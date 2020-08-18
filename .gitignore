@@ -1,0 +1,15 @@
+target
+.idea
+*.iml
+output
+bin/
+target/
+.metadata
+.settings
+.project
+.externalToolBuilders/
+.launch
+.classpath
+.factorypath
+*.jar
+*.log

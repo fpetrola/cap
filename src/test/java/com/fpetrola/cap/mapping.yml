@@ -1,0 +1,13 @@
+entity-mapping:
+  entity-class: com.fpetrola.cap.Person
+  table-name: HolaMundo
+  properties:
+    - name:
+        column-name: nameColumn2
+        mapping-type: ManyToOne
+    - age:
+        column-name: ageagf
+        mapping-type: Flat
+    - mother:
+        column-name: motherq342
+        mapping-type: ManyToOne
