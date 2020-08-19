@@ -3,8 +3,9 @@
    ids: [Task, CheckList]
    binderChain:
    -  !com.fpetrola.cap.model.binders.ConnectionExtractorFromPersistenceXML {}
-   -  !com.fpetrola.cap.model.binders.EntitiesExtractorFromDB {}
+   -  !com.fpetrola.cap.model.binders.DatabaseEntitiesExtractor {}
    -  !com.fpetrola.cap.model.binders.BasicORMMappingGenerator 
          modelPackage: com.fpetrola.cap.usermodel
-   -  !com.fpetrola.cap.model.binders.JPAEntityBinder {}
+   -  !com.fpetrola.cap.model.binders.JPAEntityBinder 
+         workspacePath: "/home/fernando/git/cap1"
       

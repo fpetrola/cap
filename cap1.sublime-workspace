@@ -1,0 +1,498 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/home/fernando/run-lsp.sh",
+			"settings":
+			{
+				"buffer_size": 1893,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "/usr/lib/jvm/java-14-openjdk-amd64/bin/java -agent"
+			}
+		},
+		{
+			"file": "src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
+			"settings":
+			{
+				"buffer_size": 311,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pom.xml",
+			"settings":
+			{
+				"buffer_size": 2454,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/fernando/katelsp.config",
+			"settings":
+			{
+				"buffer_size": 2167,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "{"
+			}
+		},
+		{
+			"contents": "-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dfile.encoding=UTF-8 -classpath /home/fernando/git/LSP4J_Tutorial/server/target/classes:/home/fernando/.m2/repository/org/eclipse/lsp4j/org.eclipse.lsp4j/0.9.0/org.eclipse.lsp4j-0.9.0.jar:/home/fernando/.m2/repository/org/eclipse/lsp4j/org.eclipse.lsp4j.generator/0.9.0/org.eclipse.lsp4j.generator-0.9.0.jar:/home/fernando/.m2/repository/org/eclipse/xtend/org.eclipse.xtend.lib/2.23.0.M2/org.eclipse.xtend.lib-2.23.0.M2.jar:/home/fernando/.m2/repository/org/eclipse/xtext/org.eclipse.xtext.xbase.lib/2.23.0.M2/org.eclipse.xtext.xbase.lib-2.23.0.M2.jar:/home/fernando/.m2/repository/com/google/guava/guava/27.1-jre/guava-27.1-jre.jar:/home/fernando/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar:/home/fernando/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/fernando/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/home/fernando/.m2/repository/org/checkerframework/checker-qual/2.5.2/checker-qual-2.5.2.jar:/home/fernando/.m2/repository/com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0.jar:/home/fernando/.m2/repository/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar:/home/fernando/.m2/repository/org/codehaus/mojo/animal-sniffer-annotations/1.17/animal-sniffer-annotations-1.17.jar:/home/fernando/.m2/repository/org/eclipse/xtend/org.eclipse.xtend.lib.macro/2.23.0.M2/org.eclipse.xtend.lib.macro-2.23.0.M2.jar:/home/fernando/.m2/repository/org/eclipse/lsp4j/org.eclipse.lsp4j.jsonrpc/0.9.0/org.eclipse.lsp4j.jsonrpc-0.9.0.jar:/home/fernando/.m2/repository/com/google/code/gson/gson/2.7/gson-2.7.jar org.eclipsecon.languageserver.Main",
+			"settings":
+			{
+				"buffer_size": 1823,
+				"line_ending": "Unix",
+				"name": "-Xdebug -Xrunjdwp:transport=dt_socket,address=8000"
+			}
+		},
+		{
+			"file": "/home/fernando/.config/sublime-text-3/Packages/User/LSP.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 2142,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/fernando/Documents/2.java",
+			"settings":
+			{
+				"buffer_size": 232,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"lsp",
+				"LSP: Restart Servers"
+			],
+			[
+				"Preferences: LSP Settings",
+				"Preferences: LSP Settings"
+			],
+			[
+				"LSP: Enable Language Server",
+				"LSP: Enable Language Server Globally"
+			],
+			[
+				"Package Control: Install Package",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/fernando/git/cap1"
+	],
+	"file_history":
+	[
+		"/home/fernando/git/cap1/README.md",
+		"/home/fernando/git/cap1/src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
+		"/home/fernando/git/cap1/src/main/java/com/fpetrola/cap/usermodel/Task.java",
+		"/home/fernando/Documents/test1.java",
+		"/home/fernando/Documents/2.java",
+		"/home/fernando/.config/sublime-text-3/Packages/User/LSP.sublime-settings",
+		"/home/fernando/.config/sublime-text-3/Packages/LSP/LSP.sublime-settings",
+		"/home/fernando/git/javaparser-maven-sample/target/test-classes/com/fpetrola/cap/mapping.yml",
+		"/home/fernando/git/javaparser-maven-sample/output/com/fpetrola/cap/Person.java",
+		"/home/fernando/git/javaparser-maven-sample/src/test/java/com/fpetrola/cap/mapping.yml",
+		"/home/fernando/Downloads/midi1 (2).mid",
+		"/home/fernando/Downloads/Freedrum_v2.0.3_apkpure.com/rocks.freedrum.freedrum/classes.dex",
+		"/home/fernando/Downloads/midifile.mid_1473337_1.mid",
+		"/home/fernando/Downloads/midi1.mid"
+	],
+	"find":
+	{
+		"height": 24.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"\t\n"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"folders":
+	[
+		{
+			"path": "/home/fernando/git/cap1"
+		}
+	],
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/home/fernando/run-lsp.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1893,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1893,
+								1893
+							]
+						],
+						"settings":
+						{
+							"auto_name": "/usr/lib/jvm/java-14-openjdk-amd64/bin/java -agent",
+							"lsp_active": true,
+							"lsp_language":
+							{
+								"bashls": "bash"
+							},
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax"
+						},
+						"translation.x": 13072.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 311,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								186,
+								186
+							]
+						],
+						"settings":
+						{
+							"lsp_active": true,
+							"lsp_language":
+							{
+								"ferlsp3": "java"
+							},
+							"show_definitions": false,
+							"syntax": "Packages/Java/Java.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "pom.xml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2454,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								22,
+								22
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/fernando/katelsp.config",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2167,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2052,
+								2052
+							]
+						],
+						"settings":
+						{
+							"auto_name": "{",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1823,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1823,
+								1823
+							]
+						],
+						"settings":
+						{
+							"auto_name": "-Xdebug -Xrunjdwp:transport=dt_socket,address=8000",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/home/fernando/.config/sublime-text-3/Packages/User/LSP.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2142,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								65,
+								65
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/fernando/Documents/2.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 232,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"lsp_active": true,
+							"lsp_language":
+							{
+								"ferlsp3": "java"
+							},
+							"syntax": "Packages/Java/Java.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 36.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.diagnostics":
+	{
+		"height": 268.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.language servers":
+	{
+		"height": 222.0
+	},
+	"output.references":
+	{
+		"height": 222.0
+	},
+	"pinned_build_system": "",
+	"project": "",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 274.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

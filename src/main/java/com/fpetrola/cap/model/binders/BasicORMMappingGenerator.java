@@ -10,7 +10,7 @@ import com.fpetrola.cap.model.developer.PropertyMapping;
 import com.fpetrola.cap.model.developer.PropertyMappingType;
 
 public class BasicORMMappingGenerator implements BidirectionalBinder<EntityModel, ORMEntityMapping> {
-	public String modelPackage;
+	public String modelPackage = "com.fpetrola.cap.usermodel";
 
 	public List<ORMEntityMapping> pull(EntityModel source) {
 		ArrayList<ORMEntityMapping> arrayList = new ArrayList<ORMEntityMapping>();

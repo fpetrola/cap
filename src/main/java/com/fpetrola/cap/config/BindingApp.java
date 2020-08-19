@@ -13,17 +13,26 @@ import com.fpetrola.cap.model.binders.BidirectionalBinder;
 public class BindingApp {
 	public static void main(String[] args) throws YamlException, InterruptedException, ClassNotFoundException {
 
-		InputStream inputStream = BindingApp.class.getClassLoader().getResourceAsStream("cap-config.yml");
-		YamlReader reader = new YamlReader(new InputStreamReader(inputStream));
-		ModelManagement modelManagement = reader.read(ModelManagement.class);
+		bind(true);
 
-		while (true) {
-			List lastValue = new ArrayList<>(Arrays.asList(""));
-			List<BidirectionalBinder> binderChain = modelManagement.getBinderChain();
+	}
 
-			traverse(modelManagement, lastValue, binderChain, 0);
+	public static void bind(boolean doLoop) {
+		try {
+			InputStream inputStream = BindingApp.class.getClassLoader().getResourceAsStream("cap-config.yml");
+			YamlReader reader = new YamlReader(new InputStreamReader(inputStream));
+			ModelManagement modelManagement = reader.read(ModelManagement.class);
+
+			do {
+				List lastValue = new ArrayList<>(Arrays.asList(""));
+				List<BidirectionalBinder> binderChain = modelManagement.getBinderChain();
+
+				traverse(modelManagement, lastValue, binderChain, 0);
+			} while (doLoop);
+		} catch (YamlException | ClassNotFoundException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
 	}
 
 	private static void traverse(ModelManagement modelManagement, List lastValue, List<BidirectionalBinder> binderChain, int i) throws ClassNotFoundException, InterruptedException {

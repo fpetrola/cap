@@ -14,7 +14,7 @@ import com.fpetrola.cap.model.developer.DatabaseConnection;
 import com.fpetrola.cap.model.developer.EntityModel;
 import com.fpetrola.cap.model.developer.Property;
 
-public class EntitiesExtractorFromDB implements BidirectionalBinder<DatabaseConnection, EntityModel> {
+public class DatabaseEntitiesExtractor implements BidirectionalBinder<DatabaseConnection, EntityModel> {
 
 	private List<EntityModel> entities = new ArrayList<EntityModel>();
 	private DatabaseConnection dbConnection;
@@ -69,6 +69,6 @@ public class EntitiesExtractorFromDB implements BidirectionalBinder<DatabaseConn
 
 	@Override
 	public String toString() {
-		return "EntitiesExtractorFromDB";
+		return "DatabaseEntitiesExtractor";
 	}
 }

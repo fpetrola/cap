@@ -8,6 +8,8 @@ import com.fpetrola.cap.model.developer.ORMEntityMapping;
 
 public class JPAEntityBinder implements BidirectionalBinder<ORMEntityMapping, Object> {
 
+	public String workspacePath;
+
 	@Override
 	public String toString() {
 		return "JPABinder []";
@@ -15,7 +17,7 @@ public class JPAEntityBinder implements BidirectionalBinder<ORMEntityMapping, Ob
 
 	@Override
 	public List<Object> pull(ORMEntityMapping source) {
-		new JPAEntityMappingWriter(source).write();
+		new JPAEntityMappingWriter(source, workspacePath).write();
 		return Arrays.asList(new JPAEntity(source));
 	}
 
