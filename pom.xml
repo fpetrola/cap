@@ -87,11 +87,19 @@
 			<version>8.0.21</version>
 		</dependency>
 
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.yaml</groupId> -->
+<!-- 			<artifactId>snakeyaml</artifactId> -->
+<!-- 			<version>1.21</version> -->
+<!-- 		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/com.esotericsoftware.yamlbeans/yamlbeans -->
 		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>1.21</version>
+			<groupId>com.esotericsoftware.yamlbeans</groupId>
+			<artifactId>yamlbeans</artifactId>
+			<version>1.15</version>
 		</dependency>
+
+
 	</dependencies>
 
 	<build>

@@ -1,27 +1,25 @@
-package com.fpetrola.cap.model;
+package com.fpetrola.cap.model.binders;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
+
+import com.fpetrola.cap.model.developer.DeveloperModel;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 
-public class BindingsDashboardData {
-	public List<BidirectionalBinder> pullers;
-	public List<DeveloperModel> developerModels;
+public class BindersFinder {
 
-	public BindingsDashboardData() {
-		pullers = new ArrayList<>();
-		developerModels = new ArrayList<>();
+	protected List<BidirectionalBinder> pullers;
+	protected List<DeveloperModel> developerModels;
 
-		findBinders();
+	public BindersFinder() {
 	}
 
-	public void findBinders() {
-		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages("com.fpetrola.cap.model").scan()) {
+	protected void findBinders() {
+		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages("com.fpetrola.cap").scan()) {
 
 			ClassInfoList binderClasses = scanResult.getClassesImplementing(BidirectionalBinder.class.getName()).filter(filter -> !filter.isInterface());
 
@@ -47,4 +45,5 @@ public class BindingsDashboardData {
 
 		}
 	}
+
 }

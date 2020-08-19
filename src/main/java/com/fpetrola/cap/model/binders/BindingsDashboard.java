@@ -1,4 +1,4 @@
-package com.fpetrola.cap;
+package com.fpetrola.cap.model.binders;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -6,11 +6,9 @@ import java.util.function.Supplier;
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
-import com.fpetrola.cap.model.BidirectionalBinder;
-import com.fpetrola.cap.model.BindingsDashboardData;
-import com.fpetrola.cap.model.DeveloperModel;
-import com.mxgraph.layout.mxCircleLayout;
+import com.fpetrola.cap.model.developer.DeveloperModel;
 import com.mxgraph.layout.mxIGraphLayout;
+import com.mxgraph.layout.mxOrganicLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.util.mxMorphing;
@@ -170,7 +168,7 @@ public class BindingsDashboard extends JFrame {
 
 	private void morphGraph() {
 		// define layout
-		mxIGraphLayout layout = new mxCircleLayout(graph);
+		mxIGraphLayout layout = new mxOrganicLayout(graph);
 
 		// layout using morphing
 		graph.getModel().beginUpdate();

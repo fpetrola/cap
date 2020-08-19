@@ -1,0 +1,10 @@
+!com.fpetrola.cap.config.ModelManagement
+   model: com.fpetrola.cap.model.developer.EntityModel
+   ids: [Task, CheckList]
+   binderChain:
+   -  !com.fpetrola.cap.model.binders.ConnectionExtractorFromPersistenceXML {}
+   -  !com.fpetrola.cap.model.binders.EntitiesExtractorFromDB {}
+   -  !com.fpetrola.cap.model.binders.BasicORMMappingGenerator 
+         modelPackage: com.fpetrola.cap.usermodel
+   -  !com.fpetrola.cap.model.binders.JPAEntityBinder {}
+      

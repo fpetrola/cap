@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model;
+package com.fpetrola.cap.model.binders;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -10,6 +10,9 @@ import com.amihaiemil.eoyaml.Yaml;
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.amihaiemil.eoyaml.YamlNode;
 import com.amihaiemil.eoyaml.YamlSequence;
+import com.fpetrola.cap.model.developer.ORMEntityMapping;
+import com.fpetrola.cap.model.developer.PropertyMapping;
+import com.fpetrola.cap.model.developer.PropertyMappingType;
 
 public class ORMMappingYamlReader {
 

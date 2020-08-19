@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model;
+package com.fpetrola.cap.model.developer;
 
 import java.util.Collection;
 

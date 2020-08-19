@@ -1,9 +1,9 @@
-package com.fpetrola.cap.model;
+package com.fpetrola.cap.model.developer;
 
 public class PropertyMapping {
-	protected String propertyName;
-	protected String columnName;
-	protected PropertyMappingType propertyMappingType;
+	public String propertyName;
+	public String columnName;
+	public PropertyMappingType propertyMappingType;
 	
 	public PropertyMapping(String propertyName, String columnName, PropertyMappingType propertyMappingType) {
 		super();

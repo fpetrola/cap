@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model;
+package com.fpetrola.cap.model.binders;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -10,12 +10,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class EntitiesExtractorFromDB implements BidirectionalBinder<EntityModel, DbConnection> {
+import com.fpetrola.cap.model.developer.DatabaseConnection;
+import com.fpetrola.cap.model.developer.EntityModel;
+import com.fpetrola.cap.model.developer.Property;
+
+public class EntitiesExtractorFromDB implements BidirectionalBinder<DatabaseConnection, EntityModel> {
 
 	private List<EntityModel> entities = new ArrayList<EntityModel>();
-	private DbConnection dbConnection;
+	private DatabaseConnection dbConnection;
 
-	public List<EntityModel> pull(DbConnection dbConnection) {
+	public List<EntityModel> pull(DatabaseConnection dbConnection) {
 
 		entities.clear();
 		this.dbConnection = dbConnection;

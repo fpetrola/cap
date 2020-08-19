@@ -1,14 +1,14 @@
-package com.fpetrola.cap.model;
+package com.fpetrola.cap.model.binders;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public interface BidirectionalBinder<T, K> extends Binder {
+public interface BidirectionalBinder<S, T> extends Binder {
 
-	List<T> pull(K source);
+	List<T> pull(S source);
 
-	default List<Supplier> getSuppliers(Supplier<K> valueSupplier) {
+	default List<Supplier> getSuppliers(Supplier<S> valueSupplier) {
 		List<T> pull = pull(valueSupplier.get());
 
 		List<Supplier> suppliers = new ArrayList<>();

@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model;
+package com.fpetrola.cap.model.developer;
 
 public class JPAEntity implements DeveloperModel {
 

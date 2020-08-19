@@ -1,9 +1,12 @@
-package com.fpetrola.cap.model;
+package com.fpetrola.cap.model.binders;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class JPABinder implements BidirectionalBinder<Object, ORMEntityMapping> {
+import com.fpetrola.cap.model.developer.JPAEntity;
+import com.fpetrola.cap.model.developer.ORMEntityMapping;
+
+public class JPAEntityBinder implements BidirectionalBinder<ORMEntityMapping, Object> {
 
 	@Override
 	public String toString() {

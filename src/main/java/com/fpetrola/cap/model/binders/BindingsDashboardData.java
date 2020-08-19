@@ -1,43 +1,32 @@
-package com.fpetrola.cap.model;
+package com.fpetrola.cap.model.binders;
 
-import java.awt.GraphicsConfiguration;
-import java.awt.HeadlessException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
+import com.fpetrola.cap.model.developer.DeveloperModel;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 
-public class BindersFinder extends JFrame {
+public class BindingsDashboardData {
+	public List<BidirectionalBinder> pullers;
+	public List<DeveloperModel> developerModels;
 
-	protected List<BidirectionalBinder> pullers;
-	protected List<DeveloperModel> developerModels;
+	public BindingsDashboardData() {
+		pullers = new ArrayList<>();
+		developerModels = new ArrayList<>();
 
-	public BindersFinder() throws HeadlessException {
-		super();
+		findBinders();
 	}
 
-	public BindersFinder(GraphicsConfiguration gc) {
-		super(gc);
-	}
+	public void findBinders() {
+		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages("com.fpetrola.cap.model").scan()) {
 
-	public BindersFinder(String title) throws HeadlessException {
-		super(title);
-	}
-
-	public BindersFinder(String title, GraphicsConfiguration gc) {
-		super(title, gc);
-	}
-
-	protected void findBinders() {
-		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages("com.fpetrola.cap").scan()) {
-	
 			ClassInfoList binderClasses = scanResult.getClassesImplementing(BidirectionalBinder.class.getName()).filter(filter -> !filter.isInterface());
-	
+
 			binderClasses.loadClasses().forEach(puller -> {
 				try {
 					Constructor<?>[] constructors = puller.getConstructors();
@@ -46,9 +35,9 @@ public class BindersFinder extends JFrame {
 					e.printStackTrace();
 				}
 			});
-	
+
 			ClassInfoList developerModelsClasses = scanResult.getClassesImplementing(DeveloperModel.class.getName()).filter(filter -> !filter.isInterface());
-	
+
 			developerModelsClasses.loadClasses().forEach(puller -> {
 				try {
 					Constructor<?>[] constructors = puller.getConstructors();
@@ -57,8 +46,7 @@ public class BindersFinder extends JFrame {
 					e.printStackTrace();
 				}
 			});
-	
+
 		}
 	}
-
 }
