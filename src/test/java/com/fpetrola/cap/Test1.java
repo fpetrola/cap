@@ -3,8 +3,8 @@ package com.fpetrola.cap;
 import org.junit.jupiter.api.Test;
 
 import com.fpetrola.cap.model.binders.JPAEntityMappingWriter;
-import com.fpetrola.cap.model.binders.ORMMappingYamlReader;
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
+import com.fpetrola.cap.model.developer.ORMMappingYamlReader;
 
 class Test1 {
 
