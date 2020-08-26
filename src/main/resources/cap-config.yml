@@ -1,3 +1,5 @@
+
+
 !com.fpetrola.cap.config.ModelManagement
    model: com.fpetrola.cap.model.developer.EntityModel
    ids: [Task, CheckList]
@@ -7,5 +9,5 @@
    -  !com.fpetrola.cap.model.binders.BasicORMMappingGenerator 
          modelPackage: com.fpetrola.cap.usermodel
    -  !com.fpetrola.cap.model.binders.JPAEntityBinder 
-         workspacePath: "/home/fernando/git/cap1"
+         workspacePath: "/home/fernando/git/cap-tests"
       

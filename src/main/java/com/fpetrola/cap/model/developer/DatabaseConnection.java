@@ -3,7 +3,7 @@ package com.fpetrola.cap.model.developer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
+ 
 public class DatabaseConnection implements DeveloperModel {
 	public String driver;
 	public String connection;

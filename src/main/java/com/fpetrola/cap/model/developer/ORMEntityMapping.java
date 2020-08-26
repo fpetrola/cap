@@ -3,20 +3,20 @@ package com.fpetrola.cap.model.developer;
 import java.util.Collection;
 
 public class ORMEntityMapping {
-	@Override
-	public String toString() {
-		return "ORMEntityMapping [" + tableName + "]";
-	}
+	public EntityModel entityModel;
+	public String mappedClass;
+	public Collection<PropertyMapping> propertyMappings;
+	public String tableName;
 
-	public ORMEntityMapping(Class<?> mappedClass, String tableName, Collection<PropertyMapping> propertyMappings) {
+	public ORMEntityMapping(EntityModel entityModel, String mappedClass, String tableName, Collection<PropertyMapping> propertyMappings) {
+		this.entityModel = entityModel;
 		this.mappedClass = mappedClass;
 		this.tableName = tableName;
 		this.propertyMappings = propertyMappings;
 	}
 
-	public Class<?> mappedClass;
-	public String tableName;
-	
-	public Collection<PropertyMapping> propertyMappings;
-
+	@Override
+	public String toString() {
+		return "ORMEntityMapping [" + tableName + "]";
+	}
 }

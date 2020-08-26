@@ -14,7 +14,7 @@ import com.fpetrola.cap.model.developer.DatabaseConnection;
 import com.fpetrola.cap.model.developer.EntityModel;
 import com.fpetrola.cap.model.developer.Property;
 
-public class DatabaseEntitiesExtractor implements BidirectionalBinder<DatabaseConnection, EntityModel> {
+public class DatabaseEntitiesExtractor extends DefaultBinder implements BidirectionalBinder<DatabaseConnection, EntityModel> {
 
 	private List<EntityModel> entities = new ArrayList<EntityModel>();
 	private DatabaseConnection dbConnection;

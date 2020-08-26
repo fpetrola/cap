@@ -9,15 +9,22 @@ import java.util.List;
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.SourceChangesListener;
 
 public class BindingApp {
-	public static void main(String[] args) throws YamlException, InterruptedException, ClassNotFoundException {
+	private SourceChangesListener sourceChangesListener;
+
+	public BindingApp(SourceChangesListener sourceChangesListener) {
+		this.sourceChangesListener = sourceChangesListener;
+	}
+
+	public void main(String[] args) throws YamlException, InterruptedException, ClassNotFoundException {
 
 		bind(true);
 
 	}
 
-	public static void bind(boolean doLoop) {
+	public void bind(boolean doLoop) {
 		try {
 			InputStream inputStream = BindingApp.class.getClassLoader().getResourceAsStream("cap-config.yml");
 			YamlReader reader = new YamlReader(new InputStreamReader(inputStream));
@@ -35,9 +42,10 @@ public class BindingApp {
 		}
 	}
 
-	private static void traverse(ModelManagement modelManagement, List lastValue, List<BidirectionalBinder> binderChain, int i) throws ClassNotFoundException, InterruptedException {
+	private void traverse(ModelManagement modelManagement, List lastValue, List<BidirectionalBinder> binderChain, int i) throws ClassNotFoundException, InterruptedException {
 		if (i < binderChain.size()) {
 			BidirectionalBinder bidirectionalBinder = binderChain.get(i);
+			bidirectionalBinder.setSourceChangesListener(sourceChangesListener);
 			lastValue = pickResults(modelManagement, lastValue);
 			for (Object object : lastValue) {
 				List result = bidirectionalBinder.pull(object);
@@ -48,7 +56,7 @@ public class BindingApp {
 		}
 	}
 
-	private static List pickResults(ModelManagement modelManagement, List lastValue) throws ClassNotFoundException {
+	private List pickResults(ModelManagement modelManagement, List lastValue) throws ClassNotFoundException {
 		List result = new ArrayList(lastValue);
 		List models = new ArrayList();
 

@@ -1,26 +1,25 @@
 package com.fpetrola.cap.model.binders;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.github.javaparser.Range;
 
 public class SourceChange {
 
-	public Range range;
 	public String message;
-	public String code;
 	public Range problemRange;
-	public File file;
+	public String uri;
+	public List<SourceCodeInsertion> insertions = new ArrayList<SourceCodeInsertion>();
 
-	public SourceChange(File file, Range range, String message) {
-		this.file = file;
-		problemRange = range;
-		this.range = range;
+	public SourceChange(String uri, Range range, String message) {
+		this.uri = uri;
+		this.problemRange = range;
 		this.message = message;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+	public void addInsertion(SourceCodeInsertion sourceCodeInsertion) {
 
+		insertions.add(sourceCodeInsertion);
+	}
 }

@@ -6,7 +6,7 @@ public class JPAEntity implements DeveloperModel {
 
 	@Override
 	public String toString() {
-		return "JPAEntity [" + source.mappedClass.getSimpleName() + "]";
+		return "JPAEntity [" + source.mappedClass + "]";
 	}
 
 	public JPAEntity(ORMEntityMapping source) {

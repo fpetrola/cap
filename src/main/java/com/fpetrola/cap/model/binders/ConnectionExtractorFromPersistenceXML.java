@@ -7,7 +7,7 @@ import com.fpetrola.cap.helpers.PersistenceUnitInfoImpl;
 import com.fpetrola.cap.helpers.PersistenceXmlParser;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 
-public class ConnectionExtractorFromPersistenceXML implements BidirectionalBinder<Object, DatabaseConnection> {
+public class ConnectionExtractorFromPersistenceXML extends DefaultBinder implements BidirectionalBinder<Object, DatabaseConnection> {
 
 	public String name;
 	public ConnectionExtractorFromPersistenceXML() {
