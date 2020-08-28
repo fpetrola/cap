@@ -11,16 +11,16 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 
-public class BindersFinder {
+public class BindersDiscoveryService {
 
-	public List<BidirectionalBinder> pullers= new ArrayList<BidirectionalBinder>();
-	public List<DeveloperModel> developerModels= new ArrayList<DeveloperModel>();
+	private static final String basePackage = "com.fpetrola.cap";
 
-	public BindersFinder() {
+	public BindersDiscoveryService() {
 	}
 
-	public void findBinders() {
-		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages("com.fpetrola.cap").scan()) {
+	public List<BidirectionalBinder> findBinders() {
+		List<BidirectionalBinder> pullers = new ArrayList<BidirectionalBinder>();
+		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(basePackage).scan()) {
 
 			ClassInfoList binderClasses = scanResult.getClassesImplementing(BidirectionalBinder.class.getName()).filter(filter -> !filter.isInterface());
 
@@ -31,6 +31,14 @@ public class BindersFinder {
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				}
 			});
+		}
+
+		return pullers;
+	}
+
+	public List<DeveloperModel> findModels() {
+		List<DeveloperModel> developerModels = new ArrayList<DeveloperModel>();
+		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(basePackage).scan()) {
 
 			ClassInfoList developerModelsClasses = scanResult.getClassesImplementing(DeveloperModel.class.getName()).filter(filter -> !filter.isInterface());
 
@@ -41,8 +49,9 @@ public class BindersFinder {
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				}
 			});
-
 		}
+
+		return developerModels;
 	}
 
 }

@@ -19,7 +19,7 @@ import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.binders.BindWriter;
-import com.fpetrola.cap.model.binders.BindersFinder;
+import com.fpetrola.cap.model.binders.BindersDiscoveryService;
 import com.fpetrola.cap.model.binders.implementations.JPAEntityBinder;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceChangesListener;
@@ -32,7 +32,7 @@ import com.github.javaparser.Range;
 public class BindingApp {
 	public SourceChangesListener sourceChangesListener;
 	private String configURI;
-	private BindersFinder bindersFinder;
+	private BindersDiscoveryService bindersDiscoveryService = new BindersDiscoveryService();
 	private List<SourceChange> sourceChanges = new ArrayList<SourceChange>();
 
 	public BindingApp(SourceChangesListener sourceChangesListener) {
@@ -49,13 +49,12 @@ public class BindingApp {
 
 				try {
 					ModelManagement modelManagement = reader.read(ModelManagement.class);
-					bindersFinder = new BindersFinder();
-					bindersFinder.findBinders();
+					bindersDiscoveryService.findBinders();
 
 					proposeIds(modelManagement);
 					proposeConfigForJPABinder(modelManagement);
 
-					List<BidirectionalBinder> pullers = bindersFinder.pullers;
+					List<BidirectionalBinder> pullers = bindersDiscoveryService.findBinders();
 					for (BidirectionalBinder bidirectionalBinder : pullers) {
 						Type[] actualTypeArguments = getBinderTypes(bidirectionalBinder);
 						Type type = actualTypeArguments[0];
