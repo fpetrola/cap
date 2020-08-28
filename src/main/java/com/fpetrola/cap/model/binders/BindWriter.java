@@ -30,10 +30,10 @@ import difflib.PatchFailedException;
 
 public class BindWriter {
 
-	protected SourceChangesListener sourceChangesListener;
-	protected String uri;
-	protected String workspacePath;
-	protected JavaParser javaParser;
+	public SourceChangesListener sourceChangesListener;
+	public String uri;
+	public String workspacePath;
+	public JavaParser javaParser;
 
 	public BindWriter() {
 		super();
@@ -91,7 +91,7 @@ public class BindWriter {
 		return Arrays.asList(split);
 	}
 
-	protected File initWithClassName(String className) {
+	public File initWithClassName(String className) {
 		Path mavenModuleRoot = Path.of(workspacePath);
 		SourceRoot sourceRoot = new SourceRoot(mavenModuleRoot.resolve("src/main/java"));
 		ParserConfiguration parserConfiguration = sourceRoot.getParserConfiguration();
@@ -118,7 +118,7 @@ public class BindWriter {
 		}
 	}
 
-	protected JavaParser createJavaParser() {
+	public JavaParser createJavaParser() {
 		JavaParser javaParser = new JavaParser();
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.setAttributeComments(true);

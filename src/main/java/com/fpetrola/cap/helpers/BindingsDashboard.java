@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
+import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.developer.DeveloperModel;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.layout.mxOrganicLayout;

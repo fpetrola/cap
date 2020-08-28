@@ -1,8 +1,6 @@
 package com.fpetrola.cap.model.binders.implementations;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,46 +16,45 @@ import com.fpetrola.cap.model.developer.ORMEntityMapping;
 import com.fpetrola.cap.model.developer.PropertyMapping;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceChangesListener;
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.ast.visitor.Visitable;
 
-public class JPAEntityMappingWriter extends BindWriter {
+public class JPAEntityMappingWriter {
 
+	private final BindWriter bindWriter = new BindWriter();
 	private ORMEntityMapping ormEntityMapping;
 
 	public JPAEntityMappingWriter(ORMEntityMapping ormEntityMapping, String workspacePath, SourceChangesListener sourceChangesListener) {
 		this.ormEntityMapping = ormEntityMapping;
-		this.workspacePath = workspacePath;
-		this.sourceChangesListener = sourceChangesListener;
+		bindWriter.workspacePath = workspacePath;
+		bindWriter.sourceChangesListener = sourceChangesListener;
 	}
 
 	public void write() {
 		try {
-			File file = initWithClassName(ormEntityMapping.mappedClass);
+			File file = bindWriter.initWithClassName(ormEntityMapping.mappedClass);
 			if (file.exists()) {
-				javaParser = createJavaParser();
+				bindWriter.javaParser = bindWriter.createJavaParser();
 
 				List<SourceChange> sourceChanges = new ArrayList<>();
 
-				addInsertionsFor(sourceChanges, cu1 -> addClassAnnotations(cu1), file);
+				bindWriter.addInsertionsFor(sourceChanges, cu1 -> addClassAnnotations(cu1), file);
 
 				for (PropertyMapping propertyMapping : ormEntityMapping.propertyMappings) {
-					addInsertionsFor(sourceChanges, cu1 -> addPropertiesAnnotations(cu1, propertyMapping), file);
+					bindWriter.addInsertionsFor(sourceChanges, cu1 -> addPropertiesAnnotations(cu1, propertyMapping), file);
 				}
 
 				Range range = new Range(new Position(1, 1), new Position(1, 1));
-				SourceChange fixAllSourceChange = new SourceChange(uri, range, "fix all");
+				SourceChange fixAllSourceChange = new SourceChange(bindWriter.uri, range, "fix all");
 				for (SourceChange sourceChange : sourceChanges) {
 					fixAllSourceChange.insertions.addAll(sourceChange.insertions);
 				}
@@ -65,11 +62,11 @@ public class JPAEntityMappingWriter extends BindWriter {
 				if (!fixAllSourceChange.insertions.isEmpty())
 					sourceChanges.add(fixAllSourceChange);
 
-				sourceChangesListener.newSourceChanges(uri, sourceChanges);
+				bindWriter.sourceChangesListener.newSourceChanges(bindWriter.uri, sourceChanges);
 			} else {
 				String className = ormEntityMapping.mappedClass;
 				String content = "package " + className.substring(0, className.lastIndexOf(".")) + ";\n\nimport java.util.List;\n" + "\n\n" + "public class " + ormEntityMapping.entityModel.name + " {\n\n}";
-				sourceChangesListener.fileCreation(uri, content);
+				bindWriter.sourceChangesListener.fileCreation(bindWriter.uri, content);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -88,7 +85,7 @@ public class JPAEntityMappingWriter extends BindWriter {
 
 					List<SimpleName> simpleNames = classDeclaration.findAll(SimpleName.class);
 
-					sourceChange[0] = new SourceChange(uri, simpleNames.get(0).getRange().get(), "JPA Entity detected");
+					sourceChange[0] = new SourceChange(bindWriter.uri, simpleNames.get(0).getRange().get(), "JPA Entity detected");
 				}
 
 				if (ormEntityMapping.tableName != null) {
@@ -123,7 +120,7 @@ public class JPAEntityMappingWriter extends BindWriter {
 					if (propertyMapping.propertyMappingType != null) {
 						if (!fieldDeclaration.isAnnotationPresent(ManyToOne.class)) {
 							fieldDeclaration.addAnnotation(ManyToOne.class);
-							sourceChange[0] = new SourceChange(uri, fieldDeclaration.getRange().get(), "column mapping detected for property: " + propertyMapping.columnName);
+							sourceChange[0] = new SourceChange(bindWriter.uri, fieldDeclaration.getRange().get(), "column mapping detected for property: " + propertyMapping.columnName);
 						}
 					}
 
@@ -149,7 +146,7 @@ public class JPAEntityMappingWriter extends BindWriter {
 				Optional<SimpleName> simpleNames = coid.findAll(SimpleName.class).stream().filter(sn -> sn.getParentNode().get() instanceof ClassOrInterfaceDeclaration).findFirst();
 
 				simpleNames.ifPresent(p -> {
-					sourceChange[0] = new SourceChange(uri, p.getRange().get(), "add property to match database column: " + propertyMapping.columnName);
+					sourceChange[0] = new SourceChange(bindWriter.uri, p.getRange().get(), "add property to match database column: " + propertyMapping.columnName);
 				});
 
 			});
