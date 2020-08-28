@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.model.binders.implementations;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 
 public class ConnectionExtractorFromHibernateXML extends DefaultBinder implements BidirectionalBinder<Object, DatabaseConnection> {

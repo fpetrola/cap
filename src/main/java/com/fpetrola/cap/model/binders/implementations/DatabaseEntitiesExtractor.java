@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.model.binders.implementations;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 import com.fpetrola.cap.model.developer.EntityModel;
 import com.fpetrola.cap.model.developer.Property;

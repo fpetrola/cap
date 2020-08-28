@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.model.binders.implementations;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +11,8 @@ import java.util.Optional;
 
 import com.fpetrola.cap.helpers.PersistenceUnitInfoImpl;
 import com.fpetrola.cap.helpers.PersistenceXmlParser;
+import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 
 public class ConnectionExtractorFromPersistenceXML extends DefaultBinder implements BidirectionalBinder<Object, DatabaseConnection> {

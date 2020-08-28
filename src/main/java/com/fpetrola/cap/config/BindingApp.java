@@ -20,7 +20,7 @@ import com.esotericsoftware.yamlbeans.YamlWriter;
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.binders.BindWriter;
 import com.fpetrola.cap.model.binders.BindersFinder;
-import com.fpetrola.cap.model.binders.JPAEntityBinder;
+import com.fpetrola.cap.model.binders.implementations.JPAEntityBinder;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceChangesListener;
 import com.fpetrola.cap.model.source.SourceCodeInsertion;

@@ -1,9 +1,11 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.model.binders.implementations;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.JPAEntity;
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
 
