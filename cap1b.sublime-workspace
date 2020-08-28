@@ -11,26 +11,19 @@
 			"file": "/home/fernando/git/cap-tests/src/main/resources/cap-config.yml",
 			"settings":
 			{
-				"buffer_size": 426,
+				"buffer_size": 455,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/fernando/git/cap-tests/src/main/resources/hibernate.cfg.xml",
+			"contents": "package com.fpetrola.cap.usermodel;\n\nimport java.util.List;\n\n\npublic class table1 {\n\n}",
+			"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1.java",
+			"file_size": 86,
+			"file_write_time": 132430622194144665,
 			"settings":
 			{
-				"buffer_size": 409,
-				"encoding": "UTF-8",
-				"line_ending": "Unix",
-				"name": "<!DOCTYPE hibernate-configuration PUBLIC"
-			}
-		},
-		{
-			"file": "/home/fernando/git/cap-tests/src/main/resources/META-INF/persistence.xml",
-			"settings":
-			{
-				"buffer_size": 734,
+				"buffer_size": 86,
 				"line_ending": "Unix"
 			}
 		},
@@ -53,13 +46,11 @@
 			}
 		},
 		{
-			"contents": "package com.fpetrola.cap.usermodel;\n\nimport java.util.List;\n\n\npublic class new_table {\n\n}",
 			"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table.java",
-			"file_size": 89,
-			"file_write_time": 132430569360976790,
 			"settings":
 			{
 				"buffer_size": 89,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -77,7 +68,7 @@
 		[
 			[
 				"lsp",
-				"LSP: Clear Diagnostics"
+				"LSP: Toggle Diagnostics Panel"
 			],
 			[
 				"lps",
@@ -124,14 +115,18 @@
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel",
-		"/home/fernando/git/cap-tests/src/main/resources"
+		"/home/fernando/git/cap-tests/src/main/resources",
+		"/home/fernando/git/cap-tests/src/main/resources/META-INF"
 	],
 	"file_history":
 	[
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/Task.java",
-		"/home/fernando/git/cap-tests/src/main/resources/cap-config.yml",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
+		"/home/fernando/git/cap-tests/src/main/resources/cap-config.yml",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1.java",
+		"/home/fernando/git/cap-tests/src/main/resources/hibernate.cfg.xml",
+		"/home/fernando/git/cap-tests/src/main/resources/META-INF/persistence1.xml",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/NEW_TABLE.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TASK.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CHECKLIST.java",
@@ -185,6 +180,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"jdbc:mysql://localhost:3306/testdb",
 			"Database",
 			"   \n",
 			"task_id",
@@ -219,7 +215,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -228,15 +224,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 426,
+						"buffer_size": 455,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1,
-								1
+								40,
+								40
 							]
 						],
 						"settings":
@@ -246,6 +242,7 @@
 							{
 								"ferlsp3": "yaml"
 							},
+							"show_definitions": false,
 							"syntax": "Packages/YAML/YAML.sublime-syntax"
 						},
 						"translation.x": 0.0,
@@ -257,67 +254,40 @@
 				},
 				{
 					"buffer": 1,
-					"file": "/home/fernando/git/cap-tests/src/main/resources/hibernate.cfg.xml",
+					"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1.java",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 409,
+						"buffer_size": 86,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								78,
+								78
 							]
 						],
 						"settings":
 						{
-							"auto_name": "<!DOCTYPE hibernate-configuration PUBLIC",
-							"syntax": "Packages/XML/XML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"lsp_active": true,
+							"lsp_language":
+							{
+								"ferlsp3": "java"
+							},
+							"show_definitions": false,
+							"syntax": "Packages/Java/Java.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "/home/fernando/git/cap-tests/src/main/resources/META-INF/persistence.xml",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 734,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/XML/XML.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
 					"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
 					"semi_transient": false,
 					"settings":
@@ -329,8 +299,8 @@
 						"selection":
 						[
 							[
-								412,
-								412
+								37,
+								37
 							]
 						],
 						"settings":
@@ -340,17 +310,18 @@
 							{
 								"ferlsp3": "java"
 							},
+							"show_definitions": false,
 							"syntax": "Packages/Java/Java.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 3,
 					"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/Task.java",
 					"semi_transient": false,
 					"settings":
@@ -373,17 +344,18 @@
 							{
 								"ferlsp3": "java"
 							},
+							"show_definitions": false,
 							"syntax": "Packages/Java/Java.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 4,
 					"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table.java",
 					"semi_transient": false,
 					"settings":
@@ -406,13 +378,14 @@
 							{
 								"ferlsp3": "java"
 							},
+							"show_definitions": false,
 							"syntax": "Packages/Java/Java.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]

@@ -16,6 +16,8 @@ import javax.persistence.Table;
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
 import com.fpetrola.cap.model.developer.PropertyMapping;
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.Position;
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -51,13 +53,15 @@ public class JPAEntityMappingWriter extends BindWriter {
 					addInsertionsFor(sourceChanges, cu1 -> addPropertiesAnnotations(cu1, propertyMapping), file);
 				}
 
-				SourceChange fixAllSourceChange = new SourceChange(uri, sourceChanges.get(0).problemRange, "fix all");
+				Range range = new Range(new Position(1, 1), new Position(1, 1));
+				SourceChange fixAllSourceChange = new SourceChange(uri, range, "fix all");
 				for (SourceChange sourceChange : sourceChanges) {
 					fixAllSourceChange.insertions.addAll(sourceChange.insertions);
 				}
-				
-				sourceChanges.add(fixAllSourceChange);
-				
+
+				if (!fixAllSourceChange.insertions.isEmpty())
+					sourceChanges.add(fixAllSourceChange);
+
 				sourceChangesListener.newSourceChanges(uri, sourceChanges);
 			} else {
 				String className = ormEntityMapping.mappedClass;

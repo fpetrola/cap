@@ -29,7 +29,7 @@ public class DatabaseEntitiesExtractor extends DefaultBinder implements Bidirect
 		try {
 
 			DatabaseMetaData databaseMetaData = dbConnection.con.getMetaData();
-			ResultSet resultSet = databaseMetaData.getTables("testdb", null, null, new String[] { "TABLE" });
+			ResultSet resultSet = databaseMetaData.getTables(dbConnection.con.getCatalog(), null, null, new String[] { "TABLE" });
 
 			while (resultSet.next()) {
 				String tableName = resultSet.getString("TABLE_NAME");
