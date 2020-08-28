@@ -3,6 +3,7 @@ package com.fpetrola.cap.languageserver;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +27,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
 import com.fpetrola.cap.config.BindingApp;
-import com.fpetrola.cap.model.binders.SourceChangesListener;
+import com.fpetrola.cap.model.source.SourceChangesListener;
 
 public class CapLanguageServer implements LanguageServer {
 
@@ -46,11 +47,11 @@ public class CapLanguageServer implements LanguageServer {
 		textService = new CapTextDocumentService(this);
 		workspaceService = new CapWorkspaceService(this);
 		log("init");
-		
+
 		SourceChangesListener sourceChangesListener = new SourceChangesListener() {
-			public void fileCreation(String mappedClass, String content) {
+			public void fileCreation(String uri, String content) {
 				try {
-					File file = new File(mappedClass.replace("file:///", "/"));
+					File file = new File(URI.create(uri));
 					file.getParentFile().mkdirs();
 					FileWriter fileWriter = new FileWriter(file);
 					fileWriter.write(content);
@@ -59,7 +60,7 @@ public class CapLanguageServer implements LanguageServer {
 					e.printStackTrace();
 				}
 
-				DiagnosticGenerator.editFile(CapLanguageServer.this, mappedClass, "");
+				DiagnosticGenerator.editFile(CapLanguageServer.this, uri, "");
 			}
 		};
 
@@ -79,7 +80,7 @@ public class CapLanguageServer implements LanguageServer {
 		res.getCapabilities().setReferencesProvider(Boolean.TRUE);
 		res.getCapabilities().setTextDocumentSync(TextDocumentSyncKind.Full);
 		TextDocumentSyncOptions textDocumentSync = new TextDocumentSyncOptions();
-		TextDocumentSyncKind te= TextDocumentSyncKind.Full;
+		TextDocumentSyncKind te = TextDocumentSyncKind.Full;
 		textDocumentSync.setChange(te);
 		textDocumentSync.setSave(new SaveOptions(true));
 		textDocumentSync.setWillSave(true);
@@ -97,7 +98,7 @@ public class CapLanguageServer implements LanguageServer {
 //		WorkspaceEditCapabilities workspaceEdit= new WorkspaceEditCapabilities();
 //		workspaceEdit.setResourceOperations(Arrays.asList(ResourceOperationKind.Create, ResourceOperationKind.Delete, ResourceOperationKind.Rename));
 //		params.getCapabilities().getWorkspace().setWorkspaceEdit(workspaceEdit);
-		
+
 		return CompletableFuture.supplyAsync(() -> res);
 	}
 

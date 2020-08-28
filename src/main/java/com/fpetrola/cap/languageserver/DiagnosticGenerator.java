@@ -27,11 +27,11 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 
 import com.fpetrola.cap.config.BindingApp;
-import com.fpetrola.cap.model.binders.SourceChange;
-import com.fpetrola.cap.model.binders.SourceChangesListener;
-import com.fpetrola.cap.model.binders.SourceCodeInsertion;
-import com.fpetrola.cap.model.binders.SourceCodeModification;
-import com.fpetrola.cap.model.binders.SourceCodeReplace;
+import com.fpetrola.cap.model.source.SourceChange;
+import com.fpetrola.cap.model.source.SourceChangesListener;
+import com.fpetrola.cap.model.source.SourceCodeInsertion;
+import com.fpetrola.cap.model.source.SourceCodeModification;
+import com.fpetrola.cap.model.source.SourceCodeReplace;
 
 public class DiagnosticGenerator {
 
@@ -93,10 +93,10 @@ public class DiagnosticGenerator {
 		diagnostic.setSeverity(DiagnosticSeverity.Warning);
 		validate.add(diagnostic);
 
-		CodeAction codeAction = new CodeAction("fix: " + sourceChange.message);
+		CodeAction codeAction = new CodeAction("" + sourceChange.message);
 		codeAction.setDiagnostics(Arrays.asList(diagnostic));
 		codeAction.setEdit(editFile1(sourceChange, versionedTextDocumentIdentifier));
-		codeAction.setKind(CodeActionKind.Source);
+		codeAction.setKind(CodeActionKind.RefactorRewrite);
 		codeActions.get(sourceChange.uri).add(codeAction);
 	}
 

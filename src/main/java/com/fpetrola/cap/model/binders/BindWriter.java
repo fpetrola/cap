@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.fpetrola.cap.model.source.SourceChange;
+import com.fpetrola.cap.model.source.SourceChangesListener;
+import com.fpetrola.cap.model.source.SourceCodeInsertion;
+import com.fpetrola.cap.model.source.SourceCodeModification;
+import com.fpetrola.cap.model.source.SourceCodeReplace;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.Position;

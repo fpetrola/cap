@@ -15,6 +15,8 @@ import javax.persistence.Table;
 
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
 import com.fpetrola.cap.model.developer.PropertyMapping;
+import com.fpetrola.cap.model.source.SourceChange;
+import com.fpetrola.cap.model.source.SourceChangesListener;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.Position;
 import com.github.javaparser.Range;

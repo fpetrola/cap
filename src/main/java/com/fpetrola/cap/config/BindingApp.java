@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,10 +21,10 @@ import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.binders.BindWriter;
 import com.fpetrola.cap.model.binders.BindersFinder;
 import com.fpetrola.cap.model.binders.JPAEntityBinder;
-import com.fpetrola.cap.model.binders.SourceChange;
-import com.fpetrola.cap.model.binders.SourceChangesListener;
-import com.fpetrola.cap.model.binders.SourceCodeInsertion;
-import com.fpetrola.cap.model.binders.SourceCodeModification;
+import com.fpetrola.cap.model.source.SourceChange;
+import com.fpetrola.cap.model.source.SourceChangesListener;
+import com.fpetrola.cap.model.source.SourceCodeInsertion;
+import com.fpetrola.cap.model.source.SourceCodeModification;
 import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 
@@ -38,18 +39,12 @@ public class BindingApp {
 		this.sourceChangesListener = sourceChangesListener;
 	}
 
-	public void main(String[] args) throws YamlException, InterruptedException, ClassNotFoundException {
-
-		bind(true);
-
-	}
-
 	public void bind(boolean doLoop) {
 		if (configURI != null)
 			try {
 				sourceChanges.clear();
 
-				InputStream inputStream = new FileInputStream(new File(configURI.replace("file:///", "/")));
+				InputStream inputStream = new FileInputStream(new File(URI.create(configURI)));
 				YamlReader reader = new YamlReader(new InputStreamReader(inputStream));
 
 				try {
@@ -103,7 +98,7 @@ public class BindingApp {
 		SourceChange sourceChange = new SourceChange(configURI, new Range(begin, end), "Initialize Model Management");
 
 		ModelManagement modelManagement = new ModelManagement();
-		String modelSerialization = "";
+		String modelSerialization = "\n";
 		String modelSerialization2 = getModelSerialization(modelManagement);
 		List<SourceCodeModification> createInsertions = new BindWriter().createModifications(modelSerialization, modelSerialization2);
 		if (!createInsertions.isEmpty()) {
@@ -198,7 +193,7 @@ public class BindingApp {
 				JPAEntityBinder jpaEntityBinder = (JPAEntityBinder) bidirectionalBinder2;
 
 				if (jpaEntityBinder.getWorkspacePath() == null) {
-					File file = new File(configURI.replace("file:///", "/"));
+					File file = new File(URI.create(configURI));
 
 					while (file != null) {
 						String message = "use workspace in: " + file.getPath();

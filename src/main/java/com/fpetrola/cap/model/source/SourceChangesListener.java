@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.model.source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
