@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.helpers;
 
 import java.util.List;
 import java.util.function.Supplier;

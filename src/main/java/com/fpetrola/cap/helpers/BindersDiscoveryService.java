@@ -1,10 +1,11 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.helpers;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.developer.DeveloperModel;
 
 import io.github.classgraph.ClassGraph;
