@@ -2,6 +2,8 @@ package com.fpetrola.cap.model.binders;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,12 +51,20 @@ public class JPAEntityMappingWriter extends BindWriter {
 					addInsertionsFor(sourceChanges, cu1 -> addPropertiesAnnotations(cu1, propertyMapping), file);
 				}
 
+				SourceChange fixAllSourceChange = new SourceChange(uri, sourceChanges.get(0).problemRange, "fix all");
+				for (SourceChange sourceChange : sourceChanges) {
+					fixAllSourceChange.insertions.addAll(sourceChange.insertions);
+				}
+				
+				sourceChanges.add(fixAllSourceChange);
+				
 				sourceChangesListener.newSourceChanges(uri, sourceChanges);
 			} else {
 				String className = ormEntityMapping.mappedClass;
-				sourceChangesListener.fileCreation(uri, "package " + className.substring(0, className.lastIndexOf(".")) + ";\n\n\n\n" + "public class " + ormEntityMapping.entityModel.name + " {\n\n}");
+				String content = "package " + className.substring(0, className.lastIndexOf(".")) + ";\n\nimport java.util.List;\n" + "\n\n" + "public class " + ormEntityMapping.entityModel.name + " {\n\n}";
+				sourceChangesListener.fileCreation(uri, content);
 			}
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -106,7 +116,7 @@ public class JPAEntityMappingWriter extends BindWriter {
 					if (propertyMapping.propertyMappingType != null) {
 						if (!fieldDeclaration.isAnnotationPresent(ManyToOne.class)) {
 							fieldDeclaration.addAnnotation(ManyToOne.class);
-							sourceChange[0] = new SourceChange(uri, fieldDeclaration.getRange().get(), "column mapping detected for column:" + propertyMapping.columnName);
+							sourceChange[0] = new SourceChange(uri, fieldDeclaration.getRange().get(), "column mapping detected for property: " + propertyMapping.columnName);
 						}
 					}
 
@@ -125,14 +135,14 @@ public class JPAEntityMappingWriter extends BindWriter {
 			cu.findAll(ClassOrInterfaceDeclaration.class).forEach(coid -> {
 				VariableDeclarator variables = new VariableDeclarator();
 				variables.setName(propertyMapping.propertyName);
-				variables.setType(String.class);
+				variables.setType(propertyMapping.typeName.contains("INT") ? Integer.class : String.class);
 				FieldDeclaration fieldDeclaration = new FieldDeclaration().addVariable(variables);
 				coid.getMembers().add(0, fieldDeclaration);
 				Optional<String> fullyQualifiedName = coid.getFullyQualifiedName();
 				Optional<SimpleName> simpleNames = coid.findAll(SimpleName.class).stream().filter(sn -> sn.getParentNode().get() instanceof ClassOrInterfaceDeclaration).findFirst();
 
 				simpleNames.ifPresent(p -> {
-					sourceChange[0] = new SourceChange(uri, p.getRange().get(), "column mapping detected for column:" + propertyMapping.columnName);
+					sourceChange[0] = new SourceChange(uri, p.getRange().get(), "add property to match database column: " + propertyMapping.columnName);
 				});
 
 			});

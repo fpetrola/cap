@@ -1,5 +1,6 @@
 package com.fpetrola.cap.model.binders;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +11,9 @@ public class JPAEntityBinder extends DefaultBinder implements BidirectionalBinde
 
 	public String workspacePath;
 
+	public JPAEntityBinder() {
+	}
+
 	@Override
 	public String toString() {
 		return "JPABinder []";
@@ -17,9 +21,23 @@ public class JPAEntityBinder extends DefaultBinder implements BidirectionalBinde
 
 	@Override
 	public List<Object> pull(ORMEntityMapping source) {
-		final JPAEntityMappingWriter jpaEntityMappingWriter = new JPAEntityMappingWriter(source, workspacePath, getSourceChangesListener());
-		jpaEntityMappingWriter.write();
-		return Arrays.asList(new JPAEntity(source));
+		List<Object> result = new ArrayList<Object>();
+
+		try {
+			final JPAEntityMappingWriter jpaEntityMappingWriter = new JPAEntityMappingWriter(source, getWorkspacePath(), getSourceChangesListener());
+			jpaEntityMappingWriter.write();
+			result.add(new JPAEntity(source));
+		} catch (Exception e) {
+		}
+		return result;
+	}
+
+	public String getWorkspacePath() {
+		return workspacePath;
+	}
+
+	public void setWorkspacePath(String workspacePath) {
+		this.workspacePath = workspacePath;
 	}
 
 }

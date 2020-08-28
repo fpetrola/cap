@@ -19,6 +19,9 @@ public class DatabaseEntitiesExtractor extends DefaultBinder implements Bidirect
 	private List<EntityModel> entities = new ArrayList<EntityModel>();
 	private DatabaseConnection dbConnection;
 
+	public DatabaseEntitiesExtractor() {
+	}
+	
 	public List<EntityModel> pull(DatabaseConnection dbConnection) {
 
 		entities.clear();
@@ -70,5 +73,9 @@ public class DatabaseEntitiesExtractor extends DefaultBinder implements Bidirect
 	@Override
 	public String toString() {
 		return "DatabaseEntitiesExtractor";
+	}
+	
+	public String getParametersProposalMessage() {
+		return "I've found some new entities in database. Do you want to add them to your code?";
 	}
 }

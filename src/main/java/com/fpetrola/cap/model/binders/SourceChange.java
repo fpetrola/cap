@@ -10,7 +10,7 @@ public class SourceChange {
 	public String message;
 	public Range problemRange;
 	public String uri;
-	public List<SourceCodeInsertion> insertions = new ArrayList<SourceCodeInsertion>();
+	public List<SourceCodeModification> insertions = new ArrayList<SourceCodeModification>();
 
 	public SourceChange(String uri, Range range, String message) {
 		this.uri = uri;

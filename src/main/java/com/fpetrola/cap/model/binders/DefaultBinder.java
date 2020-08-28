@@ -1,7 +1,11 @@
 package com.fpetrola.cap.model.binders;
 
-public class DefaultBinder {
-	SourceChangesListener sourceChangesListener;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DefaultBinder implements Binder {
+	transient SourceChangesListener sourceChangesListener;
+	private List<String> filters = new ArrayList<>();
 
 	public DefaultBinder() {
 	}
@@ -12,6 +16,14 @@ public class DefaultBinder {
 
 	public void setSourceChangesListener(SourceChangesListener sourceChangesListener) {
 		this.sourceChangesListener = sourceChangesListener;
+	}
+
+	public List<String> getFilters() {
+		return filters;
+	}
+
+	public void setFilters(List<String> ids) {
+		this.filters = ids;
 	}
 
 }

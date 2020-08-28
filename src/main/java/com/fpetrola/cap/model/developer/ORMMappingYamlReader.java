@@ -42,7 +42,7 @@ public class ORMMappingYamlReader {
 					String columnName = property.string("column-name");
 					String mappingType = property.string("mapping-type");
 					PropertyMappingType propertyMappingType = mappingType != null ? PropertyMappingType.valueOf(mappingType) : null;
-					propertyMappings.add(new PropertyMapping(propertyName, columnName, propertyMappingType));
+					propertyMappings.add(new PropertyMapping(propertyName, columnName, "String", propertyMappingType));
 
 				});
 

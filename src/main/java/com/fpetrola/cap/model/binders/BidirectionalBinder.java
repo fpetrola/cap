@@ -32,4 +32,8 @@ public interface BidirectionalBinder<S, T> extends Binder {
 		return suppliers;
 	}
 
+	default String getParametersProposalMessage() {
+		return "";
+	}
+
 }

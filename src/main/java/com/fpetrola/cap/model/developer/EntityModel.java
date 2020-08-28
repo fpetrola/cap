@@ -14,7 +14,7 @@ public class EntityModel implements DeveloperModel {
 
 	@Override
 	public String toString() {
-		return "Entity[name=" + name + "]";
+		return "Entity[" + name + "]";
 	}
 
 }

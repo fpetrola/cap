@@ -2,6 +2,7 @@ package com.fpetrola.cap.model.binders;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fpetrola.cap.model.developer.DeveloperModel;
@@ -12,13 +13,13 @@ import io.github.classgraph.ScanResult;
 
 public class BindersFinder {
 
-	protected List<BidirectionalBinder> pullers;
-	protected List<DeveloperModel> developerModels;
+	public List<BidirectionalBinder> pullers= new ArrayList<BidirectionalBinder>();
+	public List<DeveloperModel> developerModels= new ArrayList<DeveloperModel>();
 
 	public BindersFinder() {
 	}
 
-	protected void findBinders() {
+	public void findBinders() {
 		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages("com.fpetrola.cap").scan()) {
 
 			ClassInfoList binderClasses = scanResult.getClassesImplementing(BidirectionalBinder.class.getName()).filter(filter -> !filter.isInterface());
@@ -28,7 +29,6 @@ public class BindersFinder {
 					Constructor<?>[] constructors = puller.getConstructors();
 					pullers.add((BidirectionalBinder) constructors[0].newInstance());
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
 				}
 			});
 
@@ -39,7 +39,6 @@ public class BindersFinder {
 					Constructor<?>[] constructors = puller.getConstructors();
 					developerModels.add((DeveloperModel) constructors[0].newInstance());
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
 				}
 			});
 

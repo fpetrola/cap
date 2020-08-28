@@ -25,57 +25,66 @@ import difflib.PatchFailedException;
 
 public class BindWriter {
 
-    protected SourceChangesListener sourceChangesListener;
+	protected SourceChangesListener sourceChangesListener;
 	protected String uri;
 	protected String workspacePath;
 	protected JavaParser javaParser;
 
-    public BindWriter() {
-        super();
-    }
+	public BindWriter() {
+		super();
+	}
 
-    public List<SourceCodeInsertion> createInsertions(String print1, String print2) {
-        List<SourceCodeInsertion> insertions = new ArrayList<>();
-        try {
-            Patch<String> patch = DiffUtils.diff(lines(print1), lines(print2));
+	public List<SourceCodeModification> createModifications(String print1, String print2) {
+		List<SourceCodeModification> insertions = new ArrayList<>();
+		try {
+			Patch<String> patch = DiffUtils.diff(lines(print1), lines(print2));
 
-            List<Delta<String>> deltas = patch.getDeltas();
-            for (Delta<String> delta : deltas) {
-                Patch<String> patch2 = new Patch<String>();
-                patch2.addDelta(delta);
+			List<Delta<String>> deltas = patch.getDeltas();
+			for (Delta<String> delta : deltas) {
+				Patch<String> patch2 = new Patch<String>();
+				patch2.addDelta(delta);
 
-                List<String> patch3 = DiffUtils.patch(lines(print1), patch2);
-                Patch<String> patch4 = DiffUtils.diff(lines(print1), patch3);
+				List<String> patch3 = DiffUtils.patch(lines(print1), patch2);
+				Patch<String> patch4 = DiffUtils.diff(lines(print1), patch3);
 
-                Delta<String> delta2 = patch4.getDeltas().get(0);
+				Delta<String> delta2 = patch4.getDeltas().get(0);
 
-                Chunk<String> revised = delta2.getRevised();
-                String collect = revised.getLines().stream().collect(Collectors.joining("\n")) + "\n";
-                int column = 0;
+				Chunk<String> revised = delta2.getRevised();
+				String collect = revised.getLines().stream().collect(Collectors.joining("\n")) + "\n";
+				int column = 0;
 
-                int position = delta2.getOriginal().getPosition();
-                int position2 = delta2.getRevised().getPosition();
-                if (position == position2 && !delta2.getOriginal().getLines().isEmpty()) {
-                    int length = delta2.getOriginal().getLines().get(0).length();
-                    collect = collect.substring(length);
-                    column = length;
-                }
-                Position begin = new Position(revised.getPosition(), column);
-                final Range range2 = new Range(begin, begin);
-                SourceCodeInsertion sourceCodeInsertion = new SourceCodeInsertion(collect, range2);
-                insertions.add(sourceCodeInsertion);
-            }
-        } catch (PatchFailedException e) {
-            throw new RuntimeException(e);
-        }
+				int position = delta2.getOriginal().getPosition();
+				int position2 = delta2.getRevised().getPosition();
+				if (position == position2 && !delta2.getOriginal().getLines().isEmpty()) {
+					int length = delta2.getOriginal().getLines().get(0).length();
+//					collect = collect.substring(length);
+//					column = length;
+					Position begin = new Position(revised.getPosition(), 0);
+					Position end = new Position(revised.getPosition() + 1, 0);
+					final Range range2 = new Range(begin, end);
+					String content = revised.getLines().get(0) + "\n";
+					insertions.add(new SourceCodeReplace(content, range2));
 
-        return insertions;
-    }
+					Position begin2 = new Position(revised.getPosition() + 1, 0);
+					final Range range3 = new Range(begin2, begin2);
+					insertions.add(new SourceCodeInsertion(collect.substring(content.length()), range3));
+				} else {
+					Position begin = new Position(revised.getPosition(), column);
+					final Range range2 = new Range(begin, begin);
+					insertions.add((SourceCodeModification) new SourceCodeInsertion(collect, range2));
+				}
+			}
+		} catch (PatchFailedException e) {
+			throw new RuntimeException(e);
+		}
 
-    List<String> lines(String print1) {
-        String[] split = print1.split("\\r?\\n");
-        return Arrays.asList(split);
-    }
+		return insertions;
+	}
+
+	List<String> lines(String print1) {
+		String[] split = print1.split("\\r?\\n");
+		return Arrays.asList(split);
+	}
 
 	protected File initWithClassName(String className) {
 		Path mavenModuleRoot = Path.of(workspacePath);
@@ -84,7 +93,7 @@ public class BindWriter {
 		parserConfiguration.setLexicalPreservationEnabled(true);
 		SourceRoot createSourceRoot = sourceRoot;
 		createSourceRoot.setPrinter(LexicalPreservingPrinter::print);
-		
+
 		String completeFilename = mavenModuleRoot + "/src/main/java/" + className.replace(".", "/") + ".java";
 		File file = new File(completeFilename);
 		uri = getURI(file);
@@ -95,10 +104,10 @@ public class BindWriter {
 		CompilationUnit compilationUnit = javaParser.parse(file).getResult().get();
 		LexicalPreservingPrinter.setup(compilationUnit);
 		String originalSource = LexicalPreservingPrinter.print(compilationUnit);
-		
+
 		SourceChange sourceChange = function.apply(compilationUnit);
 		if (sourceChange != null) {
-			List<SourceCodeInsertion> insertions = createInsertions(originalSource, LexicalPreservingPrinter.print(compilationUnit));
+			List<SourceCodeModification> insertions = createModifications(originalSource, LexicalPreservingPrinter.print(compilationUnit));
 			sourceChange.insertions = insertions;
 			sourceChanges.add(sourceChange);
 		}
