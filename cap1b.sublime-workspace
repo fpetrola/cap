@@ -11,7 +11,7 @@
 			"file": "/home/fernando/git/cap-tests/src/main/resources/cap-config.yml",
 			"settings":
 			{
-				"buffer_size": 380,
+				"buffer_size": 444,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -20,7 +20,7 @@
 			"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1.java",
 			"settings":
 			{
-				"buffer_size": 86,
+				"buffer_size": 119,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -39,7 +39,7 @@
 		[
 			[
 				"lsp",
-				"LSP: Toggle Diagnostics Panel"
+				"LSP: Clear Diagnostics"
 			],
 			[
 				"lps",
@@ -85,13 +85,15 @@
 		"/home/fernando/git/cap-tests/src/main/java/com",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel",
 		"/home/fernando/git/cap-tests/src/main/resources",
 		"/home/fernando/git/cap-tests/src/main/resources/META-INF"
 	],
 	"file_history":
 	[
-		"/home/fernando/git/cap-tests/src/main/resources/cap-config.yml",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1.java",
+		"/home/fernando/git/cap-tests/src/main/javacom/fpetrola/cap/usermodel/table1.java",
+		"/home/fernando/git/cap-tests/src/main/resources/cap-config.yml",
 		"/home/fernando/git/cap-tests/.classpath",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
@@ -196,15 +198,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 380,
+						"buffer_size": 444,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								232,
-								232
+								0,
+								0
 							]
 						],
 						"settings":
@@ -229,15 +231,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 86,
+						"buffer_size": 119,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								86,
-								86
+								95,
+								95
 							]
 						],
 						"settings":

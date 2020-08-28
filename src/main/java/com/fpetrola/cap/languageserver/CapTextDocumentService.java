@@ -34,6 +34,7 @@ import org.eclipse.lsp4j.MarkedString;
 import org.eclipse.lsp4j.MarkupContent;
 import org.eclipse.lsp4j.MessageActionItem;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
@@ -99,7 +100,7 @@ public class CapTextDocumentService implements TextDocumentService {
 	}
 
 	public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
-		Map<String, List<CodeAction>> list = DiagnosticGenerator.codeActions;
+		Map<String, List<CodeAction>> list = languageServer.diagnosticGenerator.getCodeActions();
 
 		List<Either<Command, CodeAction>> result = new ArrayList<>();
 
@@ -183,7 +184,10 @@ public class CapTextDocumentService implements TextDocumentService {
 	}
 
 	public void sendDiagnostics(VersionedTextDocumentIdentifier versionedTextDocumentIdentifier) {
-		DiagnosticGenerator.send(languageServer);
+		List<PublishDiagnosticsParams> publish = languageServer.diagnosticGenerator.getDiagnostics(languageServer.getSourceChangesListener().getRanges(), languageServer.bindingApp);
+		for (PublishDiagnosticsParams publishDiagnosticsParams : publish) {
+			languageServer.client.publishDiagnostics(publishDiagnosticsParams);
+		}
 	}
 
 	private void editFile() {

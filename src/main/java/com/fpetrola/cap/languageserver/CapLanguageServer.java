@@ -27,7 +27,6 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
 import com.fpetrola.cap.config.BindingApp;
-import com.fpetrola.cap.model.source.SourceChangesListener;
 
 public class CapLanguageServer implements LanguageServer {
 
@@ -36,6 +35,8 @@ public class CapLanguageServer implements LanguageServer {
 	LanguageClient client;
 	private FileWriter fileWriter;
 	public BindingApp bindingApp;
+	private SourceChangesListenerImpl sourceChangesListener;
+	public DiagnosticGenerator diagnosticGenerator = new DiagnosticGenerator();
 
 	public CapLanguageServer() {
 		try {
@@ -48,7 +49,8 @@ public class CapLanguageServer implements LanguageServer {
 		workspaceService = new CapWorkspaceService(this);
 		log("init");
 
-		SourceChangesListener sourceChangesListener = new SourceChangesListener() {
+		sourceChangesListener = new SourceChangesListenerImpl() {
+
 			public void fileCreation(String uri, String content) {
 				try {
 					File file = new File(URI.create(uri));
@@ -60,11 +62,11 @@ public class CapLanguageServer implements LanguageServer {
 					e.printStackTrace();
 				}
 
-				DiagnosticGenerator.editFile(CapLanguageServer.this, uri, "");
+				diagnosticGenerator.createFileAtClient(uri, "", client);
 			}
 		};
 
-		bindingApp = new BindingApp(sourceChangesListener);
+		bindingApp = new BindingApp(getSourceChangesListener());
 
 	}
 
@@ -150,6 +152,10 @@ public class CapLanguageServer implements LanguageServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public SourceChangesListenerImpl getSourceChangesListener() {
+		return sourceChangesListener;
 	}
 
 }

@@ -1,7 +1,8 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.model.source;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,11 +10,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.fpetrola.cap.model.source.SourceChange;
-import com.fpetrola.cap.model.source.SourceChangesListener;
-import com.fpetrola.cap.model.source.SourceCodeInsertion;
-import com.fpetrola.cap.model.source.SourceCodeModification;
-import com.fpetrola.cap.model.source.SourceCodeReplace;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.Position;
@@ -28,29 +24,31 @@ import difflib.DiffUtils;
 import difflib.Patch;
 import difflib.PatchFailedException;
 
-public class BindWriter {
+public class JavaSourceChangesHandler {
 
-	public SourceChangesListener sourceChangesListener;
-	public String uri;
-	public String workspacePath;
-	public JavaParser javaParser;
+	private static final String javaSourceFolderBase = "src/main/java";
+	private String uri;
+	private String workspacePath;
+	private JavaParser javaParser;
 
-	public BindWriter() {
-		super();
+	public JavaSourceChangesHandler(String workspacePath, String className) {
+		this.workspacePath = workspacePath;
+		this.javaParser = createJavaParser();
+		initWithClassName(className);
 	}
 
-	public List<SourceCodeModification> createModifications(String print1, String print2) {
+	public static List<SourceCodeModification> createModifications(String originalSource, String modifiedSource) {
 		List<SourceCodeModification> insertions = new ArrayList<>();
 		try {
-			Patch<String> patch = DiffUtils.diff(lines(print1), lines(print2));
+			Patch<String> patch = DiffUtils.diff(getlines(originalSource), getlines(modifiedSource));
 
 			List<Delta<String>> deltas = patch.getDeltas();
 			for (Delta<String> delta : deltas) {
 				Patch<String> patch2 = new Patch<String>();
 				patch2.addDelta(delta);
 
-				List<String> patch3 = DiffUtils.patch(lines(print1), patch2);
-				Patch<String> patch4 = DiffUtils.diff(lines(print1), patch3);
+				List<String> patch3 = DiffUtils.patch(getlines(originalSource), patch2);
+				Patch<String> patch4 = DiffUtils.diff(getlines(originalSource), patch3);
 
 				Delta<String> delta2 = patch4.getDeltas().get(0);
 
@@ -62,8 +60,6 @@ public class BindWriter {
 				int position2 = delta2.getRevised().getPosition();
 				if (position == position2 && !delta2.getOriginal().getLines().isEmpty()) {
 					int length = delta2.getOriginal().getLines().get(0).length();
-//					collect = collect.substring(length);
-//					column = length;
 					Position begin = new Position(revised.getPosition(), 0);
 					Position end = new Position(revised.getPosition() + 1, 0);
 					final Range range2 = new Range(begin, end);
@@ -86,27 +82,27 @@ public class BindWriter {
 		return insertions;
 	}
 
-	List<String> lines(String print1) {
-		String[] split = print1.split("\\r?\\n");
+	static List<String> getlines(String sourceCode) {
+		String[] split = sourceCode.split("\\r?\\n");
 		return Arrays.asList(split);
 	}
 
 	public File initWithClassName(String className) {
-		Path mavenModuleRoot = Path.of(workspacePath);
-		SourceRoot sourceRoot = new SourceRoot(mavenModuleRoot.resolve("src/main/java"));
+		Path mavenModuleRoot = Path.of(getWorkspacePath());
+		SourceRoot sourceRoot = new SourceRoot(mavenModuleRoot.resolve(javaSourceFolderBase));
 		ParserConfiguration parserConfiguration = sourceRoot.getParserConfiguration();
 		parserConfiguration.setLexicalPreservationEnabled(true);
 		SourceRoot createSourceRoot = sourceRoot;
 		createSourceRoot.setPrinter(LexicalPreservingPrinter::print);
 
-		String completeFilename = mavenModuleRoot + "/src/main/java/" + className.replace(".", "/") + ".java";
+		String completeFilename = mavenModuleRoot + "/" + javaSourceFolderBase + "/" + className.replace(".", "/") + ".java";
 		File file = new File(completeFilename);
 		uri = getURI(file);
 		return file;
 	}
 
-	public void addInsertionsFor(List<SourceChange> sourceChanges, Function<CompilationUnit, SourceChange> function, File file) throws FileNotFoundException {
-		CompilationUnit compilationUnit = javaParser.parse(file).getResult().get();
+	public void addInsertionsFor(List<SourceChange> sourceChanges, Function<CompilationUnit, SourceChange> function) throws FileNotFoundException {
+		CompilationUnit compilationUnit = javaParser.parse(createFileFromUri()).getResult().get();
 		LexicalPreservingPrinter.setup(compilationUnit);
 		String originalSource = LexicalPreservingPrinter.print(compilationUnit);
 
@@ -118,7 +114,11 @@ public class BindWriter {
 		}
 	}
 
-	public JavaParser createJavaParser() {
+	private File createFileFromUri() {
+		return new File(URI.create(uri));
+	}
+
+	private JavaParser createJavaParser() {
 		JavaParser javaParser = new JavaParser();
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.setAttributeComments(true);
@@ -130,6 +130,18 @@ public class BindWriter {
 
 	private String getURI(File file) {
 		return file.toURI().toString().replace("file:/", "file:///");
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public String getWorkspacePath() {
+		return workspacePath;
+	}
+
+	public boolean fileExists() {
+		return createFileFromUri().exists();
 	}
 
 }

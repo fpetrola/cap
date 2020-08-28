@@ -19,11 +19,10 @@ import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
 import com.fpetrola.cap.helpers.BindersDiscoveryService;
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
-import com.fpetrola.cap.model.binders.BindWriter;
 import com.fpetrola.cap.model.binders.implementations.JPAEntityBinder;
+import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceChangesListener;
-import com.fpetrola.cap.model.source.SourceCodeInsertion;
 import com.fpetrola.cap.model.source.SourceCodeModification;
 import com.github.javaparser.Position;
 import com.github.javaparser.Range;
@@ -77,7 +76,7 @@ public class BindingApp {
 						if (sourceBinderPresent)
 							addSourceInsertions(modelManagement, bidirectionalBinder);
 					}
-					sourceChangesListener.newSourceChanges(configURI, sourceChanges);
+					sourceChangesListener.sourceChange(configURI, sourceChanges);
 
 					runPath(doLoop, modelManagement, (b, v) -> {
 					}, true);
@@ -99,13 +98,13 @@ public class BindingApp {
 		ModelManagement modelManagement = new ModelManagement();
 		String modelSerialization = "\n";
 		String modelSerialization2 = getModelSerialization(modelManagement);
-		List<SourceCodeModification> createInsertions = new BindWriter().createModifications(modelSerialization, modelSerialization2);
+		List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization, modelSerialization2);
 		if (!createInsertions.isEmpty()) {
 			sourceChange.insertions = createInsertions;
 			sourceChanges.add(sourceChange);
 		}
 
-		sourceChangesListener.newSourceChanges(configURI, sourceChanges);
+		sourceChangesListener.sourceChange(configURI, sourceChanges);
 	}
 
 	private void runPath(boolean doLoop, ModelManagement modelManagement, TraverseListener traverseListener, boolean listenChanges) {
@@ -114,10 +113,10 @@ public class BindingApp {
 				SourceChangesListener lastSourceChangesListener = sourceChangesListener;
 				if (!listenChanges) {
 					sourceChangesListener = new SourceChangesListener() {
-						public void fileCreation(String mappedClass, String content) {
+						public void fileCreation(String resourceUri, String content) {
 						}
 
-						public void newSourceChanges(String resource, List<SourceChange> changes) {
+						public void sourceChange(String resourceUri, List<SourceChange> changes) {
 						}
 					};
 				}
@@ -169,7 +168,7 @@ public class BindingApp {
 				}, false);
 
 				String modelSerialization2 = getModelSerialization(modelManagement);
-				List<SourceCodeModification> createInsertions = new BindWriter().createModifications(modelSerialization, modelSerialization2);
+				List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization, modelSerialization2);
 				if (!createInsertions.isEmpty()) {
 					sourceChange.insertions = createInsertions;
 					sourceChanges.add(sourceChange);
@@ -201,7 +200,7 @@ public class BindingApp {
 						jpaEntityBinder.setWorkspacePath(file.getPath());
 
 						String modelSerialization2 = getModelSerialization(modelManagement);
-						List<SourceCodeModification> createInsertions = new BindWriter().createModifications(modelSerialization, modelSerialization2);
+						List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization, modelSerialization2);
 						if (!createInsertions.isEmpty()) {
 							sourceChange.insertions = createInsertions;
 							sourceChanges.add(sourceChange);
@@ -223,7 +222,7 @@ public class BindingApp {
 		modelManagement.binderChain.add(bidirectionalBinder);
 
 		String modelSerialization2 = getModelSerialization(modelManagement);
-		List<SourceCodeModification> createInsertions = new BindWriter().createModifications(modelSerialization, modelSerialization2);
+		List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization, modelSerialization2);
 		sourceChange.insertions = createInsertions;
 		sourceChanges.add(sourceChange);
 		modelManagement.binderChain.remove(bidirectionalBinder);
