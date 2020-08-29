@@ -1,8 +1,7 @@
-package com.fpetrola.cap.model.binders.implementations;
+package com.fpetrola.cap.model.source;
 
 import java.util.Optional;
 
-import com.fpetrola.cap.model.source.SourceChange;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
@@ -24,11 +23,11 @@ public class JavaClassBinder {
 		this.uri = uri;
 	}
 
-	protected NormalAnnotationExpr createAnnotation(String identifier, MemberValuePair... memberValuePair) {
+	public NormalAnnotationExpr createAnnotation(String identifier, MemberValuePair... memberValuePair) {
 		return new NormalAnnotationExpr(new Name(identifier), NodeList.nodeList(memberValuePair));
 	}
 
-	protected SourceChange[] addAnnotationToClass(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String message, String name) {
+	public SourceChange[] addAnnotationToClass(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String message, String name) {
 		SourceChange[] sourceChange = new SourceChange[1];
 		cu.accept(new ModifierVisitor<Void>() {
 			public Visitable visit(ClassOrInterfaceDeclaration classDeclaration, Void arg) {
@@ -39,7 +38,7 @@ public class JavaClassBinder {
 		return sourceChange;
 	}
 
-	protected SourceChange addAnnotationToField(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String propertyName) {
+	public SourceChange addAnnotationToField(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String propertyName) {
 		SourceChange[] sourceChange = new SourceChange[1];
 		cu.accept(new ModifierVisitor<Void>() {
 			public Visitable visit(FieldDeclaration fieldDeclaration, Void arg) {
@@ -55,7 +54,7 @@ public class JavaClassBinder {
 		return sourceChange[0];
 	}
 
-	protected SourceChange addFieldIfNotExists(CompilationUnit cu, String message, String propertyName, String typeName) {
+	public SourceChange addFieldIfNotExists(CompilationUnit cu, String message, String propertyName, String typeName) {
 		boolean found = fieldExists(cu, propertyName);
 
 		SourceChange[] sourceChange = new SourceChange[1];
@@ -110,4 +109,11 @@ public class JavaClassBinder {
 		}, null);
 		return found[0];
 	}
+	
+	public String createNewJavaClassContent(String className) {
+		String simpleName = className.substring(0, className.lastIndexOf("."));
+		String content = "package " + simpleName + ";\n\nimport java.util.List;\n" + "\n\n" + "public class " + className.substring(simpleName.length() + 1) + " {\n\n}";
+		return content;
+	}
+
 }

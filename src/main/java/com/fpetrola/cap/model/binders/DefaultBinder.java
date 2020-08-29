@@ -6,8 +6,9 @@ import java.util.List;
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
 public class DefaultBinder implements Binder {
-	private SourceChangesListener sourceChangesListener;
-	private List<String> filters = new ArrayList<>();
+	protected SourceChangesListener sourceChangesListener;
+	protected List<String> filters = new ArrayList<>();
+	public String workspacePath;
 
 	public DefaultBinder() {
 	}
@@ -26,6 +27,14 @@ public class DefaultBinder implements Binder {
 
 	public void setFilters(List<String> ids) {
 		this.filters = ids;
+	}
+
+	public String getWorkspacePath() {
+		return workspacePath;
+	}
+
+	public void setWorkspacePath(String workspacePath) {
+		this.workspacePath = workspacePath;
 	}
 
 }

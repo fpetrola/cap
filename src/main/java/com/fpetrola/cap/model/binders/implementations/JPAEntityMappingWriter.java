@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.DefaultBinder;
+import com.fpetrola.cap.model.developer.JPAEntity;
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
 import com.fpetrola.cap.model.developer.PropertyMapping;
+import com.fpetrola.cap.model.source.JavaClassBinder;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
 import com.fpetrola.cap.model.source.SourceChange;
-import com.fpetrola.cap.model.source.SourceChangesListener;
 import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.NodeList;
@@ -17,23 +20,13 @@ import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
-public class JPAEntityMappingWriter {
+public class JPAEntityMappingWriter extends DefaultBinder implements BidirectionalBinder<ORMEntityMapping, Object>, WorkspaceAwareBinder {
 
-	private final JavaClassBinder javaClassBinder;
-	private ORMEntityMapping ormEntityMapping;
-	private SourceChangesListener sourceChangesListener;
-	private JavaSourceChangesHandler javaSourceChangesHandler;
-
-	public JPAEntityMappingWriter(ORMEntityMapping ormEntityMapping, String workspacePath, SourceChangesListener sourceChangesListener) {
-		javaSourceChangesHandler = new JavaSourceChangesHandler(workspacePath, ormEntityMapping.mappedClass);
-		this.sourceChangesListener = sourceChangesListener;
-		this.ormEntityMapping = ormEntityMapping;
-		javaClassBinder = new JavaClassBinder(javaSourceChangesHandler.getUri());
-	}
-
-	public void write() {
+	public void write(ORMEntityMapping ormEntityMapping) {
 		try {
+			JavaSourceChangesHandler javaSourceChangesHandler = new JavaSourceChangesHandler(workspacePath, ormEntityMapping.mappedClass);
 			String uri = javaSourceChangesHandler.getUri();
+			JavaClassBinder javaClassBinder = new JavaClassBinder(uri);
 
 			if (javaSourceChangesHandler.fileExists()) {
 				List<SourceChange> sourceChanges = new ArrayList<>();
@@ -43,36 +36,39 @@ public class JPAEntityMappingWriter {
 				javaSourceChangesHandler.addInsertionsFor(sourceChanges, cu1 -> javaClassBinder.addAnnotationToClass(cu1, classNormalAnnotationExpr, "JPA Entity detected", "")[0]);
 
 				for (PropertyMapping propertyMapping : ormEntityMapping.propertyMappings) {
-					javaSourceChangesHandler.addInsertionsFor(sourceChanges, cu1 -> javaClassBinder.addAnnotationToField(cu1, javaClassBinder.createAnnotation("javax.persistence.JoinColumn", new MemberValuePair("name", new StringLiteralExpr(propertyMapping.columnName))), propertyMapping.propertyName));
-					javaSourceChangesHandler.addInsertionsFor(sourceChanges, cu1 -> javaClassBinder.addAnnotationToField(cu1, javaClassBinder.createAnnotation("javax.persistence.ManyToOne"), propertyMapping.propertyName));
+					javaSourceChangesHandler.addInsertionsFor(sourceChanges, cu1 -> {
+						NormalAnnotationExpr createAnnotation = javaClassBinder.createAnnotation("javax.persistence.JoinColumn", new MemberValuePair("name", new StringLiteralExpr(propertyMapping.columnName)));
+						return javaClassBinder.addAnnotationToField(cu1, createAnnotation, propertyMapping.propertyName);
+					});
+					javaSourceChangesHandler.addInsertionsFor(sourceChanges, cu1 -> {
+						NormalAnnotationExpr createAnnotation = javaClassBinder.createAnnotation("javax.persistence.ManyToOne");
+						return javaClassBinder.addAnnotationToField(cu1, createAnnotation, propertyMapping.propertyName);
+					});
 					javaSourceChangesHandler.addInsertionsFor(sourceChanges, cu1 -> javaClassBinder.addFieldIfNotExists(cu1, "add property to match database column: " + propertyMapping.columnName, propertyMapping.propertyName, propertyMapping.typeName));
 				}
 
-				addFixAllForNow(uri, sourceChanges);
+				javaSourceChangesHandler.addFixAllForNow(uri, sourceChanges);
+				sourceChangesListener.sourceChange(uri, sourceChanges);
 			} else {
-				sourceChangesListener.fileCreation(uri, createNewJavaClassContent());
+				sourceChangesListener.fileCreation(uri, javaClassBinder.createNewJavaClassContent(ormEntityMapping.mappedClass));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private String createNewJavaClassContent() {
-		String className = ormEntityMapping.mappedClass;
-		String content = "package " + className.substring(0, className.lastIndexOf(".")) + ";\n\nimport java.util.List;\n" + "\n\n" + "public class " + ormEntityMapping.entityModel.name + " {\n\n}";
-		return content;
+	public List<Object> pull(ORMEntityMapping source) {
+		List<Object> result = new ArrayList<Object>();
+
+		try {
+			write(source);
+			result.add(new JPAEntity(source));
+		} catch (Exception e) {
+		}
+		return result;
 	}
 
-	private void addFixAllForNow(String uri, List<SourceChange> sourceChanges) {
-		Range range = new Range(new Position(1, 1), new Position(1, 1));
-		SourceChange fixAllSourceChange = new SourceChange(uri, range, "fix all");
-		for (SourceChange sourceChange : sourceChanges) {
-			fixAllSourceChange.insertions.addAll(sourceChange.insertions);
-		}
-
-		if (!fixAllSourceChange.insertions.isEmpty())
-			sourceChanges.add(fixAllSourceChange);
-
-		sourceChangesListener.sourceChange(uri, sourceChanges);
+	public String toString() {
+		return "JPABinder []";
 	}
 }

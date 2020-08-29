@@ -19,7 +19,7 @@ import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
 import com.fpetrola.cap.helpers.BindersDiscoveryService;
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
-import com.fpetrola.cap.model.binders.implementations.JPAEntityBinder;
+import com.fpetrola.cap.model.binders.implementations.WorkspaceAwareBinder;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceChangesListener;
@@ -187,8 +187,8 @@ public class BindingApp {
 
 		for (BidirectionalBinder bidirectionalBinder2 : modelManagement.binderChain) {
 
-			if (bidirectionalBinder2 instanceof JPAEntityBinder) {
-				JPAEntityBinder jpaEntityBinder = (JPAEntityBinder) bidirectionalBinder2;
+			if (bidirectionalBinder2 instanceof WorkspaceAwareBinder) {
+				WorkspaceAwareBinder jpaEntityBinder = (WorkspaceAwareBinder) bidirectionalBinder2;
 
 				if (jpaEntityBinder.getWorkspacePath() == null) {
 					File file = new File(URI.create(configURI));
@@ -196,7 +196,7 @@ public class BindingApp {
 					while (file != null) {
 						String message = "use workspace in: " + file.getPath();
 						SourceChange sourceChange = createSourceChange(bidirectionalBinder2, message);
-						String workspacePath = ((JPAEntityBinder) bidirectionalBinder2).getWorkspacePath();
+						String workspacePath = ((WorkspaceAwareBinder) bidirectionalBinder2).getWorkspacePath();
 						jpaEntityBinder.setWorkspacePath(file.getPath());
 
 						String modelSerialization2 = getModelSerialization(modelManagement);
@@ -206,7 +206,7 @@ public class BindingApp {
 							sourceChanges.add(sourceChange);
 						}
 
-						((JPAEntityBinder) bidirectionalBinder2).setWorkspacePath(workspacePath);
+						((WorkspaceAwareBinder) bidirectionalBinder2).setWorkspacePath(workspacePath);
 
 						file = file.getParentFile();
 					}

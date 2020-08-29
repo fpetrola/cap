@@ -37,6 +37,17 @@ public class JavaSourceChangesHandler {
 		initWithClassName(className);
 	}
 
+	public void addFixAllForNow(String uri, List<SourceChange> sourceChanges) {
+		Range range = new Range(new Position(1, 1), new Position(1, 1));
+		SourceChange fixAllSourceChange = new SourceChange(uri, range, "fix all");
+		for (SourceChange sourceChange : sourceChanges) {
+			fixAllSourceChange.insertions.addAll(sourceChange.insertions);
+		}
+
+		if (!fixAllSourceChange.insertions.isEmpty())
+			sourceChanges.add(fixAllSourceChange);
+	}
+
 	public static List<SourceCodeModification> createModifications(String originalSource, String modifiedSource) {
 		List<SourceCodeModification> insertions = new ArrayList<>();
 		try {
