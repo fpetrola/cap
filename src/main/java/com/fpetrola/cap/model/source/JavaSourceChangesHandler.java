@@ -112,16 +112,22 @@ public class JavaSourceChangesHandler {
 		return file;
 	}
 
-	public void addInsertionsFor(List<SourceChange> sourceChanges, Function<CompilationUnit, SourceChange> function) throws FileNotFoundException {
-		CompilationUnit compilationUnit = javaParser.parse(createFileFromUri()).getResult().get();
-		LexicalPreservingPrinter.setup(compilationUnit);
-		String originalSource = LexicalPreservingPrinter.print(compilationUnit);
+	public void addInsertionsFor(List<SourceChange> sourceChanges, List<Function<CompilationUnit, SourceChange>> funcs) {
+		try {
+			for (Function<CompilationUnit, SourceChange> function : funcs) {
+				CompilationUnit compilationUnit = javaParser.parse(createFileFromUri()).getResult().get();
+				LexicalPreservingPrinter.setup(compilationUnit);
+				String originalSource = LexicalPreservingPrinter.print(compilationUnit);
 
-		SourceChange sourceChange = function.apply(compilationUnit);
-		if (sourceChange != null) {
-			List<SourceCodeModification> insertions = createModifications(originalSource, LexicalPreservingPrinter.print(compilationUnit));
-			sourceChange.insertions = insertions;
-			sourceChanges.add(sourceChange);
+				SourceChange sourceChange = function.apply(compilationUnit);
+				if (sourceChange != null) {
+					List<SourceCodeModification> insertions = createModifications(originalSource, LexicalPreservingPrinter.print(compilationUnit));
+					sourceChange.insertions = insertions;
+					sourceChanges.add(sourceChange);
+				}
+			}
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

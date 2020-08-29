@@ -1,16 +1,20 @@
 package com.fpetrola.cap.model.binders.implementations;
 
-import java.io.IOException;
+import static com.fpetrola.cap.model.source.JavaClassBinder.addFieldIfNotExists;
+import static com.fpetrola.cap.model.source.JavaClassBinder.createNewJavaClassContent;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.EntityModel;
 import com.fpetrola.cap.model.developer.Property;
-import com.fpetrola.cap.model.source.JavaClassBinder;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
 import com.fpetrola.cap.model.source.SourceChange;
+import com.github.javaparser.ast.CompilationUnit;
 
 public class JavaEntityGenerator extends DefaultBinder implements BidirectionalBinder<EntityModel, Object>, WorkspaceAwareBinder {
 
@@ -19,31 +23,28 @@ public class JavaEntityGenerator extends DefaultBinder implements BidirectionalB
 
 	public List<Object> pull(EntityModel source) {
 		if (workspacePath != null && sourceChangesListener != null) {
+
 			String className = "com.fpetrola.cap.usermodel." + source.name;
 
 			JavaSourceChangesHandler javaSourceChangesHandler = new JavaSourceChangesHandler(getWorkspacePath(), className);
 			String uri = javaSourceChangesHandler.getUri();
-			JavaClassBinder javaClassBinder = new JavaClassBinder(uri);
 
-			try {
-				if (javaSourceChangesHandler.fileExists()) {
-					List<SourceChange> sourceChanges = new ArrayList<>();
+			List<Function<CompilationUnit, SourceChange>> modifiers = new ArrayList<>();
 
-					for (Property property : source.properties) {
+			if (javaSourceChangesHandler.fileExists()) {
+				List<SourceChange> sourceChanges = new ArrayList<>();
 
-						String message = "add property: " + property.name;
-						javaSourceChangesHandler.addInsertionsFor(sourceChanges, cu1 -> javaClassBinder.addFieldIfNotExists(cu1, message, property.name, property.typeName));
-					}
+				for (Property property : source.properties)
+					modifiers.add(cu1 -> addFieldIfNotExists(cu1, "add bean property: " + property.name, property.name, property.typeName, uri));
 
-					javaSourceChangesHandler.addFixAllForNow(uri, sourceChanges);
-					sourceChangesListener.sourceChange(uri, sourceChanges);
-				} else {
-					sourceChangesListener.fileCreation(uri, javaClassBinder.createNewJavaClassContent(className));
-				}
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+				javaSourceChangesHandler.addInsertionsFor(sourceChanges, modifiers);
+				javaSourceChangesHandler.addFixAllForNow(uri, sourceChanges);
+				sourceChangesListener.sourceChange(uri, sourceChanges);
+			} else
+				sourceChangesListener.fileCreation(uri, createNewJavaClassContent(className));
+
 		}
-		return new ArrayList<>();
+
+		return Arrays.asList();
 	}
 }

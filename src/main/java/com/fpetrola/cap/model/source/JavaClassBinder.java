@@ -17,35 +17,30 @@ import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.ast.visitor.Visitable;
 
 public class JavaClassBinder {
-	private String uri;
 
-	public JavaClassBinder(String uri) {
-		this.uri = uri;
-	}
-
-	public NormalAnnotationExpr createAnnotation(String identifier, MemberValuePair... memberValuePair) {
+	public static NormalAnnotationExpr createAnnotation(String identifier, MemberValuePair... memberValuePair) {
 		return new NormalAnnotationExpr(new Name(identifier), NodeList.nodeList(memberValuePair));
 	}
 
-	public SourceChange[] addAnnotationToClass(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String message, String name) {
+	public static SourceChange[] addAnnotationToClass(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String message, String name, String uri) {
 		SourceChange[] sourceChange = new SourceChange[1];
 		cu.accept(new ModifierVisitor<Void>() {
 			public Visitable visit(ClassOrInterfaceDeclaration classDeclaration, Void arg) {
-				sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, classDeclaration, classDeclaration.findAll(SimpleName.class).get(0));
+				sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, classDeclaration, classDeclaration.findAll(SimpleName.class).get(0), uri);
 				return super.visit(classDeclaration, arg);
 			}
 		}, null);
 		return sourceChange;
 	}
 
-	public SourceChange addAnnotationToField(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String propertyName) {
+	public static SourceChange addAnnotationToField(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String propertyName, String uri) {
 		SourceChange[] sourceChange = new SourceChange[1];
 		cu.accept(new ModifierVisitor<Void>() {
 			public Visitable visit(FieldDeclaration fieldDeclaration, Void arg) {
 				SimpleName fieldName = fieldDeclaration.getVariable(0).getName();
 				if (fieldName.toString().equals(propertyName)) {
 					String message = "add annotation " + normalAnnotationExpr.getNameAsString() + " to property: " + propertyName;
-					sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, fieldDeclaration, fieldDeclaration);
+					sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, fieldDeclaration, fieldDeclaration, uri);
 				}
 
 				return super.visit(fieldDeclaration, arg);
@@ -54,7 +49,7 @@ public class JavaClassBinder {
 		return sourceChange[0];
 	}
 
-	public SourceChange addFieldIfNotExists(CompilationUnit cu, String message, String propertyName, String typeName) {
+	public static SourceChange addFieldIfNotExists(CompilationUnit cu, String message, String propertyName, String typeName, String uri) {
 		boolean found = fieldExists(cu, propertyName);
 
 		SourceChange[] sourceChange = new SourceChange[1];
@@ -77,7 +72,7 @@ public class JavaClassBinder {
 		return sourceChange[0];
 	}
 
-	private SourceChange addAnnotationToBodyDeclaration(NormalAnnotationExpr normalAnnotationExpr, final String message, BodyDeclaration classDeclaration, Node node) {
+	private static SourceChange addAnnotationToBodyDeclaration(NormalAnnotationExpr normalAnnotationExpr, final String message, BodyDeclaration classDeclaration, Node node, String uri) {
 		SourceChange[] sourceChange = new SourceChange[1];
 
 		if (node != null) {
@@ -96,7 +91,7 @@ public class JavaClassBinder {
 		return sourceChange[0];
 	}
 
-	private boolean fieldExists(CompilationUnit cu, final String propertyName) {
+	private static boolean fieldExists(CompilationUnit cu, final String propertyName) {
 		boolean[] found = new boolean[1];
 		cu.accept(new ModifierVisitor<Void>() {
 			public Visitable visit(FieldDeclaration fieldDeclaration, Void arg) {
@@ -110,7 +105,7 @@ public class JavaClassBinder {
 		return found[0];
 	}
 	
-	public String createNewJavaClassContent(String className) {
+	public static String createNewJavaClassContent(String className) {
 		String simpleName = className.substring(0, className.lastIndexOf("."));
 		String content = "package " + simpleName + ";\n\nimport java.util.List;\n" + "\n\n" + "public class " + className.substring(simpleName.length() + 1) + " {\n\n}";
 		return content;
