@@ -43,7 +43,6 @@ public class ConnectionExtractorFromHibernateXML extends DefaultBinder implement
 
 				try {
 					HashMap<String, String> values = new HashMap<String, String>();
-					String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><user><kyc>123</kyc><address>test</address><resiFI>asds</resiFI></user>";
 
 					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder builder;

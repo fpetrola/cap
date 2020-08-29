@@ -1,34 +1,24 @@
 package com.fpetrola.cap.model.binders.implementations;
- 
-import java.util.ArrayList;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.EntityModel;
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
-import com.fpetrola.cap.model.developer.Property;
 import com.fpetrola.cap.model.developer.PropertyMapping;
 import com.fpetrola.cap.model.developer.PropertyMappingType;
 
 public class BasicORMMappingGenerator extends DefaultBinder implements BidirectionalBinder<EntityModel, ORMEntityMapping> {
-	public String modelPackage = "com.fpetrola.cap.usermodel";
 
-	public BasicORMMappingGenerator() {
-	}
 	public List<ORMEntityMapping> pull(EntityModel source) {
-		ArrayList<ORMEntityMapping> arrayList = new ArrayList<ORMEntityMapping>();
-		ArrayList<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
-		for (Property property : source.properties) {
-			propertyMappings.add(new PropertyMapping(property.name, property.name, property.typeName, PropertyMappingType.ManyToOne));
-		}
 
-		arrayList.add(new ORMEntityMapping(source, modelPackage + "." + source.name, source.name, propertyMappings));
-		return arrayList;
-	}
+		List<PropertyMapping> propertyMappings = source.properties.stream()
+			.map(property -> new PropertyMapping(property.name, property.name, property.typeName, PropertyMappingType.ManyToOne))
+			.collect(Collectors.toList());
 
-	@Override
-	public String toString() {
-		return "BasicORMMappingGenerator";
+		return Arrays.asList(new ORMEntityMapping(source, "com.fpetrola.cap.usermodel" + "." + source.name, source.name, propertyMappings));
 	}
 }
