@@ -1,8 +1,10 @@
 package com.fpetrola.cap.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,39 +45,27 @@ public class BindingApp {
 			try {
 				sourceChanges.clear();
 
-				InputStream inputStream = new FileInputStream(new File(URI.create(configURI)));
-				YamlReader reader = new YamlReader(new InputStreamReader(inputStream));
-
 				try {
-					ModelManagement modelManagement = reader.read(ModelManagement.class);
+					ModelManagement modelManagement = deserializeModelFromURI(configURI);
+
 					bindersDiscoveryService.findBinders();
 
-					proposeIds(modelManagement);
 					proposeConfigForJPABinder(modelManagement);
 
-					List<BidirectionalBinder> pullers = bindersDiscoveryService.findBinders();
-					for (BidirectionalBinder bidirectionalBinder : pullers) {
-						Type[] actualTypeArguments = getBinderTypes(bidirectionalBinder);
-						Type type = actualTypeArguments[0];
-						Type type2 = actualTypeArguments[1];
-						boolean baseBinder = type.equals(Object.class);
-						if (baseBinder) {
-							try {
-								List pull = bidirectionalBinder.pull("");
-								if (pull.isEmpty())
-									baseBinder = false;
-							} catch (Exception e) {
-								baseBinder = false;
-							}
+					List<BidirectionalBinder> availableBinders = bindersDiscoveryService.findBinders();
+					for (BidirectionalBinder bidirectionalBinder : availableBinders) {
+						if (modelManagement.binderChain.isEmpty() && getBinderTypes(bidirectionalBinder)[0].equals(Object.class) && !bidirectionalBinder.pull("").isEmpty())
+							addSourceInsertions(modelManagement, bidirectionalBinder);
 
-							if (baseBinder)
+						if (!modelManagement.binderChain.isEmpty()) {
+							BidirectionalBinder lastBinder = modelManagement.binderChain.get(modelManagement.binderChain.size() - 1);
+							boolean sourceBinderPresent = getBinderTypes(lastBinder)[1].equals(getBinderTypes(bidirectionalBinder)[0]);
+							if (sourceBinderPresent)
 								addSourceInsertions(modelManagement, bidirectionalBinder);
 						}
-
-						boolean sourceBinderPresent = modelManagement.binderChain.stream().anyMatch(b -> getBinderTypes(b)[1].equals(type));
-						if (sourceBinderPresent)
-							addSourceInsertions(modelManagement, bidirectionalBinder);
 					}
+
+					proposeIds(modelManagement);
 					sourceChangesListener.sourceChange(configURI, sourceChanges);
 
 					runPath(doLoop, modelManagement, (b, v) -> {
@@ -89,15 +79,44 @@ public class BindingApp {
 			}
 	}
 
+	private Range findPositionOf(ModelManagement modelManagement, BidirectionalBinder bidirectionalBinder) {
+		try {
+			String modelSerialization = serializeModel(modelManagement);
+			List<BidirectionalBinder> lastBinderChain = modelManagement.binderChain;
+
+			ArrayList<BidirectionalBinder> binders = new ArrayList<>(modelManagement.binderChain);
+			modelManagement.binderChain = binders;
+			modelManagement.binderChain.remove(bidirectionalBinder);
+			String modelSerialization2 = serializeModel(modelManagement);
+			List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization2, modelSerialization);
+			modelManagement.binderChain = lastBinderChain;
+			return createInsertions.get(0).range;
+		} catch (YamlException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private ModelManagement deserializeModelFromURI(String uri) throws FileNotFoundException, YamlException {
+		InputStream inputStream = new FileInputStream(new File(URI.create(uri)));
+		YamlReader reader = new YamlReader(new InputStreamReader(inputStream));
+		ModelManagement modelManagement = reader.read(ModelManagement.class);
+		return modelManagement;
+	}
+
+	private ModelManagement deserializeModel(String serializedModel) throws FileNotFoundException, YamlException {
+		InputStream inputStream = new ByteArrayInputStream(serializedModel.getBytes());
+		YamlReader reader = new YamlReader(new InputStreamReader(inputStream));
+		ModelManagement modelManagement = reader.read(ModelManagement.class);
+		return modelManagement;
+	}
+
 	private void proposeCreation() throws YamlException {
 
-		Position begin = new Position(1, 1);
-		Position end = new Position(1, 1);
-		SourceChange sourceChange = new SourceChange(configURI, new Range(begin, end), "Initialize Model Management");
+		SourceChange sourceChange = new SourceChange(configURI, new Range(new Position(1, 1), new Position(1, 1)), "Initialize Model Management");
 
 		ModelManagement modelManagement = new ModelManagement();
 		String modelSerialization = "\n";
-		String modelSerialization2 = getModelSerialization(modelManagement);
+		String modelSerialization2 = serializeModel(modelManagement);
 		List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization, modelSerialization2);
 		if (!createInsertions.isEmpty()) {
 			sourceChange.insertions = createInsertions;
@@ -148,7 +167,7 @@ public class BindingApp {
 	}
 
 	private void proposeIds(ModelManagement modelManagement) throws YamlException {
-		String modelSerialization = getModelSerialization(modelManagement);
+		String modelSerialization = serializeModel(modelManagement);
 
 		for (BidirectionalBinder bidirectionalBinder2 : modelManagement.binderChain) {
 			try {
@@ -156,7 +175,9 @@ public class BindingApp {
 				if (message.isEmpty())
 					message = "Add filters for: " + bidirectionalBinder2.getClass().getSimpleName();
 
-				SourceChange sourceChange = createSourceChange(bidirectionalBinder2, message);
+				Range range = findBInderRange(modelManagement, bidirectionalBinder2);
+
+				SourceChange sourceChange = createSourceChange(message, range);
 
 				List<String> lastIds = bidirectionalBinder2.getFilters();
 
@@ -167,7 +188,7 @@ public class BindingApp {
 					}
 				}, false);
 
-				String modelSerialization2 = getModelSerialization(modelManagement);
+				String modelSerialization2 = serializeModel(modelManagement);
 				List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization, modelSerialization2);
 				if (!createInsertions.isEmpty()) {
 					sourceChange.insertions = createInsertions;
@@ -182,8 +203,15 @@ public class BindingApp {
 		}
 	}
 
+	private Range findBInderRange(ModelManagement modelManagement, BidirectionalBinder bidirectionalBinder) {
+		Range positionOf = findPositionOf(modelManagement, bidirectionalBinder);
+		Position withLine = new Position(positionOf.end.line + 2, 0);
+		Range range = new Range(positionOf.begin.withLine(positionOf.begin.line + 1), withLine);
+		return range;
+	}
+
 	private void proposeConfigForJPABinder(ModelManagement modelManagement) throws YamlException {
-		String modelSerialization = getModelSerialization(modelManagement);
+		String modelSerialization = serializeModel(modelManagement);
 
 		for (BidirectionalBinder bidirectionalBinder2 : modelManagement.binderChain) {
 
@@ -195,11 +223,11 @@ public class BindingApp {
 
 					while (file != null) {
 						String message = "use workspace in: " + file.getPath();
-						SourceChange sourceChange = createSourceChange(bidirectionalBinder2, message);
+						SourceChange sourceChange = createSourceChange(message, findBInderRange(modelManagement, bidirectionalBinder2));
 						String workspacePath = ((WorkspaceAwareBinder) bidirectionalBinder2).getWorkspacePath();
 						jpaEntityBinder.setWorkspacePath(file.getPath());
 
-						String modelSerialization2 = getModelSerialization(modelManagement);
+						String modelSerialization2 = serializeModel(modelManagement);
 						List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization, modelSerialization2);
 						if (!createInsertions.isEmpty()) {
 							sourceChange.insertions = createInsertions;
@@ -216,22 +244,28 @@ public class BindingApp {
 	}
 
 	private void addBinder(ModelManagement modelManagement, BidirectionalBinder bidirectionalBinder, String message) throws YamlException {
-		SourceChange sourceChange = createSourceChange(bidirectionalBinder, message);
-		String modelSerialization = getModelSerialization(modelManagement);
+		SourceChange sourceChange = createSourceChange(message);
+		String modelSerialization = serializeModel(modelManagement);
 
 		modelManagement.binderChain.add(bidirectionalBinder);
 
-		String modelSerialization2 = getModelSerialization(modelManagement);
+		String modelSerialization2 = serializeModel(modelManagement);
 		List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization, modelSerialization2);
 		sourceChange.insertions = createInsertions;
 		sourceChanges.add(sourceChange);
 		modelManagement.binderChain.remove(bidirectionalBinder);
 	}
 
-	private SourceChange createSourceChange(BidirectionalBinder bidirectionalBinder, String message) {
+	private SourceChange createSourceChange(String message) {
 		Position begin = new Position(1, 1);
 		Position end = new Position(1, 2);
-		SourceChange sourceChange = new SourceChange(configURI, new Range(begin, end), message);
+		Range range = new Range(begin, end);
+		SourceChange sourceChange = createSourceChange(message, range);
+		return sourceChange;
+	}
+
+	private SourceChange createSourceChange(String message, Range range) {
+		SourceChange sourceChange = new SourceChange(configURI, range, message);
 		return sourceChange;
 	}
 
@@ -240,7 +274,7 @@ public class BindingApp {
 		return actualTypeArguments;
 	}
 
-	private String getModelSerialization(ModelManagement modelManagement) throws YamlException {
+	private String serializeModel(ModelManagement modelManagement) throws YamlException {
 		Writer writer = new CharArrayWriter();
 		YamlWriter yamlWriter = new YamlWriter(writer);
 		yamlWriter.write(modelManagement);

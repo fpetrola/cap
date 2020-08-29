@@ -30,12 +30,9 @@ public class DatabaseEntitiesExtractor extends DefaultBinder implements Bidirect
 
 				entities.add(new EntityModel(tableName, properties));
 			}
-
-			return entities;
-
 		} catch (Exception e) {
-			return entities;
 		}
+		return entities;
 	}
 
 	public String getParametersProposalMessage() {

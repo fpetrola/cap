@@ -101,7 +101,7 @@ public class CapLanguageServer implements LanguageServer {
 //		workspaceEdit.setResourceOperations(Arrays.asList(ResourceOperationKind.Create, ResourceOperationKind.Delete, ResourceOperationKind.Rename));
 //		params.getCapabilities().getWorkspace().setWorkspaceEdit(workspaceEdit);
 
-		return CompletableFuture.supplyAsync(() -> res);
+		return CompletableFuture.completedFuture(res);
 	}
 
 	public void getWorkspaceFolders() {

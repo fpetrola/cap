@@ -11,6 +11,8 @@ import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.MemberValuePair;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder {
 
@@ -40,6 +42,10 @@ public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder {
 			}
 		}
 		return Arrays.asList();
+	}
+
+	protected MemberValuePair createPair(String key, String value) {
+		return new MemberValuePair(key, new StringLiteralExpr(value));
 	}
 
 }
