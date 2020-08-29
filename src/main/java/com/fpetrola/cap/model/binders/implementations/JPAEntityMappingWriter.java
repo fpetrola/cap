@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.WorkspaceAwareBinder;
+import com.fpetrola.cap.model.binders.implementations.helpers.DefaultJavaClassBinder;
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
 import com.fpetrola.cap.model.developer.PropertyMapping;
 import com.fpetrola.cap.model.source.SourceChange;

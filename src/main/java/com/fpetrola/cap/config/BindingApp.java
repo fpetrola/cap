@@ -19,7 +19,7 @@ import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
 import com.fpetrola.cap.helpers.BindersDiscoveryService;
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
-import com.fpetrola.cap.model.binders.implementations.WorkspaceAwareBinder;
+import com.fpetrola.cap.model.binders.WorkspaceAwareBinder;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceChangesListener;

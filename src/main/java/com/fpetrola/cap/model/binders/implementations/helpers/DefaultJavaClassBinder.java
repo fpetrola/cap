@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model.binders.implementations;
+package com.fpetrola.cap.model.binders.implementations.helpers;
 
 import static com.fpetrola.cap.model.source.JavaClassBinder.createNewJavaClassContent;
 

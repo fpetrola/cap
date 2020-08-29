@@ -13,9 +13,6 @@ import com.fpetrola.cap.model.developer.Property;
 
 public class DatabaseEntitiesExtractor extends DefaultBinder implements BidirectionalBinder<DatabaseConnection, EntityModel> {
 
-	public DatabaseEntitiesExtractor() {
-	}
-
 	public List<EntityModel> pull(DatabaseConnection dbConnection) {
 		List<EntityModel> entities = new ArrayList<>();
 		try {
@@ -24,7 +21,7 @@ public class DatabaseEntitiesExtractor extends DefaultBinder implements Bidirect
 
 			while (resultSet.next()) {
 				String tableName = resultSet.getString("TABLE_NAME");
-				
+
 				ResultSetMetaData metaData = dbConnection.con.createStatement().executeQuery("select * from " + tableName).getMetaData();
 
 				List<Property> properties = new ArrayList<>();
