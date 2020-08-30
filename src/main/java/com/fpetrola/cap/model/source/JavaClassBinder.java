@@ -4,12 +4,14 @@ import static com.github.javaparser.ast.Modifier.createModifierList;
 
 import java.util.Optional;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
@@ -41,46 +43,62 @@ public class JavaClassBinder {
 	}
 
 	public static SourceChange addAnnotationToField(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String propertyName, String uri) {
-		SourceChange[] sourceChange = new SourceChange[1];
-		cu.accept(new ModifierVisitor<Void>() {
-			public Visitable visit(FieldDeclaration fieldDeclaration, Void arg) {
-				SimpleName fieldName = fieldDeclaration.getVariable(0).getName();
-				if (fieldName.toString().equals(propertyName)) {
-					String message = "add annotation " + normalAnnotationExpr.getNameAsString() + " to property: " + propertyName;
-					sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, fieldDeclaration, fieldDeclaration, uri);
-				}
+		boolean found = fieldExists(cu, propertyName);
 
-				return super.visit(fieldDeclaration, arg);
-			}
-		}, null);
+		SourceChange[] sourceChange = new SourceChange[1];
+		if (found) {
+			cu.accept(new ModifierVisitor<Void>() {
+				public Visitable visit(FieldDeclaration fieldDeclaration, Void arg) {
+					SimpleName fieldName = fieldDeclaration.getVariable(0).getName();
+					if (fieldName.toString().equals(propertyName)) {
+						String message = "add annotation " + normalAnnotationExpr.getNameAsString() + " to property: " + propertyName;
+						sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, fieldDeclaration, fieldDeclaration, uri);
+					}
+
+					return super.visit(fieldDeclaration, arg);
+				}
+			}, null);
+		}
 		return sourceChange[0];
 	}
 
-	public static SourceChange addMethod(CompilationUnit cu, String methodName, String uri, String message) {
+	public static SourceChange addMethod(CompilationUnit cu, String methodName, String uri, String message, String body) {
+		boolean found = methodExists(cu, methodName);
+
 		SourceChange[] sourceChange = new SourceChange[1];
 
-		cu.findAll(ClassOrInterfaceDeclaration.class).forEach(coid -> {
+		if (!found)
+			cu.findAll(ClassOrInterfaceDeclaration.class).forEach(coid -> {
 
-			Optional<String> fullyQualifiedName = coid.getFullyQualifiedName();
-			Optional<SimpleName> simpleNames = coid.findAll(SimpleName.class).stream().filter(sn -> sn.getParentNode().get() instanceof ClassOrInterfaceDeclaration).findFirst();
+				Optional<String> fullyQualifiedName = coid.getFullyQualifiedName();
+				Optional<SimpleName> simpleNames = coid.findAll(SimpleName.class).stream().filter(sn -> sn.getParentNode().get() instanceof ClassOrInterfaceDeclaration).findFirst();
 
 //			MethodDeclaration method = coid.addMethod(methodName, Modifier.Keyword.PUBLIC);
-			MethodDeclaration methodDeclaration = new MethodDeclaration();
-			methodDeclaration.setName(methodName);
-			methodDeclaration.setType(new VoidType());
-			methodDeclaration.setModifiers(createModifierList(Modifier.Keyword.PUBLIC));
-			
-			ReturnStmt returnStmt = new ReturnStmt("null");
+				MethodDeclaration methodDeclaration = new MethodDeclaration();
+				methodDeclaration.setName(methodName);
+				methodDeclaration.setType(new VoidType());
+				methodDeclaration.setModifiers(createModifierList(Modifier.Keyword.PUBLIC));
 
-			BlockStmt block = new BlockStmt();
-			block.addStatement(returnStmt);
-			methodDeclaration.setBody(block);
-			coid.getMembers().add(0, methodDeclaration);
+				ReturnStmt returnStmt = new ReturnStmt("null");
 
-			simpleNames.ifPresent(p -> {
-				sourceChange[0] = new SourceChange(uri, p.getRange().get(), message);
+				BlockStmt block;
+				try {
+					String ctorBlock = body;
+					ConstructorDeclaration cd = (ConstructorDeclaration) StaticJavaParser.parseBodyDeclaration("C()" + ctorBlock);
+					block = cd.getBody();
+
+//				block.addStatement(returnStmt);
+					methodDeclaration.setBody(block);
+					coid.getMembers().add(0, methodDeclaration);
+
+					simpleNames.ifPresent(p -> {
+						sourceChange[0] = new SourceChange(uri, p.getRange().get(), message);
+					});
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			});
-		});
 
 		return sourceChange[0];
 	}
@@ -136,6 +154,20 @@ public class JavaClassBinder {
 					found[0] = true;
 				}
 				return super.visit(fieldDeclaration, arg);
+			}
+		}, null);
+		return found[0];
+	}
+
+	private static boolean methodExists(CompilationUnit cu, final String methodName) {
+		boolean[] found = new boolean[1];
+		cu.accept(new ModifierVisitor<Void>() {
+			public Visitable visit(MethodDeclaration methodDeclaration, Void arg) {
+				SimpleName foundMethodName = methodDeclaration.getName();
+				if (foundMethodName.toString().equals(methodName)) {
+					found[0] = true;
+				}
+				return super.visit(methodDeclaration, arg);
 			}
 		}, null);
 		return found[0];

@@ -20,8 +20,8 @@ import com.github.javaparser.ast.CompilationUnit;
 public class JPAEntityMappingWriter extends DefaultJavaClassBinder<ORMEntityMapping, Void> implements BidirectionalBinder<ORMEntityMapping, Void>, WorkspaceAwareBinder {
 
 	protected List<Function<CompilationUnit, SourceChange>> getModifiers(ORMEntityMapping source, String uri) {
-		List<Function<CompilationUnit, SourceChange>> modifiers = new ArrayList<>();
-
+		List<Function<CompilationUnit, SourceChange>> modifiers;
+		modifiers = new ArrayList<>();
 		modifiers.add(c -> addAnnotationToClass(c, createAnnotation("javax.persistence.Entity"), "JPA Entity detected", "", uri)[0]);
 		modifiers.add(c -> addAnnotationToClass(c, createAnnotation("javax.persistence.Table", createPair("name", source.tableName)), "JPA Entity table detected", "", uri)[0]);
 

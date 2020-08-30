@@ -30,16 +30,18 @@ public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder<S, T> {
 			JavaSourceChangesHandler javaSourceChangesHandler = new JavaSourceChangesHandler(findWorkspacePath, getClassname(source));
 			String uri = javaSourceChangesHandler.getUri();
 			List<SourceChange> sourceChanges = new ArrayList<>();
+			List<Function<CompilationUnit, SourceChange>> modifiers = getModifiers(source, uri);
 
 			if (javaSourceChangesHandler.fileExists()) {
 
-				List<Function<CompilationUnit, SourceChange>> modifiers = getModifiers(source, uri);
 
 				javaSourceChangesHandler.addInsertionsFor(sourceChanges, modifiers);
-				javaSourceChangesHandler.addFixAllForNow(uri, sourceChanges);
+				javaSourceChangesHandler.addFixAllForNow(sourceChanges, modifiers, uri, null);
 				sourceChangesListener.sourceChange(uri, sourceChanges);
 			} else {
-				sourceChangesListener.fileCreation(uri, createNewJavaClassContent(getClassname(source)));
+				String content = createNewJavaClassContent(getClassname(source));
+				String addFixAllForNow = javaSourceChangesHandler.addFixAllForNow(sourceChanges, modifiers, uri, content);
+				sourceChangesListener.fileCreation(uri, addFixAllForNow);
 			}
 		}
 		return Arrays.asList();

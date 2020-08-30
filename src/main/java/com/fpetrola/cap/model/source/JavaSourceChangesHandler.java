@@ -40,15 +40,46 @@ public class JavaSourceChangesHandler {
 		initWithClassName(className);
 	}
 
-	public void addFixAllForNow(String uri, List<SourceChange> sourceChanges) {
-		Range range = new Range(new Position(1, 1), new Position(1, 1));
-		SourceChange fixAllSourceChange = new SourceChange(uri, range, "fix all");
-		for (SourceChange sourceChange : sourceChanges) {
-			fixAllSourceChange.insertions.addAll(sourceChange.insertions);
-		}
+	public String addFixAllForNow(List<SourceChange> sourceChanges, List<Function<CompilationUnit, SourceChange>> funcs, String uri, String content) {
+		try {
+			CompilationUnit compilationUnit;
+			if (content == null)
+				compilationUnit = javaParser.parse(createFileFromUri()).getResult().get();
+			else
+				compilationUnit = javaParser.parse(content).getResult().get();
 
-		if (!fixAllSourceChange.insertions.isEmpty())
-			sourceChanges.add(fixAllSourceChange);
+			LexicalPreservingPrinter.setup(compilationUnit);
+			String originalSource = LexicalPreservingPrinter.print(compilationUnit);
+
+			boolean solved = true;
+			for (Function<CompilationUnit, SourceChange> function : funcs) {
+				SourceChange apply = function.apply(compilationUnit);
+				solved &= apply == null;
+			}
+
+			String originalSource2 = LexicalPreservingPrinter.print(compilationUnit);
+			CompilationUnit compilationUnit2 = javaParser.parse(originalSource2).getResult().get();
+			LexicalPreservingPrinter.setup(compilationUnit2);
+
+			for (Function<CompilationUnit, SourceChange> function : funcs) {
+				SourceChange apply = function.apply(compilationUnit2);
+				solved &= apply == null;
+			}
+
+			Range range = new Range(new Position(1, 1), new Position(1, 1));
+			SourceChange sourceChange = new SourceChange(uri, range, "fix all");
+
+			String print = LexicalPreservingPrinter.print(compilationUnit2);
+			if (!solved && sourceChange != null) {
+				List<SourceCodeModification> insertions = createModifications(originalSource, print);
+				sourceChange.insertions = insertions;
+				sourceChanges.add(sourceChange);
+			}
+
+			return print;
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static List<SourceCodeModification> createModifications(String originalSource, String modifiedSource) {

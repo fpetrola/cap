@@ -15,19 +15,26 @@
 			"file": "/home/fernando/git/cap-tests/src/main/resources/cap-config.yml",
 			"settings":
 			{
-				"buffer_size": 2,
+				"buffer_size": 529,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "package com.fpetrola.cap.usermodel;\n\nimport java.util.List;\n\n\npublic class TaskDTO {\n\n}",
-			"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TaskDTO.java",
-			"file_size": 87,
-			"file_write_time": 132432897306950221,
+			"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
 			"settings":
 			{
-				"buffer_size": 87,
+				"buffer_size": 343,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckListRepository.java",
+			"settings":
+			{
+				"buffer_size": 102,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -45,7 +52,7 @@
 		[
 			[
 				"lsp",
-				"LSP: Toggle Diagnostics Panel"
+				"LSP: Clear Diagnostics"
 			],
 			[
 				"lps",
@@ -96,18 +103,18 @@
 	],
 	"file_history":
 	[
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/Task.java",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TaskDTO.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/Task.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TaskRepository.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckListDTO.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckListRepository.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/New_tableDTO.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CHECKLIST.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TASK.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/NEW_TABLE.java",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckListRepository.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_tableRepository.java",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TaskRepository.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1Repository.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/Table1DTO.java",
@@ -213,15 +220,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2,
+						"buffer_size": 529,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2,
-								2
+								483,
+								483
 							]
 						],
 						"settings":
@@ -231,7 +238,6 @@
 							{
 								"ferlsp3": "yaml"
 							},
-							"show_definitions": false,
 							"syntax": "Packages/YAML/YAML.sublime-syntax",
 							"tab_size": 3
 						},
@@ -244,19 +250,19 @@
 				},
 				{
 					"buffer": 1,
-					"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TaskDTO.java",
+					"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 87,
+						"buffer_size": 343,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								201,
+								201
 							]
 						],
 						"settings":
@@ -266,7 +272,6 @@
 							{
 								"ferlsp3": "java"
 							},
-							"show_definitions": false,
 							"syntax": "Packages/Java/Java.sublime-syntax"
 						},
 						"translation.x": 0.0,
@@ -274,6 +279,39 @@
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckListRepository.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 102,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								38,
+								38
+							]
+						],
+						"settings":
+						{
+							"lsp_active": true,
+							"lsp_language":
+							{
+								"ferlsp3": "java"
+							},
+							"syntax": "Packages/Java/Java.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -312,7 +350,7 @@
 	"menu_visible": true,
 	"output.diagnostics":
 	{
-		"height": 270.0
+		"height": 282.0
 	},
 	"output.find_results":
 	{

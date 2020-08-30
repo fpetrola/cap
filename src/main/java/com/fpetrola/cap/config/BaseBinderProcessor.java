@@ -32,10 +32,10 @@ public class BaseBinderProcessor {
 
 		List<SourceCodeModification> sourceCodeModifications = JavaSourceChangesHandler.createModifications(modelSerialization, updatedModelSerialization);
 
-		Range range = new Range(new Position(1, 1), new Position(1, 100));
+		Range range = new Range(new Position(1, 0), new Position(1, 100));
 		if (binder != modelManagement) {
 			Range findPositionOf = findPositionOf(binder);
-			range = new Range(new Position(findPositionOf.begin.line, 1), new Position(findPositionOf.begin.line, 100));
+			range = new Range(new Position(findPositionOf.begin.line, 0), new Position(findPositionOf.begin.line, 100));
 		}
 		SourceChange sourceChange = new SourceChange(configURI, range, message);
 		sourceChange.insertions = sourceCodeModifications;

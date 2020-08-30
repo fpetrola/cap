@@ -21,13 +21,23 @@ public class RepositoryGenerator extends DefaultJavaClassBinder<ORMEntityMapping
 
 	protected List<Function<CompilationUnit, SourceChange>> getModifiers(ORMEntityMapping source, String uri) {
 		List<Function<CompilationUnit, SourceChange>> modifiers = new ArrayList<>();
+		String className = source.mappedClass.substring(source.mappedClass.lastIndexOf(".") + 1);
 
+		String select = "{\n\tTypedQuery<classname> q = entityManager.createQuery(\"SELECT b FROM classname b WHERE b.propertyname = :propertyname\", classname.class);\n\tq.setParameter(\"propertyname\", propertyname);\n\treturn q.getSingleResult();\n}";
+//		String select = "{\n" + "    return 1;\n" + "}";
+		
 		modifiers.add(c -> addAnnotationToClass(c, createAnnotation("Repository"), "Repository annotation", "", uri)[0]);
 		modifiers.add(c -> addFieldIfNotExists(c, "add entity manager", "entityManager", "EntityManager", uri));
-		modifiers.add(c -> addMethod(c, "findAll", uri, "add findAll method"));
-		modifiers.add(c -> addMethod(c, "save", uri, "add save method"));
+		modifiers.add(c -> {
+			String body = "{\n" + "    return entityManager.find(" + className + ".class, id);\n";
+			return addMethod(c, "find" + className + "ById", uri, "add findById method", body + "}");
+		});
+		modifiers.add(c -> addMethod(c, "save", uri, "add save method", "{\n" + "    return 1;\n" + "}"));
 		for (PropertyMapping p : source.propertyMappings) {
-			modifiers.add(c -> addMethod(c, "findBy" + p.propertyName, uri, "add method findBy" + p.propertyName));
+			modifiers.add(c -> {
+				String replaceAll = select.replaceAll("propertyname", p.propertyName).replaceAll("classname", className);
+				return addMethod(c, "findBy" + p.propertyName, uri, "add method findBy" + p.propertyName, replaceAll);
+			});
 		}
 		return modifiers;
 	}

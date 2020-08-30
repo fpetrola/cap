@@ -42,6 +42,7 @@ public class YamlHelper {
         addTag(yamlConfig, ModelManagement.class);
         addTag(yamlConfig, DatabaseConnectionDiscoverer.class);
         addTag(yamlConfig, RepositoryGenerator.class);
+        addTag(yamlConfig, DtoMapperGenerator.class);
         return yamlConfig;
     }
 
