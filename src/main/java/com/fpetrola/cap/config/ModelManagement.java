@@ -1,17 +1,10 @@
 package com.fpetrola.cap.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.binders.Binder;
+import com.fpetrola.cap.model.binders.DefaultBinder;
 
-public class ModelManagement {
-
+public class ModelManagement<S, T> extends DefaultBinder<S, T, Object> implements Binder<S, T, Object>{
 	public String model;
-	public List<String> ids = new ArrayList<>();
-	public List<BidirectionalBinder> binderChain = new ArrayList<>();
-
 	public ModelManagement() {
 	}
 
@@ -21,21 +14,5 @@ public class ModelManagement {
 
 	public void setModel(String model) {
 		this.model = model;
-	}
-
-	public List<String> getIds() {
-		return ids;
-	}
-
-	public void setIds(List<String> ids) {
-		this.ids = ids;
-	}
-
-	public List<BidirectionalBinder> getBinderChain() {
-		return binderChain;
-	}
-
-	public void setBinderChain(List<BidirectionalBinder> binders) {
-		this.binderChain = binders;
 	}
 }

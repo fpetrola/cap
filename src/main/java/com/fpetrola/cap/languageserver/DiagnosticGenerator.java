@@ -61,7 +61,7 @@ public class DiagnosticGenerator {
 	public void createFileAtClient(String uri, String content, LanguageClient languageClient) {
 		TextEdit textEdit = new TextEdit(new Range(new Position(0, 0), new Position(0, 0)), content);
 		WorkspaceEdit edit = new WorkspaceEdit();
-		edit.setDocumentChanges(Arrays.asList(Either.forRight(new CreateFile(uri, new CreateFileOptions(false, false)))));
+		edit.setDocumentChanges(Arrays.asList(Either.forRight(new CreateFile(uri, new CreateFileOptions(true, true)))));
 		HashMap<String, List<TextEdit>> changes = new HashMap<>();
 		changes.put(uri, Arrays.asList(textEdit));
 		edit.setChanges(changes);

@@ -14,7 +14,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
-public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder {
+public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder<S, T, Object> {
 
 	public DefaultJavaClassBinder() {
 	}

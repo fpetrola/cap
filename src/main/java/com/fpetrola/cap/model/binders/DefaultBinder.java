@@ -5,10 +5,11 @@ import java.util.List;
 
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
-public class DefaultBinder implements Binder {
+public class DefaultBinder<S, T, T2> implements Binder<S, T, T2> {
 	protected SourceChangesListener sourceChangesListener;
 	protected List<String> filters = new ArrayList<>();
 	public String workspacePath;
+	public List<BidirectionalBinder<T, T2>> chain = new ArrayList<>();
 
 	public DefaultBinder() {
 	}
@@ -37,4 +38,11 @@ public class DefaultBinder implements Binder {
 		this.workspacePath = workspacePath;
 	}
 
+	public void setChain(List<BidirectionalBinder<T, T2>> binders) {
+		this.chain = binders;
+	}
+
+	public List<BidirectionalBinder<T, T2>> getChain() {
+		return chain;
+	}
 }

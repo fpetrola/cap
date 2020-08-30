@@ -11,7 +11,7 @@ import com.fpetrola.cap.model.developer.ORMEntityMapping;
 import com.fpetrola.cap.model.developer.PropertyMapping;
 import com.fpetrola.cap.model.developer.PropertyMappingType;
 
-public class UppercaseORMMappingGenerator extends DefaultBinder implements BidirectionalBinder<EntityModel, ORMEntityMapping> {
+public class UppercaseORMMappingGenerator extends DefaultBinder<EntityModel, ORMEntityMapping, Object> implements BidirectionalBinder<EntityModel, ORMEntityMapping> {
 	public String modelPackage = "com.fpetrola.cap.usermodel";
 
 	public UppercaseORMMappingGenerator() {

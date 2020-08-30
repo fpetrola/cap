@@ -2,7 +2,6 @@ package com.fpetrola.cap.model.binders.implementations;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,7 +19,7 @@ import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 
-public class ConnectionExtractorFromPersistenceXML extends DefaultBinder implements BidirectionalBinder<Object, DatabaseConnection> {
+public class ConnectionExtractorFromPersistenceXML extends DefaultBinder<Object, DatabaseConnection, Object> implements BidirectionalBinder<Object, DatabaseConnection> {
 
 	public String name;
 
