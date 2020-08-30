@@ -72,4 +72,13 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 	public Binder<T, ?> getParent() {
 		return parentBinder;
 	}
+
+	public String findWorkspacePath() {
+		if (workspacePath != null)
+			return workspacePath;
+		if (parentBinder != null) {
+			return parentBinder.findWorkspacePath();
+		} else
+			return null;
+	}
 }

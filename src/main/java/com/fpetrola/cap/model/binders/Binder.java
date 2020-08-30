@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
-public interface Binder<S, T> {
+public interface Binder<S, T> extends WorkspaceAwareBinder  {
 
 	void setSourceChangesListener(SourceChangesListener sourceChangesListener);
 

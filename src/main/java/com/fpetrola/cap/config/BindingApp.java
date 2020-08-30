@@ -71,13 +71,20 @@ public class BindingApp extends BaseBinderProcessor {
 					}
 
 					boolean noInputBinder = availableBinderTypes2[0].equals(Object.class) && !availableBinder.pull("").isEmpty();
-					if (noInputBinder || sourceBinderPresent) {
-						addChangeProposalToBinder(binder, "Add binder: " + availableBinder.getClass().getSimpleName(), (bidirectionalBinder) -> {
-							List<Binder<?, ?>> chain = bidirectionalBinder.getChain();
-							bidirectionalBinder.setChain(new ArrayList<>(chain));
-							bidirectionalBinder.addBinder(availableBinder);
-							return chain;
-						}, (bidirectionalBinder, chain) -> bidirectionalBinder.setChain(chain));
+					boolean parentLinkedBinder = false;
+
+					Binder parent = binder.getParent();
+					if (parent != null) {
+						Type[] parentBinderTypes = getBinderTypes(parent);
+						parentLinkedBinder = availableBinderTypes2[0].equals(parentBinderTypes[1]);
+					}
+					
+					if (noInputBinder || sourceBinderPresent || parentLinkedBinder) {
+						List<Binder<?, ?>> chain = binder.getChain();
+						addChangeProposalToBinder(binder, "Add binder: " + availableBinder.getClass().getSimpleName(), (aBinder) -> {
+							aBinder.setChain(new ArrayList<>(chain));
+							aBinder.addBinder(availableBinder);
+						}, (bidirectionalBinder) -> bidirectionalBinder.setChain(chain));
 					} else {
 					}
 				}
@@ -113,8 +120,7 @@ public class BindingApp extends BaseBinderProcessor {
 								b.setFilters((List<String>) v.stream().map(o -> o.toString()).collect(Collectors.toList()));
 							}
 						}, false);
-						return bidirectionalBinder.getChain();
-					}, (bidirectionalBinder, chain) -> binder.setFilters(lastFilters));
+					}, (bidirectionalBinder) -> binder.setFilters(lastFilters));
 				}
 			}
 		});
@@ -127,7 +133,7 @@ public class BindingApp extends BaseBinderProcessor {
 				if (binder instanceof WorkspaceAwareBinder) {
 					WorkspaceAwareBinder workspaceAwareBinder = (WorkspaceAwareBinder) binder;
 
-					if (workspaceAwareBinder.getWorkspacePath() == null) {
+					if (workspaceAwareBinder.findWorkspacePath() == null) {
 						File[] file = new File[1];
 						file[0] = new File(URI.create(configURI));
 
@@ -136,10 +142,7 @@ public class BindingApp extends BaseBinderProcessor {
 								String message = "use workspace in: " + file[0].getPath();
 								String lastWorkspacePath = ((WorkspaceAwareBinder) binder).getWorkspacePath();
 
-								addChangeProposalToBinder(binder, message, (bidirectionalBinder) -> {
-									workspaceAwareBinder.setWorkspacePath(file[0].getPath());
-									return bidirectionalBinder.getChain();
-								}, (bidirectionalBinder, chain) -> ((WorkspaceAwareBinder) binder).setWorkspacePath(lastWorkspacePath));
+								addChangeProposalToBinder(binder, message, (bidirectionalBinder) -> workspaceAwareBinder.setWorkspacePath(file[0].getPath()), (bidirectionalBinder) -> ((WorkspaceAwareBinder) binder).setWorkspacePath(lastWorkspacePath));
 							}
 							file[0] = file[0].getParentFile();
 						}

@@ -19,29 +19,29 @@ public class BaseBinderProcessor {
 	public SourceChangesListener sourceChangesListener;
 	protected String configURI;
 	protected List<SourceChange> sourceChanges = new ArrayList<SourceChange>();
-	protected ModelManagement<?, ?> modelManagement;
+	protected ModelManagement modelManagement;
 
 	public BaseBinderProcessor() {
 		super();
 	}
 
-	protected void addChangeProposalToBinder(Binder<?, ?> bidirectionalBinder, String message, BinderModMaker doer, BinderModeUnmaker undoer) {
+	protected void addChangeProposalToBinder(Binder<?, ?> binder, String message, BinderModMaker doer, BinderModeUnmaker undoer) {
 		String modelSerialization = YamlHelper.serializeModel(modelManagement);
-		List<Binder<?, ?>> chain = doer.doMod(bidirectionalBinder);
+		doer.doMod(binder);
 		String updatedModelSerialization = YamlHelper.serializeModel(modelManagement);
 
 		List<SourceCodeModification> sourceCodeModifications = JavaSourceChangesHandler.createModifications(modelSerialization, updatedModelSerialization);
 
 		Range range = new Range(new Position(1, 1), new Position(1, 100));
-		if (bidirectionalBinder != modelManagement) {
-			Range findPositionOf = findPositionOf(bidirectionalBinder);
+		if (binder != modelManagement) {
+			Range findPositionOf = findPositionOf(binder);
 			range = new Range(new Position(findPositionOf.begin.line, 1), new Position(findPositionOf.begin.line, 100));
 		}
 		SourceChange sourceChange = new SourceChange(configURI, range, message);
 		sourceChange.insertions = sourceCodeModifications;
 		sourceChanges.add(sourceChange);
 
-		undoer.undoMod(bidirectionalBinder, chain);
+		undoer.undoMod(binder);
 	}
 
 	private Range findPositionOf(Binder<?, ?> bidirectionalBinder) {

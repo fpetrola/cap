@@ -24,9 +24,10 @@ public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder<S, T> {
 	protected abstract String getClassname(S source);
 
 	public List<T> pull(S source) {
-		if (workspacePath != null && sourceChangesListener != null) {
+		String findWorkspacePath = findWorkspacePath();
+		if (findWorkspacePath != null && sourceChangesListener != null) {
 
-			JavaSourceChangesHandler javaSourceChangesHandler = new JavaSourceChangesHandler(workspacePath, getClassname(source));
+			JavaSourceChangesHandler javaSourceChangesHandler = new JavaSourceChangesHandler(findWorkspacePath, getClassname(source));
 			String uri = javaSourceChangesHandler.getUri();
 			List<SourceChange> sourceChanges = new ArrayList<>();
 

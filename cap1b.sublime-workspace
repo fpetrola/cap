@@ -3,6 +3,10 @@
 	{
 		"selected_items":
 		[
+			[
+				"bind",
+				"binderChain"
+			]
 		]
 	},
 	"buffers":
@@ -11,17 +15,19 @@
 			"file": "/home/fernando/git/cap-tests/src/main/resources/cap-config.yml",
 			"settings":
 			{
-				"buffer_size": 444,
+				"buffer_size": 2,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1.java",
+			"contents": "package com.fpetrola.cap.usermodel;\n\nimport java.util.List;\n\n\npublic class TaskDTO {\n\n}",
+			"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TaskDTO.java",
+			"file_size": 87,
+			"file_write_time": 132432897306950221,
 			"settings":
 			{
-				"buffer_size": 119,
-				"encoding": "UTF-8",
+				"buffer_size": 87,
 				"line_ending": "Unix"
 			}
 		}
@@ -39,7 +45,7 @@
 		[
 			[
 				"lsp",
-				"LSP: Clear Diagnostics"
+				"LSP: Toggle Diagnostics Panel"
 			],
 			[
 				"lps",
@@ -86,25 +92,32 @@
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel",
-		"/home/fernando/git/cap-tests/src/main/resources",
-		"/home/fernando/git/cap-tests/src/main/resources/META-INF"
+		"/home/fernando/git/cap-tests/src/main/resources"
 	],
 	"file_history":
 	[
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/Task.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TaskDTO.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckListDTO.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/New_tableDTO.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CHECKLIST.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TASK.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/NEW_TABLE.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckListRepository.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_tableRepository.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TaskRepository.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1Repository.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/Table1DTO.java",
+		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TABLE1.java",
+		"/home/fernando/git/cap-tests/src/main/resources/META-INF/persistence.xml",
 		"/home/fernando/git/cap-tests/src/main/javacom/fpetrola/cap/usermodel/table1.java",
 		"/home/fernando/git/cap-tests/src/main/resources/cap-config.yml",
 		"/home/fernando/git/cap-tests/.classpath",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table.java",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CheckList.java",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/Task.java",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TABLE1.java",
-		"/home/fernando/git/cap-tests/src/main/resources/META-INF/persistence.xml",
 		"/home/fernando/git/cap-tests/src/main/resources/hibernate.cfg.xml",
 		"/home/fernando/git/cap-tests/src/main/resources/META-INF/persistence1.xml",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/NEW_TABLE.java",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TASK.java",
-		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/CHECKLIST.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/new_table3.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TablaTest1.java",
 		"/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/Tabla2.java",
@@ -140,7 +153,7 @@
 	],
 	"find":
 	{
-		"height": 24.0
+		"height": 23.0
 	},
 	"find_in_files":
 	{
@@ -154,6 +167,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"   ",
+			"package",
 			"jdbc:mysql://localhost:3306/testdb",
 			"Database",
 			"   \n",
@@ -189,7 +204,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -198,7 +213,42 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 444,
+						"buffer_size": 2,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"lsp_active": true,
+							"lsp_language":
+							{
+								"ferlsp3": "yaml"
+							},
+							"show_definitions": false,
+							"syntax": "Packages/YAML/YAML.sublime-syntax",
+							"tab_size": 3
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/TaskDTO.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 87,
 						"regions":
 						{
 						},
@@ -214,9 +264,10 @@
 							"lsp_active": true,
 							"lsp_language":
 							{
-								"ferlsp3": "yaml"
+								"ferlsp3": "java"
 							},
-							"syntax": "Packages/YAML/YAML.sublime-syntax"
+							"show_definitions": false,
+							"syntax": "Packages/Java/Java.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -224,46 +275,13 @@
 					},
 					"stack_index": 1,
 					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "/home/fernando/git/cap-tests/src/main/java/com/fpetrola/cap/usermodel/table1.java",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 119,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								95,
-								95
-							]
-						],
-						"settings":
-						{
-							"lsp_active": true,
-							"lsp_language":
-							{
-								"ferlsp3": "java"
-							},
-							"syntax": "Packages/Java/Java.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
 				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 24.0
+		"height": 23.0
 	},
 	"input":
 	{
@@ -294,7 +312,7 @@
 	"menu_visible": true,
 	"output.diagnostics":
 	{
-		"height": 158.0
+		"height": 270.0
 	},
 	"output.find_results":
 	{
@@ -312,7 +330,7 @@
 	"project": "",
 	"replace":
 	{
-		"height": 44.0
+		"height": 42.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -350,7 +368,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 299.0,
+	"side_bar_width": 279.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

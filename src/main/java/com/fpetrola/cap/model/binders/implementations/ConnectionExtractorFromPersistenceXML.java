@@ -22,38 +22,40 @@ import com.fpetrola.cap.model.developer.DatabaseConnection;
 public class ConnectionExtractorFromPersistenceXML extends DefaultBinder<Void, DatabaseConnection> implements BidirectionalBinder<Void, DatabaseConnection> {
 
 	public String name;
+	private List<DatabaseConnection> result;
 
 	public ConnectionExtractorFromPersistenceXML() {
 	}
 
 	public List<DatabaseConnection> pull(Void source) {
-		List<DatabaseConnection> result= new ArrayList<DatabaseConnection>();
-		try {
+		result = new ArrayList<DatabaseConnection>();
+		if (result.isEmpty())
+			try {
 
-			File dir = new File("/home/fernando/git/cap-tests");
-			Optional<Path> findFirst = Files.walk(Paths.get(dir.getPath())).filter(f -> f.getFileName().toString().contains("persistence.xml")).findFirst();
-			System.out.println(findFirst);
+				File dir = new File("/home/fernando/git/cap-tests");
+				Optional<Path> findFirst = Files.walk(Paths.get(dir.getPath())).filter(f -> f.getFileName().toString().contains("persistence.xml")).findFirst();
+				System.out.println(findFirst);
 
-			findFirst.ifPresent(p -> {
+				findFirst.ifPresent(p -> {
 
-				try {
-					PersistenceXmlParser persistenceXmlParser = new PersistenceXmlParser();
-					persistenceXmlParser.parse(p.toUri().toURL());
-					PersistenceUnitInfoImpl defaultPersistenceUnit = persistenceXmlParser.getDefaultPersistenceUnit();
+					try {
+						PersistenceXmlParser persistenceXmlParser = new PersistenceXmlParser();
+						persistenceXmlParser.parse(p.toUri().toURL());
+						PersistenceUnitInfoImpl defaultPersistenceUnit = persistenceXmlParser.getDefaultPersistenceUnit();
 
-					String driver = defaultPersistenceUnit.getProperties().getProperty("javax.persistence.jdbc.driver");
-					String connection = defaultPersistenceUnit.getProperties().getProperty("javax.persistence.jdbc.url");
-					String user = defaultPersistenceUnit.getProperties().getProperty("javax.persistence.jdbc.user");
-					String password = defaultPersistenceUnit.getProperties().getProperty("javax.persistence.jdbc.password");
-					DatabaseConnection dbConnection = new DatabaseConnection(driver, connection, user, password);
-					result.add(dbConnection);
-				} catch (IOException | ParserConfigurationException | SAXException e) {
-					e.printStackTrace();
-				}
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+						String driver = defaultPersistenceUnit.getProperties().getProperty("javax.persistence.jdbc.driver");
+						String connection = defaultPersistenceUnit.getProperties().getProperty("javax.persistence.jdbc.url");
+						String user = defaultPersistenceUnit.getProperties().getProperty("javax.persistence.jdbc.user");
+						String password = defaultPersistenceUnit.getProperties().getProperty("javax.persistence.jdbc.password");
+						DatabaseConnection dbConnection = new DatabaseConnection(driver, connection, user, password);
+						result.add(dbConnection);
+					} catch (IOException | ParserConfigurationException | SAXException e) {
+						e.printStackTrace();
+					}
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		return result;
 	}
 }

@@ -6,4 +6,6 @@ public interface WorkspaceAwareBinder {
 
 	void setWorkspacePath(String workspacePath);
 
+	String findWorkspacePath();
+
 }

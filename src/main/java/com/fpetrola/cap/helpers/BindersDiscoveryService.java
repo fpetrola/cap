@@ -16,26 +16,32 @@ import io.github.classgraph.ScanResult;
 public class BindersDiscoveryService {
 
 	private static final String basePackage = "com.fpetrola.cap";
+	private List<Class<?>> loadClasses;
 
 	public BindersDiscoveryService() {
 	}
 
+	@SuppressWarnings("rawtypes")
 	public List<Binder> findBinders() {
-		List<Binder> pullers = new ArrayList<Binder>();
-		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(basePackage).scan()) {
+		List<Binder> instances = new ArrayList<Binder>();
 
-			ClassInfoList binderClasses = scanResult.getClassesImplementing(BidirectionalBinder.class.getName()).filter(filter -> !filter.isInterface());
-
-			binderClasses.loadClasses().forEach(puller -> {
-				try {
-					Constructor<?>[] constructors = puller.getConstructors();
-					pullers.add((Binder) constructors[0].newInstance());
-				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				}
-			});
+		if (loadClasses == null) {
+			ClassInfoList binderClasses;
+			try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(basePackage).scan()) {
+				binderClasses = scanResult.getClassesImplementing(BidirectionalBinder.class.getName()).filter(filter -> !filter.isInterface());
+				loadClasses = binderClasses.loadClasses();
+			}
 		}
 
-		return pullers;
+		loadClasses.forEach(puller -> {
+			try {
+				Constructor<?>[] constructors = puller.getConstructors();
+				instances.add((Binder) constructors[0].newInstance());
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			}
+		});
+
+		return instances;
 	}
 
 	public List<DeveloperModel> findModels() {
