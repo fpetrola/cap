@@ -1,18 +1,25 @@
 package com.fpetrola.cap.model.source;
 
+import static com.github.javaparser.ast.Modifier.createModifierList;
+
 import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.ast.visitor.Visitable;
 
@@ -46,6 +53,35 @@ public class JavaClassBinder {
 				return super.visit(fieldDeclaration, arg);
 			}
 		}, null);
+		return sourceChange[0];
+	}
+
+	public static SourceChange addMethod(CompilationUnit cu, String methodName, String uri, String message) {
+		SourceChange[] sourceChange = new SourceChange[1];
+
+		cu.findAll(ClassOrInterfaceDeclaration.class).forEach(coid -> {
+
+			Optional<String> fullyQualifiedName = coid.getFullyQualifiedName();
+			Optional<SimpleName> simpleNames = coid.findAll(SimpleName.class).stream().filter(sn -> sn.getParentNode().get() instanceof ClassOrInterfaceDeclaration).findFirst();
+
+//			MethodDeclaration method = coid.addMethod(methodName, Modifier.Keyword.PUBLIC);
+			MethodDeclaration methodDeclaration = new MethodDeclaration();
+			methodDeclaration.setName(methodName);
+			methodDeclaration.setType(new VoidType());
+			methodDeclaration.setModifiers(createModifierList(Modifier.Keyword.PUBLIC));
+			
+			ReturnStmt returnStmt = new ReturnStmt("null");
+
+			BlockStmt block = new BlockStmt();
+			block.addStatement(returnStmt);
+			methodDeclaration.setBody(block);
+			coid.getMembers().add(0, methodDeclaration);
+
+			simpleNames.ifPresent(p -> {
+				sourceChange[0] = new SourceChange(uri, p.getRange().get(), message);
+			});
+		});
+
 		return sourceChange[0];
 	}
 
@@ -104,7 +140,7 @@ public class JavaClassBinder {
 		}, null);
 		return found[0];
 	}
-	
+
 	public static String createNewJavaClassContent(String className) {
 		String simpleName = className.substring(0, className.lastIndexOf("."));
 		String content = "package " + simpleName + ";\n\nimport java.util.List;\n" + "\n\n" + "public class " + className.substring(simpleName.length() + 1) + " {\n\n}";
