@@ -18,9 +18,12 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import com.github.javaparser.utils.SourceRoot;
 
+import difflib.ChangeDelta;
 import difflib.Chunk;
+import difflib.DeleteDelta;
 import difflib.Delta;
 import difflib.DiffUtils;
+import difflib.InsertDelta;
 import difflib.Patch;
 import difflib.PatchFailedException;
 
@@ -52,25 +55,47 @@ public class JavaSourceChangesHandler {
 		List<SourceCodeModification> insertions = new ArrayList<>();
 		try {
 			Patch<String> patch = DiffUtils.diff(getlines(originalSource), getlines(modifiedSource));
-
 			List<Delta<String>> deltas = patch.getDeltas();
 			for (Delta<String> delta : deltas) {
 				Patch<String> patch2 = new Patch<String>();
 				patch2.addDelta(delta);
+				List<Delta<String>> delta2 = DiffUtils.diff(getlines(originalSource), DiffUtils.patch(getlines(originalSource), patch2)).getDeltas();
+				convertDeltasToSourceChange(insertions, delta2);
+			}
+		} catch (PatchFailedException e) {
+			throw new RuntimeException(e);
+		}
 
-				List<String> patch3 = DiffUtils.patch(getlines(originalSource), patch2);
-				Patch<String> patch4 = DiffUtils.diff(getlines(originalSource), patch3);
+		return insertions;
+	}
 
-				Delta<String> delta2 = patch4.getDeltas().get(0);
+	@SuppressWarnings({ "rawtypes", "unused" })
+	private static void convertDeltasToSourceChange(List<SourceCodeModification> insertions, List<Delta<String>> deltas) {
 
-				Chunk<String> revised = delta2.getRevised();
-				String collect = revised.getLines().stream().collect(Collectors.joining("\n")) + "\n";
-				int column = 0;
+		for (Delta<String> delta : deltas) {
 
-				int position = delta2.getOriginal().getPosition();
-				int position2 = delta2.getRevised().getPosition();
-				if (position == position2 && !delta2.getOriginal().getLines().isEmpty()) {
-					int length = delta2.getOriginal().getLines().get(0).length();
+			Chunk<String> revised = delta.getRevised();
+			String collect = revised.getLines().stream().collect(Collectors.joining("\n")) + "\n";
+
+			if (delta instanceof DeleteDelta) {
+				DeleteDelta<String> deleteDelta = (DeleteDelta<String>) delta;
+				Position begin = new Position(revised.getPosition(), 0);
+				Position end = new Position(revised.getPosition() + revised.size() + 1, 0);
+				final Range range2 = new Range(begin, end);
+				insertions.add((SourceCodeModification) new SourceCodeReplace("", range2));
+
+			} else if (delta instanceof InsertDelta) {
+				Position begin = new Position(revised.getPosition(), 0);
+				final Range range2 = new Range(begin, begin);
+				insertions.add((SourceCodeModification) new SourceCodeInsertion(collect, range2));
+
+			} else if (delta instanceof ChangeDelta) {
+
+				ChangeDelta changeDelta = (ChangeDelta) delta;
+				int position = delta.getOriginal().getPosition();
+				int position2 = delta.getRevised().getPosition();
+				if (position == position2 && !delta.getOriginal().getLines().isEmpty()) {
+					int length = delta.getOriginal().getLines().get(0).length();
 					Position begin = new Position(revised.getPosition(), 0);
 					Position end = new Position(revised.getPosition() + 1, 0);
 					final Range range2 = new Range(begin, end);
@@ -80,17 +105,9 @@ public class JavaSourceChangesHandler {
 					Position begin2 = new Position(revised.getPosition() + 1, 0);
 					final Range range3 = new Range(begin2, begin2);
 					insertions.add(new SourceCodeInsertion(collect.substring(content.length()), range3));
-				} else {
-					Position begin = new Position(revised.getPosition(), column);
-					final Range range2 = new Range(begin, begin);
-					insertions.add((SourceCodeModification) new SourceCodeInsertion(collect, range2));
 				}
 			}
-		} catch (PatchFailedException e) {
-			throw new RuntimeException(e);
 		}
-
-		return insertions;
 	}
 
 	static List<String> getlines(String sourceCode) {

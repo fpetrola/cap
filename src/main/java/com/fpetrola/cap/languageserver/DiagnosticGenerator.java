@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.fpetrola.cap.config.BaseBinderProcessor;
 import com.fpetrola.cap.config.BindingApp;
 import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
 import org.eclipse.lsp4j.CodeAction;
@@ -36,7 +37,7 @@ public class DiagnosticGenerator {
 	public DiagnosticGenerator() {
 	}
 
-	public List<PublishDiagnosticsParams> getDiagnostics(Map<String, List<SourceChange>> changesMap, BindingApp bindingApp) {
+	public List<PublishDiagnosticsParams> getDiagnostics(Map<String, List<SourceChange>> changesMap, BaseBinderProcessor bindingApp) {
 		List<PublishDiagnosticsParams> diagnostics = new ArrayList<>();
 		changesMap.clear();
 		codeActions.clear();

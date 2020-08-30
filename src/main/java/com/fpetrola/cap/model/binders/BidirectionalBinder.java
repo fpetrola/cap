@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public interface BidirectionalBinder<S, T> extends Binder<S, T, Object> {
-
-	List<T> pull(S source);
+public interface BidirectionalBinder<S, T> extends Binder<S, T> {
 
 	default List<Supplier> getSuppliers(Supplier<S> valueSupplier) {
 		List<T> pull = pull(valueSupplier.get());
@@ -30,10 +28,6 @@ public interface BidirectionalBinder<S, T> extends Binder<S, T, Object> {
 			suppliers.add(supplier);
 		}
 		return suppliers;
-	}
-
-	default String getParametersProposalMessage() {
-		return "";
 	}
 
 }

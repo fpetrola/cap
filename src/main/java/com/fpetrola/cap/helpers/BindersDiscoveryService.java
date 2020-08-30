@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.developer.DeveloperModel;
 
 import io.github.classgraph.ClassGraph;
@@ -19,8 +20,8 @@ public class BindersDiscoveryService {
 	public BindersDiscoveryService() {
 	}
 
-	public List<BidirectionalBinder> findBinders() {
-		List<BidirectionalBinder> pullers = new ArrayList<BidirectionalBinder>();
+	public List<Binder> findBinders() {
+		List<Binder> pullers = new ArrayList<Binder>();
 		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(basePackage).scan()) {
 
 			ClassInfoList binderClasses = scanResult.getClassesImplementing(BidirectionalBinder.class.getName()).filter(filter -> !filter.isInterface());
@@ -28,7 +29,7 @@ public class BindersDiscoveryService {
 			binderClasses.loadClasses().forEach(puller -> {
 				try {
 					Constructor<?>[] constructors = puller.getConstructors();
-					pullers.add((BidirectionalBinder) constructors[0].newInstance());
+					pullers.add((Binder) constructors[0].newInstance());
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				}
 			});

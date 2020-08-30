@@ -11,7 +11,7 @@ import com.fpetrola.cap.model.developer.ORMEntityMapping;
 import com.fpetrola.cap.model.developer.PropertyMapping;
 import com.fpetrola.cap.model.developer.PropertyMappingType;
 
-public class BasicORMMappingGenerator extends DefaultBinder<EntityModel, ORMEntityMapping, Object> implements BidirectionalBinder<EntityModel, ORMEntityMapping> {
+public class BasicORMMappingGenerator extends DefaultBinder<EntityModel, ORMEntityMapping> implements BidirectionalBinder<EntityModel, ORMEntityMapping> {
 
 	public List<ORMEntityMapping> pull(EntityModel source) {
 

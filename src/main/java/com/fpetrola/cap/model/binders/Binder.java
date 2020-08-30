@@ -1,10 +1,11 @@
 package com.fpetrola.cap.model.binders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
-public interface Binder<S, T, T2> {
+public interface Binder<S, T> {
 
 	void setSourceChangesListener(SourceChangesListener sourceChangesListener);
 
@@ -12,8 +13,25 @@ public interface Binder<S, T, T2> {
 
 	List<String> getFilters();
 
-	void setChain(List<BidirectionalBinder<T, T2>> binders);
+	void setChain(List<Binder<?, ?>> binders);
 
-	List<BidirectionalBinder<T, T2>> getChain();
+	List<Binder<?, ?>> getChain();
 
+	void accept(BinderVisitor<?, ?> visitor);
+
+	void addBinder(Binder aBinder);
+
+	void removeBinder(Binder availableBinder);
+
+	void setParent(Binder<T, ?> aParentBinder);
+
+	default String getParametersProposalMessage() {
+		return "";
+	}
+
+	default List<T> pull(S source) {
+		return new ArrayList<>();
+	}
+
+	Binder<T, ?> getParent();
 }

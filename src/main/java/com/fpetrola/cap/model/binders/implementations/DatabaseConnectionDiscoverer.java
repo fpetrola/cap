@@ -11,7 +11,7 @@ import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 
-public class DatabaseConnectionDiscoverer extends DefaultBinder<Object, DatabaseConnection, Object> implements BidirectionalBinder<Object, DatabaseConnection> {
+public class DatabaseConnectionDiscoverer extends DefaultBinder<Object, DatabaseConnection> implements BidirectionalBinder<Object, DatabaseConnection> {
 
 	public String name;
 

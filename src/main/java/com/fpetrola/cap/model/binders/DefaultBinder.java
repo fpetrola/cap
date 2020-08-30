@@ -5,11 +5,12 @@ import java.util.List;
 
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
-public class DefaultBinder<S, T, T2> implements Binder<S, T, T2> {
+public class DefaultBinder<S, T> implements Binder<S, T> {
 	protected SourceChangesListener sourceChangesListener;
 	protected List<String> filters = new ArrayList<>();
 	public String workspacePath;
-	public List<BidirectionalBinder<T, T2>> chain = new ArrayList<>();
+	public List<Binder<?, ?>> chain = new ArrayList<>();
+	private Binder<T, ?> parentBinder;
 
 	public DefaultBinder() {
 	}
@@ -38,11 +39,37 @@ public class DefaultBinder<S, T, T2> implements Binder<S, T, T2> {
 		this.workspacePath = workspacePath;
 	}
 
-	public void setChain(List<BidirectionalBinder<T, T2>> binders) {
+	public void setChain(List<Binder<?, ?>> binders) {
 		this.chain = binders;
 	}
 
-	public List<BidirectionalBinder<T, T2>> getChain() {
+	public List<Binder<?, ?>> getChain() {
 		return chain;
+	}
+
+	public void accept(BinderVisitor<?, ?> visitor) {
+		visitor.visitChainedBinder(this);
+		for (Binder<?, ?> binder : chain) {
+			binder.accept(visitor);
+		}
+	}
+
+	public void addBinder(Binder aBinder) {
+		chain.add(aBinder);
+		aBinder.setParent(this);
+	}
+
+	public void setParent(Binder<T, ?> aParentBinder) {
+		this.parentBinder = aParentBinder;
+	}
+
+	@Override
+	public void removeBinder(Binder aBinder) {
+		chain.remove(aBinder);
+		aBinder.setParent(null);
+	}
+
+	public Binder<T, ?> getParent() {
+		return parentBinder;
 	}
 }

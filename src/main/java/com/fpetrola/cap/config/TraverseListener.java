@@ -2,10 +2,10 @@ package com.fpetrola.cap.config;
 
 import java.util.List;
 
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 
 public interface TraverseListener {
 
-	void valuesPulledFrom(BidirectionalBinder bidirectionalBinder, List result);
+	void valuesPulledFrom(Binder<?, ?> bidirectionalBinder, List result);
 
 }
