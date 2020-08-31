@@ -1,6 +1,4 @@
-package com.fpetrola.cap.config;
-
-import com.fpetrola.cap.model.binders.Binder;
+package com.fpetrola.cap.model.binders;
 
 public interface BinderModMaker {
     void doMod(Binder<?, ?> bidirectionalBinder);

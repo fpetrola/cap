@@ -1,4 +1,4 @@
-package com.fpetrola.cap.config;
+package com.fpetrola.cap.model.binders;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -9,9 +9,7 @@ import java.util.stream.Collectors;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.fpetrola.cap.helpers.BindersDiscoveryService;
-import com.fpetrola.cap.model.binders.Binder;
-import com.fpetrola.cap.model.binders.BinderVisitor;
-import com.fpetrola.cap.model.binders.WorkspaceAwareBinder;
+import com.fpetrola.cap.helpers.YamlHelper;
 import com.fpetrola.cap.model.binders.implementations.DatabaseEntitiesExtractor;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
 import com.fpetrola.cap.model.source.SourceChange;

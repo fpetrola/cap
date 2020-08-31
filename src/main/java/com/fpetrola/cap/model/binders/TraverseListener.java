@@ -1,8 +1,6 @@
-package com.fpetrola.cap.config;
+package com.fpetrola.cap.model.binders;
 
 import java.util.List;
-
-import com.fpetrola.cap.model.binders.Binder;
 
 public interface TraverseListener {
 

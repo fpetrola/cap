@@ -26,8 +26,8 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
-import com.fpetrola.cap.config.BaseBinderProcessor;
-import com.fpetrola.cap.config.BindingApp;
+import com.fpetrola.cap.model.binders.BaseBinderProcessor;
+import com.fpetrola.cap.model.binders.BindingApp;
 
 public class CapLanguageServer implements LanguageServer {
 

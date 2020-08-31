@@ -1,9 +1,10 @@
-package com.fpetrola.cap.config;
+package com.fpetrola.cap.helpers;
 
 import com.esotericsoftware.yamlbeans.YamlConfig;
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
+import com.fpetrola.cap.model.binders.ModelManagement;
 import com.fpetrola.cap.model.binders.implementations.*;
 
 import java.io.*;
@@ -11,13 +12,13 @@ import java.net.URI;
 
 public class YamlHelper {
 
-    static <T> T deserializeModelFromURI(String uri, Class<T> class1) throws FileNotFoundException, YamlException {
+    public static <T> T deserializeModelFromURI(String uri, Class<T> class1) throws FileNotFoundException, YamlException {
         InputStream inputStream = new FileInputStream(new File(URI.create(uri)));
         YamlReader reader = new YamlReader(new InputStreamReader(inputStream), getYmlConfig());
         return reader.read(class1);
     }
 
-    static String serializeModel(Object object) {
+    public static String serializeModel(Object object) {
         try {
 			Writer writer = new CharArrayWriter();
 			YamlWriter yamlWriter = new YamlWriter(writer, getYmlConfig());

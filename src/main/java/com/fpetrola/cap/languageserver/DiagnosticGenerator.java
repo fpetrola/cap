@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.fpetrola.cap.config.BaseBinderProcessor;
-import com.fpetrola.cap.config.BindingApp;
 import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionKind;
@@ -27,6 +25,8 @@ import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 
+import com.fpetrola.cap.model.binders.BaseBinderProcessor;
+import com.fpetrola.cap.model.binders.BindingApp;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceCodeModification;
 

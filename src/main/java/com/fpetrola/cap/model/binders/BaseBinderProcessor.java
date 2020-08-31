@@ -1,12 +1,12 @@
-package com.fpetrola.cap.config;
+package com.fpetrola.cap.model.binders;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fpetrola.cap.model.binders.Binder;
-import com.fpetrola.cap.model.binders.DefaultBinder;
+import com.fpetrola.cap.helpers.YamlHelper;
+import com.fpetrola.cap.model.source.DummySourceChangesListener;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceChangesListener;

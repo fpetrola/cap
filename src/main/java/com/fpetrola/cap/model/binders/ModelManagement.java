@@ -1,7 +1,4 @@
-package com.fpetrola.cap.config;
-
-import com.fpetrola.cap.model.binders.Binder;
-import com.fpetrola.cap.model.binders.DefaultBinder;
+package com.fpetrola.cap.model.binders;
 
 public class ModelManagement<S, T> extends DefaultBinder<S, T> implements Binder<S, T>{
 	public String model;
