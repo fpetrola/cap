@@ -45,38 +45,40 @@ public abstract class BaseBindingProcessor {
 		undoer.undoMod(binder);
 	}
 
-	private Range findPositionOfBinderBasedInYamlSerialization(Binder<?, ?> bidirectionalBinder) {
-		Range range = new Range(new Position(0, 0), new Position(0, 1));
-		Binder<?, ?> parent = bidirectionalBinder.getParent();
+	private Range findPositionOfBinderBasedInYamlSerialization(Binder<?, ?> binder) {
+		Range result = new Range(new Position(0, 0), new Position(0, 1));
 
+		Binder<?, ?> parent = binder.getParent();
 		if (parent != null) {
 			List<Binder> lastBinderChain = parent.getChain();
-			DefaultBinder<Object, Object> aBinder = new DefaultBinder<>();
+
 			List<Binder> binders = new ArrayList<>();
 			binders.addAll(parent.getChain());
-			int indexOf = binders.indexOf(bidirectionalBinder);
-			binders.add(indexOf + 1, aBinder);
+			int indexOf = binders.indexOf(binder);
+
+			DefaultBinder<Object, Object> temporalBinder = new DefaultBinder<>();
+			binders.add(indexOf + 1, temporalBinder);
 			parent.setChain(binders);
 
 			String modelSerialization = YamlHelper.serializeModel(modelManagement);
-			parent.getChain().remove(bidirectionalBinder);
+			parent.getChain().remove(binder);
 			String modelSerialization2 = YamlHelper.serializeModel(modelManagement);
-			parent.removeBinder(aBinder);
+			parent.removeBinder(temporalBinder);
 			List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization2, modelSerialization);
 			parent.setChain(lastBinderChain);
 
 			try {
-				Position begin = range.begin;
+				Position begin = result.begin;
 
-				for (SourceCodeModification sourceCodeModification : createInsertions) {
+				for (SourceCodeModification sourceCodeModification : createInsertions)
 					begin = sourceCodeModification.range.begin;
-				}
+				
 				return new Range(new Position(begin.line + 1, 100), new Position(begin.line + 1, 100));
 			} catch (Exception e) {
-				return range;
+				return result;
 			}
 		}
-		return range;
+		return result;
 	}
 
 	protected void bindModel(boolean doLoop, Binder<?, ?> aModelManagement, TraverseListener traverseListener, boolean listenChanges) {

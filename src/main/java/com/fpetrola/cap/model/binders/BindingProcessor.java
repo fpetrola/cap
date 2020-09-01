@@ -25,24 +25,22 @@ public class BindingProcessor extends BaseBindingProcessor {
 	}
 
 	public void bind(boolean doLoop) {
-		if (configURI != null)
-			sourceChanges.clear();
+		sourceChanges.clear();
 
 		try {
-
 			deserializeModel();
-			proposeNewBinders();
-			proposeFilters();
-			proposeConfigForWorkspaceAwareBinder();
-
-			bindModel(false, modelManagement, (b, v) -> {
-			}, true);
-
-			sourceChangesListener.sourceChange(configURI, sourceChanges);
-
 		} catch (Exception e1) {
 			proposeCreation();
 		}
+		proposeNewBinders();
+		proposeFilters();
+		proposeConfigForWorkspaceAwareBinder();
+
+		bindModel(false, modelManagement, (b, v) -> {
+		}, true);
+
+		if (configURI != null)
+			sourceChangesListener.sourceChange(configURI, sourceChanges);
 	}
 
 	private void deserializeModel() throws FileNotFoundException, YamlException {
@@ -57,11 +55,10 @@ public class BindingProcessor extends BaseBindingProcessor {
 		}
 	}
 
-	private void proposeNewBinders() throws YamlException {
+	private void proposeNewBinders() {
 		BindersDiscoveryService bindersDiscoveryService = new BindersDiscoveryService();
 
 		modelManagement.accept(new BinderVisitor() {
-			@Override
 			public void visitChainedBinder(Binder binder) {
 				List<Binder> newBinders = bindersDiscoveryService.findBinders();
 
@@ -82,7 +79,6 @@ public class BindingProcessor extends BaseBindingProcessor {
 	}
 
 	private void proposeCreation() {
-
 		SourceChange sourceChange = new SourceChange(configURI, new Range(new Position(1, 1), new Position(1, 1)), "Initialize Model Management");
 		modelManagement = new ModelManagement();
 		List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications("\n", YamlHelper.serializeModel(modelManagement));
@@ -90,12 +86,9 @@ public class BindingProcessor extends BaseBindingProcessor {
 			sourceChange.insertions = createInsertions;
 			sourceChanges.add(sourceChange);
 		}
-
-		if (configURI != null)
-			sourceChangesListener.sourceChange(configURI, sourceChanges);
 	}
 
-	private void proposeFilters() throws YamlException {
+	private void proposeFilters() {
 		modelManagement.accept(new BinderVisitor() {
 			public void visitChainedBinder(Binder binder) {
 				if (binder instanceof DatabaseEntitiesExtractor) {
@@ -106,9 +99,8 @@ public class BindingProcessor extends BaseBindingProcessor {
 					List<String> lastFilters = binder.getFilters();
 					addChangeProposalToBinder(binder, message, (bidirectionalBinder) -> {
 						bindModel(false, modelManagement, (b, v) -> {
-							if (b == binder) {
+							if (b == binder)
 								b.setFilters((List<String>) v.stream().map(o -> o.toString()).collect(Collectors.toList()));
-							}
 						}, false);
 					}, b -> binder.setFilters(lastFilters));
 				}
@@ -116,7 +108,7 @@ public class BindingProcessor extends BaseBindingProcessor {
 		});
 	}
 
-	private void proposeConfigForWorkspaceAwareBinder() throws YamlException {
+	private void proposeConfigForWorkspaceAwareBinder() {
 
 		modelManagement.accept(new BinderVisitor() {
 			public void visitChainedBinder(Binder binder) {
