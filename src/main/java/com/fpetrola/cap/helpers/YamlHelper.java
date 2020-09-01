@@ -32,13 +32,13 @@ public class YamlHelper {
 
     private static YamlConfig getYmlConfig() {
         YamlConfig yamlConfig = new YamlConfig();
-        addTag(yamlConfig, BasicORMMappingGenerator.class, "create-entities-orm-mapping");
-        addTag(yamlConfig, UppercaseORMMappingGenerator.class, "create-entities-orm-mapping-using-uppercase");
+        addTag(yamlConfig, BasicORMMappingGenerator.class, "create-entity-orm-mapping");
+        addTag(yamlConfig, UppercaseORMMappingGenerator.class, "create-entity-orm-mapping-using-uppercase");
         addTag(yamlConfig, ConnectionExtractorFromHibernateXML.class, "load-database-connection-from-hibernate-xml");
         addTag(yamlConfig, ConnectionExtractorFromPersistenceXML.class, "load-database-connection-from-persistence-xml");
         addTag(yamlConfig, DatabaseEntitiesExtractor.class, "extract-entities-from-database");
         addTag(yamlConfig, DTOGenerator.class, "create-dtos");
-        addTag(yamlConfig, JPAEntityMappingWriter.class,  "write-orm-mappings-to-java-class");
+        addTag(yamlConfig, JPAEntityMappingWriter.class,  "write-orm-mapping-to-java-class");
         addTag(yamlConfig, BinderList.class, "list");
         addTag(yamlConfig, ModelManagement.class, "developer-model");
         addTag(yamlConfig, DatabaseConnectionDiscoverer.class, "search-for-a-database");

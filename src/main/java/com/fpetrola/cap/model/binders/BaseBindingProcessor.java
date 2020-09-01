@@ -81,32 +81,18 @@ public abstract class BaseBindingProcessor {
 
 	protected void bindModel(boolean doLoop, Binder<?, ?> aModelManagement, TraverseListener traverseListener, boolean listenChanges) {
 		do {
-			SourceChangesListener lastSourceChangesListener;
-			lastSourceChangesListener = sourceChangesListener;
 			try {
 
-				if (!listenChanges)
-					sourceChangesListener = new DummySourceChangesListener();
+				modelManagement.setSourceChangesListener(!listenChanges ? new DummySourceChangesListener() : sourceChangesListener);
+				modelManagement.setTraverseListener(traverseListener);
 
-				aModelManagement.accept(new BinderVisitor() {
-					public void visitChainedBinder(Binder binder) {
-						binder.setSourceChangesListener(sourceChangesListener);
-						binder.setTraverserListener(traverseListener);
-					}
-				});
 				aModelManagement.solve(null);
 
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			} finally {
-				aModelManagement.accept(new BinderVisitor() {
-					public void visitChainedBinder(Binder binder) {
-						binder.setSourceChangesListener(null);
-						binder.setTraverserListener(null);
-					}
-				});
-
-				sourceChangesListener = lastSourceChangesListener;
+				modelManagement.setTraverseListener(null);
+				modelManagement.setSourceChangesListener(null);
 			}
 		} while (doLoop);
 	}

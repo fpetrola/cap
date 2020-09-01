@@ -10,6 +10,7 @@ import java.util.function.Function;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
 import com.fpetrola.cap.model.source.SourceChange;
+import com.fpetrola.cap.model.source.SourceChangesListener;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -25,6 +26,7 @@ public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder<S, T> {
 
 	public List<T> pull(S source) {
 		String findWorkspacePath = findWorkspacePath();
+		SourceChangesListener sourceChangesListener = getSourceChangesListener();
 		if (findWorkspacePath != null && sourceChangesListener != null) {
 
 			JavaSourceChangesHandler javaSourceChangesHandler = new JavaSourceChangesHandler(findWorkspacePath, getClassname(source));
@@ -34,14 +36,13 @@ public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder<S, T> {
 
 			if (javaSourceChangesHandler.fileExists()) {
 
-
 				javaSourceChangesHandler.addInsertionsFor(sourceChanges, modifiers);
 				javaSourceChangesHandler.addFixAllForNow(sourceChanges, modifiers, uri, null);
 				sourceChangesListener.sourceChange(uri, sourceChanges);
 			} else {
 				String content = createNewJavaClassContent(getClassname(source));
-				String addFixAllForNow = javaSourceChangesHandler.addFixAllForNow(sourceChanges, modifiers, uri, content);
-				sourceChangesListener.fileCreation(uri, addFixAllForNow);
+				content= javaSourceChangesHandler.addFixAllForNow(sourceChanges, modifiers, uri, content);
+				sourceChangesListener.fileCreation(uri, content);
 			}
 		}
 		return Arrays.asList();

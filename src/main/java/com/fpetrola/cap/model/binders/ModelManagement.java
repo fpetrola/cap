@@ -4,8 +4,13 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fpetrola.cap.model.source.SourceChangesListener;
+
 public class ModelManagement<S, T> extends DefaultBinder<Object, Object> implements Binder<Object, Object> {
 	public String model;
+	protected SourceChangesListener sourceChangesListener;
+
+	private TraverseListener traverseListener;
 
 	public ModelManagement() {
 	}
@@ -29,8 +34,24 @@ public class ModelManagement<S, T> extends DefaultBinder<Object, Object> impleme
 	public boolean isRootBinder() {
 		return false;
 	}
-	
+
 	public List<Object> pull(Object source) {
 		return Arrays.asList(BaseBindingProcessor.createVoid());
+	}
+
+	public TraverseListener getTraverseListener() {
+		return traverseListener;
+	}
+
+	public void setTraverseListener(TraverseListener traverseListener) {
+		this.traverseListener = traverseListener;
+	}
+
+	public SourceChangesListener getSourceChangesListener() {
+		return sourceChangesListener;
+	}
+
+	public void setSourceChangesListener(SourceChangesListener sourceChangesListener) {
+		this.sourceChangesListener = sourceChangesListener;
 	}
 }

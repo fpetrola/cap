@@ -62,12 +62,12 @@ public class DiagnosticGenerator {
 	public void createFileAtClient(String uri, String content, LanguageClient languageClient) {
 		TextEdit textEdit = new TextEdit(new Range(new Position(0, 0), new Position(0, 0)), content);
 		WorkspaceEdit edit = new WorkspaceEdit();
-		edit.setDocumentChanges(Arrays.asList(Either.forRight(new CreateFile(uri, new CreateFileOptions(true, true)))));
+		edit.setDocumentChanges(Arrays.asList(Either.forRight(new CreateFile(uri, new CreateFileOptions(false, true)))));
 		HashMap<String, List<TextEdit>> changes = new HashMap<>();
 		changes.put(uri, Arrays.asList(textEdit));
 		edit.setChanges(changes);
 	
-		languageClient.applyEdit(new ApplyWorkspaceEditParams(edit));
+//		languageClient.applyEdit(new ApplyWorkspaceEditParams(edit));
 	}
 
 	private CodeAction createCodeAction(VersionedTextDocumentIdentifier versionedTextDocumentIdentifier, SourceChange sourceChange, Diagnostic diagnostic) {

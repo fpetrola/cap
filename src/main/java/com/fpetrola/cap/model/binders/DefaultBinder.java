@@ -2,29 +2,34 @@ package com.fpetrola.cap.model.binders;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
 public class DefaultBinder<S, T> implements Binder<S, T> {
-	protected SourceChangesListener sourceChangesListener;
 	protected List<String> filters = new ArrayList<>();
 	public String workspacePath;
 	public List<Binder> chain = new ArrayList<>();
 	private Binder<T, ?> parentBinder;
-	private TraverseListener traverseListener;
 
 	public DefaultBinder() {
 	}
 
 	public SourceChangesListener getSourceChangesListener() {
-		return sourceChangesListener;
+		return parentBinder.getSourceChangesListener();
+	}
+
+	public TraverseListener getTraverseListener() {
+		return parentBinder.getTraverseListener();
+	}
+
+	public void setTraverserListener(TraverseListener traverseListener) {
+		parentBinder.setTraverserListener(traverseListener);
 	}
 
 	public void setSourceChangesListener(SourceChangesListener sourceChangesListener) {
-		this.sourceChangesListener = sourceChangesListener;
+		parentBinder.setSourceChangesListener(sourceChangesListener);
 	}
 
 	public List<String> getFilters() {
@@ -111,8 +116,8 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 
 	public List<T> solve(S input) {
 		List<T> pull = pull(input);
-		pull= pickResults(this, pull, getFilters());
-		traverseListener.valuesPulledFrom(this, pull);
+		pull = pickResults(this, pull, getFilters());
+		getTraverseListener().valuesPulledFrom(this, pull);
 
 		List<Object> result = new ArrayList<>();
 		List<Object> lastValue = (List<Object>) pull;
@@ -141,9 +146,5 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 			return lastValue;
 		else
 			return (List) lastValue.stream().filter(v -> ids.stream().anyMatch(f -> v.toString().contains(f))).collect(Collectors.toList());
-	}
-
-	public void setTraverserListener(TraverseListener traverseListener) {
-		this.traverseListener = traverseListener;
 	}
 }

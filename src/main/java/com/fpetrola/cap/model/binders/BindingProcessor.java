@@ -91,7 +91,8 @@ public class BindingProcessor extends BaseBindingProcessor {
 			sourceChanges.add(sourceChange);
 		}
 
-		sourceChangesListener.sourceChange(configURI, sourceChanges);
+		if (configURI != null)
+			sourceChangesListener.sourceChange(configURI, sourceChanges);
 	}
 
 	private void proposeFilters() throws YamlException {

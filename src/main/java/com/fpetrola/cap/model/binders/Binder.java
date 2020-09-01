@@ -56,4 +56,8 @@ public interface Binder<S, T> extends WorkspaceAwareBinder {
 	List<T> solve(S s);
 
 	void setTraverserListener(TraverseListener traverseListener);
+
+	SourceChangesListener getSourceChangesListener();
+
+	TraverseListener getTraverseListener();
 }
