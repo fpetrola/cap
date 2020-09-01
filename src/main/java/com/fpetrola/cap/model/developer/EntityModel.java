@@ -17,4 +17,8 @@ public class EntityModel implements DeveloperModel {
 		return "Entity[" + name + "]";
 	}
 
+	public List<Property> getProperties() {
+		return properties;
+	}
+
 }

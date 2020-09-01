@@ -33,9 +33,11 @@ public class JavaSourceChangesHandler {
 	private String uri;
 	private String workspacePath;
 	private JavaParser javaParser;
+	private String className;
 
 	public JavaSourceChangesHandler(String workspacePath, String className) {
 		this.workspacePath = workspacePath;
+		this.className = className;
 		this.javaParser = createJavaParser();
 		initWithClassName(className);
 	}
@@ -147,7 +149,7 @@ public class JavaSourceChangesHandler {
 	}
 
 	public File initWithClassName(String className) {
-		Path mavenModuleRoot = Path.of(getWorkspacePath());
+		Path mavenModuleRoot = new File(getWorkspacePath()).toPath();
 		SourceRoot sourceRoot = new SourceRoot(mavenModuleRoot.resolve(javaSourceFolderBase));
 		ParserConfiguration parserConfiguration = sourceRoot.getParserConfiguration();
 		parserConfiguration.setLexicalPreservationEnabled(true);
@@ -161,22 +163,33 @@ public class JavaSourceChangesHandler {
 	}
 
 	public void addInsertionsFor(List<SourceChange> sourceChanges, List<Function<CompilationUnit, SourceChange>> funcs) {
-		try {
-			for (Function<CompilationUnit, SourceChange> function : funcs) {
-				CompilationUnit compilationUnit = javaParser.parse(createFileFromUri()).getResult().get();
-				LexicalPreservingPrinter.setup(compilationUnit);
-				String originalSource = LexicalPreservingPrinter.print(compilationUnit);
+		for (Function<CompilationUnit, SourceChange> function : funcs) {
+			CompilationUnit compilationUnit = createCompilationUnit();
+			String originalSource = LexicalPreservingPrinter.print(compilationUnit);
 
-				SourceChange sourceChange = function.apply(compilationUnit);
-				if (sourceChange != null) {
-					List<SourceCodeModification> insertions = createModifications(originalSource, LexicalPreservingPrinter.print(compilationUnit));
-					sourceChange.insertions = insertions;
-					sourceChanges.add(sourceChange);
-				}
+			SourceChange sourceChange = function.apply(compilationUnit);
+			if (sourceChange != null) {
+				List<SourceCodeModification> insertions = createModifications(originalSource, LexicalPreservingPrinter.print(compilationUnit));
+				sourceChange.insertions = insertions;
+				sourceChanges.add(sourceChange);
 			}
+		}
+	}
+
+	public CompilationUnit createCompilationUnit() {
+		try {
+			CompilationUnit compilationUnit = javaParser.parse(createFileFromUri()).getResult().get();
+			LexicalPreservingPrinter.setup(compilationUnit);
+			return compilationUnit;
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public CompilationUnit createCompilationUnitFromSource(String source) {
+		CompilationUnit compilationUnit = javaParser.parse(source).getResult().get();
+		LexicalPreservingPrinter.setup(compilationUnit);
+		return compilationUnit;
 	}
 
 	private File createFileFromUri() {
@@ -207,6 +220,10 @@ public class JavaSourceChangesHandler {
 
 	public boolean fileExists() {
 		return createFileFromUri().exists();
+	}
+
+	public String getClassName() {
+		return className;
 	}
 
 }

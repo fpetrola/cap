@@ -17,7 +17,7 @@ public class UppercaseORMMappingGenerator extends DefaultBinder<EntityModel, ORM
 	public UppercaseORMMappingGenerator() {
 	}
 	public List<ORMEntityMapping> pull(EntityModel source) {
-		List<PropertyMapping> propertyMappings = source.properties.stream()
+		List<PropertyMapping> propertyMappings = source.getProperties().stream()
 				.map(property -> new PropertyMapping(property.name, property.name, property.typeName, PropertyMappingType.ManyToOne))
 				.collect(Collectors.toList());
 

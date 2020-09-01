@@ -1,5 +1,6 @@
 package com.fpetrola.cap.model.binders;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public interface Binder<S, T> extends WorkspaceAwareBinder {
 	Binder<T, ?> getParent();
 
 	default Type[] getTypes() {
-		Type[] actualTypeArguments = ((sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl) getClass().getGenericInterfaces()[0]).getActualTypeArguments();
+		Type[] actualTypeArguments = ((ParameterizedType) getClass().getGenericInterfaces()[0]).getActualTypeArguments();
 
 		if (getParent() != null && actualTypeArguments[1].equals(Object.class))
 			return getParent().getTypes();

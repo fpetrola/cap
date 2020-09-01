@@ -19,4 +19,8 @@ public class ORMEntityMapping {
 	public String toString() {
 		return "ORMEntityMapping [" + tableName + "]";
 	}
+
+	public Collection<PropertyMapping> getPropertyMappings() {
+		return propertyMappings;
+	}
 }

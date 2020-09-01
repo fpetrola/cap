@@ -1,6 +1,6 @@
 package com.fpetrola.cap.model.binders.implementations;
 
-import static com.fpetrola.cap.model.source.JavaClassBinder.addMethod;
+import static com.fpetrola.cap.model.source.JavaparserHelper.addMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class DtoMapperGenerator extends DefaultJavaClassBinder<ORMEntityMapping,
 			String convertBody = "{\n\tclassnameDTO dto = new classnameDTO();\n";
 			convertBody = convertBody.replaceAll("classname", className);
 
-			for (PropertyMapping p : source.propertyMappings) {
+			for (PropertyMapping p : source.getPropertyMappings()) {
 				convertBody += "\tdto.setpropertyName (model.getpropertyName());\n".replaceAll("propertyName", p.propertyName.toUpperCase().charAt(0) + p.propertyName.substring(1));
 			}
 
@@ -36,5 +36,11 @@ public class DtoMapperGenerator extends DefaultJavaClassBinder<ORMEntityMapping,
 
 	protected String getClassname(ORMEntityMapping source) {
 		return source.mappedClass + "Mapper";
+	}
+
+	@Override
+	public void computeChanges(ORMEntityMapping ormEntityMapping, JavaClassModel javaClassModel) {
+		// TODO Auto-generated method stub
+		
 	}
 }

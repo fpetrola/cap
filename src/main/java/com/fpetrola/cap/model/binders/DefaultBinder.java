@@ -107,9 +107,9 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 	}
 
 	public Type getOutputType() {
-		Binder outputBinder = this;
+		var outputBinder = this;
 		if (!chain.isEmpty())
-			outputBinder = (Binder) chain.get(chain.size() - 1);
+			outputBinder = (DefaultBinder<S, T>) chain.get(chain.size() - 1);
 
 		return outputBinder.getTypes()[1];
 	}
@@ -119,14 +119,13 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 		pull = pickResults(this, pull, getFilters());
 		getTraverseListener().valuesPulledFrom(this, pull);
 
-		List<Object> result = new ArrayList<>();
-		List<Object> lastValue = (List<Object>) pull;
-		List<Object> lastResult = (List<Object>) pull;
+		var result = new ArrayList<>();
+		var lastValue = (List<?>) pull;
+		var lastResult = (List<?>) pull;
 
-		for (Binder<Object, Object> chainElement : chain) {
-
-			for (Object inputItem : lastValue) {
-				List<Object> solve = chainElement.solve(inputItem);
+		for (var chainElement : chain) {
+			for (var inputItem : lastValue) {
+				var solve = chainElement.solve(inputItem);
 				result.addAll(solve);
 			}
 

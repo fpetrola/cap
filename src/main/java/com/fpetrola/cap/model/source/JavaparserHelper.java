@@ -2,8 +2,12 @@ package com.fpetrola.cap.model.source;
 
 import static com.github.javaparser.ast.Modifier.createModifierList;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import com.fpetrola.cap.model.binders.implementations.JavaField;
+import com.fpetrola.cap.model.binders.implementations.SourceCodeChanger;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -25,34 +29,33 @@ import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.ast.visitor.Visitable;
 
-public class JavaClassBinder {
+public class JavaparserHelper {
 
 	public static NormalAnnotationExpr createAnnotation(String identifier, MemberValuePair... memberValuePair) {
 		return new NormalAnnotationExpr(new Name(identifier), NodeList.nodeList(memberValuePair));
 	}
 
-	public static SourceChange[] addAnnotationToClass(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String message, String name, String uri) {
+	public static SourceChange addAnnotationToClass(SourceCodeChanger sourceCodeChanger, NormalAnnotationExpr normalAnnotationExpr, final String message, String name) {
 		SourceChange[] sourceChange = new SourceChange[1];
-		cu.accept(new ModifierVisitor<Void>() {
+		sourceCodeChanger.getCompilationUnitProvider().get().accept(new ModifierVisitor<Void>() {
 			public Visitable visit(ClassOrInterfaceDeclaration classDeclaration, Void arg) {
-				sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, classDeclaration, classDeclaration.findAll(SimpleName.class).get(0), uri);
+				sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, classDeclaration, classDeclaration.findAll(SimpleName.class).get(0), sourceCodeChanger.getUri());
 				return super.visit(classDeclaration, arg);
 			}
 		}, null);
-		return sourceChange;
+		return sourceChange[0];
 	}
 
-	public static SourceChange addAnnotationToField(CompilationUnit cu, NormalAnnotationExpr normalAnnotationExpr, final String propertyName, String uri) {
-		boolean found = fieldExists(cu, propertyName);
+	public static SourceChange addAnnotationToField(SourceCodeChanger sourceCodeChanger, NormalAnnotationExpr normalAnnotationExpr, final String propertyName, String message) {
+		boolean found = fieldExists(sourceCodeChanger.getCompilationUnitProvider().get(), propertyName);
 
 		SourceChange[] sourceChange = new SourceChange[1];
 		if (found) {
-			cu.accept(new ModifierVisitor<Void>() {
+			sourceCodeChanger.getCompilationUnitProvider().get().accept(new ModifierVisitor<Void>() {
 				public Visitable visit(FieldDeclaration fieldDeclaration, Void arg) {
 					SimpleName fieldName = fieldDeclaration.getVariable(0).getName();
 					if (fieldName.toString().equals(propertyName)) {
-						String message = "add annotation " + normalAnnotationExpr.getNameAsString() + " to property: " + propertyName;
-						sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, fieldDeclaration, fieldDeclaration, uri);
+						sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, fieldDeclaration, fieldDeclaration, sourceCodeChanger.getUri());
 					}
 
 					return super.visit(fieldDeclaration, arg);
@@ -177,6 +180,22 @@ public class JavaClassBinder {
 		String simpleName = className.substring(0, className.lastIndexOf("."));
 		String content = "package " + simpleName + ";\n\nimport java.util.List;\n" + "\n\n" + "public class " + className.substring(simpleName.length() + 1) + " {\n\n}";
 		return content;
+	}
+
+	public static List<JavaField> getFields(SourceCodeChanger sourceCodeChanger) {
+		List<JavaField> result = new ArrayList<JavaField>();
+
+		sourceCodeChanger.getCompilationUnitProvider().get().accept(new ModifierVisitor<Void>() {
+			public Visitable visit(FieldDeclaration fieldDeclaration, Void arg) {
+
+				VariableDeclarator variable = fieldDeclaration.getVariable(0);
+				result.add(new JavaField(variable.getName().asString(), variable.getType().toString(), sourceCodeChanger, false));
+
+				return super.visit(fieldDeclaration, arg);
+			}
+		}, null);
+
+		return result;
 	}
 
 }
