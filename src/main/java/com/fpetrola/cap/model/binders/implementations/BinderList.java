@@ -33,16 +33,4 @@ public class BinderList extends DefaultBinder<Object, Object> implements Bidirec
 	public boolean canReceiveFrom(Binder binder) {
 		return getParent() != null ? getParent().canReceiveFrom(binder) : true;
 	}
-
-//	public List<Object> solve(Object input) {
-//		List<Object> pull= new ArrayList<Object>(Arrays.asList(input));
-////		if (!chain.isEmpty()) {
-////			pull = pull(input);
-////			List<Binder> chainElementsToCall = new ArrayList<>(chain);
-////			chainElementsToCall.remove(0);
-//
-//			solveInternal(pull, chain);
-////		}
-//		return Arrays.asList();
-//	}
 }

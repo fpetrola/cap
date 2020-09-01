@@ -2,7 +2,9 @@ package com.fpetrola.cap.model.binders;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
@@ -119,6 +121,7 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 
 			for (Object inputItem : lastValue) {
 				List<Object> solve = chainElement.solve(inputItem);
+				solve = pickResults(chainElement, solve, chainElement.getFilters());
 				result.addAll(solve);
 			}
 
@@ -131,6 +134,13 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 		}
 
 		return (List<T>) lastResult;
+	}
+
+	private List pickResults(Binder<?, ?> binder, List lastValue, List<String> ids) {
+		if (ids.isEmpty())
+			return lastValue;
+		else
+			return (List) lastValue.stream().filter(v -> ids.stream().anyMatch(f -> v.toString().contains(f))).collect(Collectors.toList());
 	}
 
 	public void setTraverserListener(TraverseListener traverseListener) {

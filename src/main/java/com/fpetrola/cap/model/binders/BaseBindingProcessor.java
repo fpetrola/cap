@@ -106,27 +106,8 @@ public abstract class BaseBindingProcessor {
 				}
 			});
 
-			// traverse(aModelManagement, new ArrayList<>(Arrays.asList("")),
-			// aModelManagement.getChain(), 0, new ArrayList<String>(), traverseListener);
-
 			sourceChangesListener = lastSourceChangesListener;
 		} while (doLoop);
-	}
-
-	private List pickResults(Binder<?, ?> aModelManagement, List lastValue, List<String> ids) {
-		if (lastValue != null) {
-			List models = new ArrayList();
-
-			for (String id : ids)
-				for (Object object : lastValue)
-					if (object.toString().contains(id)) {
-						models.add(object);
-						break;
-					}
-
-			return models.isEmpty() ? new ArrayList(lastValue) : models;
-		} else
-			return Arrays.asList();
 	}
 
 	public void setConfigUri(String uri) {
