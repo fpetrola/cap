@@ -111,6 +111,7 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 
 	public List<T> solve(S input) {
 		List<T> pull = pull(input);
+		pull= pickResults(this, pull, getFilters());
 		traverseListener.valuesPulledFrom(this, pull);
 
 		List<Object> result = new ArrayList<>();
@@ -121,7 +122,6 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 
 			for (Object inputItem : lastValue) {
 				List<Object> solve = chainElement.solve(inputItem);
-				solve = pickResults(chainElement, solve, chainElement.getFilters());
 				result.addAll(solve);
 			}
 

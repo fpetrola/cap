@@ -95,18 +95,19 @@ public abstract class BaseBindingProcessor {
 					}
 				});
 				aModelManagement.solve(null);
+
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
+			} finally {
+				aModelManagement.accept(new BinderVisitor() {
+					public void visitChainedBinder(Binder binder) {
+						binder.setSourceChangesListener(null);
+						binder.setTraverserListener(null);
+					}
+				});
+
+				sourceChangesListener = lastSourceChangesListener;
 			}
-
-			aModelManagement.accept(new BinderVisitor() {
-				public void visitChainedBinder(Binder binder) {
-					binder.setSourceChangesListener(null);
-					binder.setTraverserListener(null);
-				}
-			});
-
-			sourceChangesListener = lastSourceChangesListener;
 		} while (doLoop);
 	}
 
