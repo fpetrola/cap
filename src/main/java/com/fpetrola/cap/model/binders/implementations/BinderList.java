@@ -33,9 +33,4 @@ public class BinderList extends DefaultBinder<Object, Object> implements Bidirec
 	public boolean canReceiveFrom(Binder binder) {
 		return getParent() != null ? getParent().canReceiveFrom(binder) : true;
 	}
-	
-	public List<String> getFilters() {
-		return super.getFilters();
-//		return getParent() != null ? getParent().getFilters() : Arrays.asList();
-	}
 }

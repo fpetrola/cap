@@ -32,22 +32,25 @@ public class YamlHelper {
 
     private static YamlConfig getYmlConfig() {
         YamlConfig yamlConfig = new YamlConfig();
-        addTag(yamlConfig, BasicORMMappingGenerator.class);
-        addTag(yamlConfig, UppercaseORMMappingGenerator.class);
-        addTag(yamlConfig, ConnectionExtractorFromHibernateXML.class);
-        addTag(yamlConfig, ConnectionExtractorFromPersistenceXML.class);
-        addTag(yamlConfig, DatabaseEntitiesExtractor.class);
-        addTag(yamlConfig, DTOGenerator.class);
-        addTag(yamlConfig, JPAEntityMappingWriter.class);
-        addTag(yamlConfig, BinderList.class);
-        addTag(yamlConfig, ModelManagement.class);
-        addTag(yamlConfig, DatabaseConnectionDiscoverer.class);
-        addTag(yamlConfig, RepositoryGenerator.class);
-        addTag(yamlConfig, DtoMapperGenerator.class);
+        addTag(yamlConfig, BasicORMMappingGenerator.class, "create-entities-orm-mapping");
+        addTag(yamlConfig, UppercaseORMMappingGenerator.class, "create-entities-orm-mapping-using-uppercase");
+        addTag(yamlConfig, ConnectionExtractorFromHibernateXML.class, "load-database-connection-from-hibernate-xml");
+        addTag(yamlConfig, ConnectionExtractorFromPersistenceXML.class, "load-database-connection-from-persistence-xml");
+        addTag(yamlConfig, DatabaseEntitiesExtractor.class, "extract-entities-from-database");
+        addTag(yamlConfig, DTOGenerator.class, "create-dtos");
+        addTag(yamlConfig, JPAEntityMappingWriter.class,  "write-orm-mappings-to-java-class");
+        addTag(yamlConfig, BinderList.class, "list");
+        addTag(yamlConfig, ModelManagement.class, "developer-model");
+        addTag(yamlConfig, DatabaseConnectionDiscoverer.class, "search-for-a-database");
+        addTag(yamlConfig, RepositoryGenerator.class, "create-repository-for-entity");
+        addTag(yamlConfig, DtoMapperGenerator.class, "create-dto-mapper-for-entity");
         return yamlConfig;
     }
 
     private static void addTag(YamlConfig yamlConfig, Class<?> class1) {
         yamlConfig.setClassTag(class1.getSimpleName(), class1);
+    }
+    private static void addTag(YamlConfig yamlConfig, Class<?> class1, String tag) {
+        yamlConfig.setClassTag(tag, class1);
     }
 }
