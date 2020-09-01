@@ -1,5 +1,6 @@
 package com.fpetrola.cap.model.binders;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +10,9 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 	protected SourceChangesListener sourceChangesListener;
 	protected List<String> filters = new ArrayList<>();
 	public String workspacePath;
-	public List<Binder<?, ?>> chain = new ArrayList<>();
+	public List<Binder> chain = new ArrayList<>();
 	private Binder<T, ?> parentBinder;
+	private TraverseListener traverseListener;
 
 	public DefaultBinder() {
 	}
@@ -39,11 +41,11 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 		this.workspacePath = workspacePath;
 	}
 
-	public void setChain(List<Binder<?, ?>> binders) {
+	public void setChain(List<Binder> binders) {
 		this.chain = binders;
 	}
 
-	public List<Binder<?, ?>> getChain() {
+	public List<Binder> getChain() {
 		return chain;
 	}
 
@@ -80,5 +82,58 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 			return parentBinder.findWorkspacePath();
 		} else
 			return null;
+	}
+
+	public boolean allowsRootBinder() {
+		return false;
+	}
+
+	public boolean canReceiveFrom(Binder binder) {
+		if (isRootBinder())
+			return binder.allowsRootBinder();
+		else
+			return getTypes()[0].equals(binder.getOutputType());
+	}
+
+	public boolean isRootBinder() {
+		return getTypes()[0].equals(Void.class);
+	}
+
+	public Type getOutputType() {
+		Binder outputBinder = this;
+		if (!chain.isEmpty())
+			outputBinder = (Binder) chain.get(chain.size() - 1);
+
+		return outputBinder.getTypes()[1];
+	}
+
+	public List<T> solve(S input) {
+		List<T> pull = pull(input);
+		traverseListener.valuesPulledFrom(this, pull);
+
+		List<Object> result = new ArrayList<>();
+		List<Object> lastValue = (List<Object>) pull;
+		List<Object> lastResult = (List<Object>) pull;
+
+		for (Binder<Object, Object> chainElement : chain) {
+
+			for (Object inputItem : lastValue) {
+				List<Object> solve = chainElement.solve(inputItem);
+				result.addAll(solve);
+			}
+
+			lastResult = result;
+			if (result.isEmpty())
+				result = new ArrayList<>(pull);
+
+			lastValue = new ArrayList<>(result);
+			result.clear();
+		}
+
+		return (List<T>) lastResult;
+	}
+
+	public void setTraverserListener(TraverseListener traverseListener) {
+		this.traverseListener = traverseListener;
 	}
 }

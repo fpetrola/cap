@@ -1,7 +1,7 @@
 package com.fpetrola.cap.model.binders;
 
 import java.io.File;
-import java.lang.reflect.Type;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +19,8 @@ import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class BindingApp extends BaseBinderProcessor {
-	public BindingApp(SourceChangesListener sourceChangesListener) {
+public class BindingProcessor extends BaseBindingProcessor {
+	public BindingProcessor(SourceChangesListener sourceChangesListener) {
 		this.sourceChangesListener = sourceChangesListener;
 	}
 
@@ -29,14 +29,13 @@ public class BindingApp extends BaseBinderProcessor {
 			sourceChanges.clear();
 
 		try {
-			modelManagement = YamlHelper.deserializeModelFromURI(configURI, ModelManagement.class);
-			setParents(modelManagement);
 
-			proposeNewBinders(modelManagement);
-			proposeFilters(modelManagement);
-			proposeConfigForWorkspaceAwareBinder(modelManagement);
+			deserializeModel();
+			proposeNewBinders();
+			proposeFilters();
+			proposeConfigForWorkspaceAwareBinder();
 
-			runPath(false, modelManagement, (b, v) -> {
+			bindModel(false, modelManagement, (b, v) -> {
 			}, true);
 
 			sourceChangesListener.sourceChange(configURI, sourceChanges);
@@ -46,6 +45,11 @@ public class BindingApp extends BaseBinderProcessor {
 		}
 	}
 
+	private void deserializeModel() throws FileNotFoundException, YamlException {
+		modelManagement = YamlHelper.deserializeModelFromURI(configURI, ModelManagement.class);
+		setParents(modelManagement);
+	}
+
 	private void setParents(Binder<?, ?> binder) {
 		for (Binder child : binder.getChain()) {
 			child.setParent(binder);
@@ -53,41 +57,28 @@ public class BindingApp extends BaseBinderProcessor {
 		}
 	}
 
-	private void proposeNewBinders(Binder<?, ?> aModelManagement) throws YamlException {
+	private void proposeNewBinders() throws YamlException {
 		BindersDiscoveryService bindersDiscoveryService = new BindersDiscoveryService();
 
 		modelManagement.accept(new BinderVisitor() {
 			@Override
 			public void visitChainedBinder(Binder binder) {
-				List<Binder> availableBinders = bindersDiscoveryService.findBinders();
-				for (Binder availableBinder : availableBinders) {
-					Type[] availableBinderTypes2 = getBinderTypes(availableBinder);
-					boolean sourceBinderPresent = false;
-					if (!binder.getChain().isEmpty()) {
-						Binder lastBinder = (Binder) binder.getChain().get(binder.getChain().size() - 1);
-						sourceBinderPresent = getBinderTypes(lastBinder)[1].equals(availableBinderTypes2[0]);
-					}
+				List<Binder> newBinders = bindersDiscoveryService.findBinders();
 
-					boolean noInputBinder = availableBinderTypes2[0].equals(Object.class) && !availableBinder.pull("").isEmpty();
-					boolean parentLinkedBinder = false;
-
-					Binder parent = binder.getParent();
-					if (parent != null) {
-						Type[] parentBinderTypes = getBinderTypes(parent);
-						parentLinkedBinder = availableBinderTypes2[0].equals(parentBinderTypes[1]);
-					}
-					
-					if (noInputBinder || sourceBinderPresent || parentLinkedBinder) {
-						List<Binder<?, ?>> chain = binder.getChain();
-						addChangeProposalToBinder(binder, "Add binder: " + availableBinder.getClass().getSimpleName(), (aBinder) -> {
+				newBinders.stream().forEach(newBinder -> {
+					if (newBinder.canReceiveFrom(binder)) {
+						List<Binder> chain = binder.getChain();
+						addChangeProposalToBinder(binder, "Add binder: " + newBinder.getClass().getSimpleName(), (aBinder) -> {
 							aBinder.setChain(new ArrayList<>(chain));
-							aBinder.addBinder(availableBinder);
+							aBinder.addBinder(newBinder);
 						}, (bidirectionalBinder) -> bidirectionalBinder.setChain(chain));
 					} else {
 					}
-				}
+				});
 			}
+
 		});
+
 	}
 
 	private void proposeCreation() {
@@ -103,7 +94,7 @@ public class BindingApp extends BaseBinderProcessor {
 		sourceChangesListener.sourceChange(configURI, sourceChanges);
 	}
 
-	private void proposeFilters(Binder<?, ?> aModelManagement) throws YamlException {
+	private void proposeFilters() throws YamlException {
 		modelManagement.accept(new BinderVisitor() {
 			public void visitChainedBinder(Binder binder) {
 				if (binder instanceof DatabaseEntitiesExtractor) {
@@ -113,22 +104,22 @@ public class BindingApp extends BaseBinderProcessor {
 
 					List<String> lastFilters = binder.getFilters();
 					addChangeProposalToBinder(binder, message, (bidirectionalBinder) -> {
-						runPath(false, modelManagement, (b, v) -> {
+						bindModel(false, modelManagement, (b, v) -> {
 							if (b == binder) {
 								b.setFilters((List<String>) v.stream().map(o -> o.toString()).collect(Collectors.toList()));
 							}
 						}, false);
-					}, (bidirectionalBinder) -> binder.setFilters(lastFilters));
+					}, b -> binder.setFilters(lastFilters));
 				}
 			}
 		});
 	}
 
-	private void proposeConfigForWorkspaceAwareBinder(Binder<?, ?> aModelManagement) throws YamlException {
+	private void proposeConfigForWorkspaceAwareBinder() throws YamlException {
 
 		modelManagement.accept(new BinderVisitor() {
 			public void visitChainedBinder(Binder binder) {
-				if (binder instanceof WorkspaceAwareBinder) {
+				if (binder == modelManagement) {
 					WorkspaceAwareBinder workspaceAwareBinder = (WorkspaceAwareBinder) binder;
 
 					if (workspaceAwareBinder.findWorkspacePath() == null) {

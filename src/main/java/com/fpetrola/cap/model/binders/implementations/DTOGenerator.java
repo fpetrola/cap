@@ -14,7 +14,7 @@ import com.fpetrola.cap.model.developer.Property;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.github.javaparser.ast.CompilationUnit;
 
-public class DTOGenerator extends DefaultJavaClassBinder<EntityModel, Object> implements BidirectionalBinder<EntityModel, Object>, WorkspaceAwareBinder {
+public class DTOGenerator extends DefaultJavaClassBinder<EntityModel, Void> implements BidirectionalBinder<EntityModel, Void>, WorkspaceAwareBinder {
 
 	protected List<Function<CompilationUnit, SourceChange>> getModifiers(EntityModel source, String uri) {
 		List<Function<CompilationUnit, SourceChange>> modifiers = new ArrayList<>();

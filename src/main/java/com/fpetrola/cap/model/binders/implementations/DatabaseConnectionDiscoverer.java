@@ -11,17 +11,16 @@ import com.fpetrola.cap.model.binders.BidirectionalBinder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 
-public class DatabaseConnectionDiscoverer extends DefaultBinder<Object, DatabaseConnection> implements BidirectionalBinder<Object, DatabaseConnection> {
+public class DatabaseConnectionDiscoverer extends DefaultBinder<Void, DatabaseConnection> implements BidirectionalBinder<Void, DatabaseConnection> {
 
 	public String name;
 	private DatabaseConnection dbConnection;
-	private List<DatabaseConnection> result;
+	static private List<DatabaseConnection> result = new ArrayList<DatabaseConnection>();
 
 	public DatabaseConnectionDiscoverer() {
 	}
 
-	public List<DatabaseConnection> pull(Object source) {
-		result = new ArrayList<DatabaseConnection>();
+	public List<DatabaseConnection> pull(Void source) {
 		if (result.isEmpty()) {
 			try {
 				String driver = "com.mysql.jdbc.Driver";

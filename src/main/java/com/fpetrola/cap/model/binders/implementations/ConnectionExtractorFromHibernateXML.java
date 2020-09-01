@@ -28,13 +28,13 @@ import com.fpetrola.cap.model.developer.DatabaseConnection;
 public class ConnectionExtractorFromHibernateXML extends DefaultBinder<Void, DatabaseConnection> implements BidirectionalBinder<Void, DatabaseConnection> {
 
 	public String name;
-	private List<DatabaseConnection> result;
+	
+	static private List<DatabaseConnection> result= new ArrayList<DatabaseConnection>();
 
 	public ConnectionExtractorFromHibernateXML() {
 	}
 
 	public List<DatabaseConnection> pull(Void source) {
-		result = new ArrayList<DatabaseConnection>();
 		if (result.isEmpty())
 			try {
 

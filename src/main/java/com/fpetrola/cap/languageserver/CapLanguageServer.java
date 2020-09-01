@@ -26,8 +26,8 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
-import com.fpetrola.cap.model.binders.BaseBinderProcessor;
-import com.fpetrola.cap.model.binders.BindingApp;
+import com.fpetrola.cap.model.binders.BaseBindingProcessor;
+import com.fpetrola.cap.model.binders.BindingProcessor;
 
 public class CapLanguageServer implements LanguageServer {
 
@@ -35,7 +35,7 @@ public class CapLanguageServer implements LanguageServer {
 	private WorkspaceService workspaceService;
 	LanguageClient client;
 	private FileWriter fileWriter;
-	public BaseBinderProcessor bindingApp;
+	public BaseBindingProcessor bindingApp;
 	private SourceChangesListenerImpl sourceChangesListener;
 	public DiagnosticGenerator diagnosticGenerator = new DiagnosticGenerator();
 
@@ -67,7 +67,7 @@ public class CapLanguageServer implements LanguageServer {
 			}
 		};
 
-		bindingApp = new BindingApp(getSourceChangesListener());
+		bindingApp = new BindingProcessor(getSourceChangesListener());
 
 	}
 

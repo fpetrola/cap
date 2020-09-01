@@ -1,9 +1,12 @@
 package com.fpetrola.cap.model.binders.implementations;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 
 public class BinderList extends DefaultBinder<Object, Object> implements BidirectionalBinder<Object, Object> {
@@ -12,8 +15,34 @@ public class BinderList extends DefaultBinder<Object, Object> implements Bidirec
 		return "binders list";
 	}
 
-	@Override
 	public List<Object> pull(Object source) {
-		return Arrays.asList(source);
+		return new ArrayList<Object>(Arrays.asList(source));
 	}
+
+	public Type[] getTypes() {
+		if (getParent() == null)
+			return new Type[] { Object.class, Object.class };
+		else
+			return getParent().getTypes();
+	}
+
+	public boolean allowsRootBinder() {
+		return getParent() != null ? getParent().allowsRootBinder() : false;
+	}
+
+	public boolean canReceiveFrom(Binder binder) {
+		return getParent() != null ? getParent().canReceiveFrom(binder) : true;
+	}
+
+//	public List<Object> solve(Object input) {
+//		List<Object> pull= new ArrayList<Object>(Arrays.asList(input));
+////		if (!chain.isEmpty()) {
+////			pull = pull(input);
+////			List<Binder> chainElementsToCall = new ArrayList<>(chain);
+////			chainElementsToCall.remove(0);
+//
+//			solveInternal(pull, chain);
+////		}
+//		return Arrays.asList();
+//	}
 }

@@ -22,19 +22,17 @@ import com.fpetrola.cap.model.developer.DatabaseConnection;
 public class ConnectionExtractorFromPersistenceXML extends DefaultBinder<Void, DatabaseConnection> implements BidirectionalBinder<Void, DatabaseConnection> {
 
 	public String name;
-	private List<DatabaseConnection> result;
+	static private List<DatabaseConnection> result = new ArrayList<DatabaseConnection>();
 
 	public ConnectionExtractorFromPersistenceXML() {
 	}
 
 	public List<DatabaseConnection> pull(Void source) {
-		result = new ArrayList<DatabaseConnection>();
 		if (result.isEmpty())
 			try {
 
 				File dir = new File("/home/fernando/git/cap-tests");
 				Optional<Path> findFirst = Files.walk(Paths.get(dir.getPath())).filter(f -> f.getFileName().toString().contains("persistence.xml")).findFirst();
-				System.out.println(findFirst);
 
 				findFirst.ifPresent(p -> {
 

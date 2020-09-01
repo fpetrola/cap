@@ -25,8 +25,8 @@ import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 
-import com.fpetrola.cap.model.binders.BaseBinderProcessor;
-import com.fpetrola.cap.model.binders.BindingApp;
+import com.fpetrola.cap.model.binders.BaseBindingProcessor;
+import com.fpetrola.cap.model.binders.BindingProcessor;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceCodeModification;
 
@@ -37,7 +37,7 @@ public class DiagnosticGenerator {
 	public DiagnosticGenerator() {
 	}
 
-	public List<PublishDiagnosticsParams> getDiagnostics(Map<String, List<SourceChange>> changesMap, BaseBinderProcessor bindingApp) {
+	public List<PublishDiagnosticsParams> getDiagnostics(Map<String, List<SourceChange>> changesMap, BaseBindingProcessor bindingApp) {
 		List<PublishDiagnosticsParams> diagnostics = new ArrayList<>();
 		changesMap.clear();
 		codeActions.clear();
