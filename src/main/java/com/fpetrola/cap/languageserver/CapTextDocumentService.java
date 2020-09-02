@@ -100,15 +100,15 @@ public class CapTextDocumentService implements TextDocumentService {
 	}
 
 	public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
-		Map<String, List<CodeAction>> list = languageServer.diagnosticGenerator.getCodeActions();
+		var list = languageServer.diagnosticGenerator.getCodeActions();
 
-		List<Either<Command, CodeAction>> result = new ArrayList<>();
+		List<Either<Command, CodeAction>> result = new ArrayList<Either<Command, CodeAction>>();
 
-		List<CodeAction> value = list.get(params.getTextDocument().getUri());
+		var value = list.get(params.getTextDocument().getUri());
 		if (value != null) {
-			List<Either<Command, CodeAction>> collect = value.stream().map((codeAction) -> {
-				Diagnostic diagnostic = codeAction.getDiagnostics().get(0);
-				Diagnostic obj = params.getContext().getDiagnostics().get(0);
+			var collect = value.stream().map((codeAction) -> {
+				var diagnostic = codeAction.getDiagnostics().get(0);
+				var obj = params.getContext().getDiagnostics().get(0);
 				if (diagnostic.getRange().equals(obj.getRange())) {
 					codeAction.setDiagnostics(params.getContext().getDiagnostics());
 					Either<Command, CodeAction> forRight = Either.forRight(codeAction);
@@ -116,20 +116,11 @@ public class CapTextDocumentService implements TextDocumentService {
 				} else
 					return null;
 			}).filter(e -> e != null).collect(Collectors.toList());
-			result.addAll(collect);
 
-			// List<Either<Command, CodeAction>> collect = Stream.of(1, 2, 3).map((i) -> {
-//			CodeAction codeAction = new CodeAction("hola" + i);
-//			codeAction.setCommand(new Command("command1", "view1"));
-//			Either<Command, CodeAction> forRight = Either.forRight(codeAction);
-//			return forRight;
-//
-//		}).collect(Collectors.toList());
+			result.addAll(collect);
 		}
 
-		CompletableFuture<List<Either<Command, CodeAction>>> supplyAsync = CompletableFuture.completedFuture(result);
-
-		return supplyAsync;
+		return CompletableFuture.completedFuture(result);
 	}
 
 	public CompletableFuture<List<? extends CodeLens>> codeLens(CodeLensParams params) {
