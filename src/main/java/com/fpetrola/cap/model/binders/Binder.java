@@ -4,10 +4,18 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
+import com.fpetrola.cap.model.binders.sync.ChangesLinker;
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
-public interface Binder<S, T> extends WorkspaceAwareBinder {
+public interface Binder<S, T> {
+
+	String getWorkspacePath();
+
+	void setWorkspacePath(String workspacePath);
+
+	String findWorkspacePath();
 
 	void setSourceChangesListener(SourceChangesListener sourceChangesListener);
 
@@ -61,4 +69,31 @@ public interface Binder<S, T> extends WorkspaceAwareBinder {
 	SourceChangesListener getSourceChangesListener();
 
 	TraverseListener getTraverseListener();
+
+	ChangesLinker getChangesLinker();
+
+	default List<Supplier> getSuppliers(Supplier<S> valueSupplier) {
+		List<T> pull = pull(valueSupplier.get());
+
+		List<Supplier> suppliers = new ArrayList<>();
+
+		for (int i = 0; i < pull.size(); i++) {
+			final int index = i;
+			Supplier<Object> supplier = new Supplier<Object>() {
+
+				public Object get() {
+					List object = pull(valueSupplier.get());
+					return object.get(index);
+				}
+
+				public String toString() {
+					return get().toString();
+				}
+			};
+
+			suppliers.add(supplier);
+		}
+		return suppliers;
+	}
+
 }

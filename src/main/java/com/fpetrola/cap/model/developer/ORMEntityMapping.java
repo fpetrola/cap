@@ -23,4 +23,9 @@ public class ORMEntityMapping {
 	public Collection<PropertyMapping> getPropertyMappings() {
 		return propertyMappings;
 	}
+
+	public PropertyMapping createPropertyMapping(PropertyMapping propertyMapping) {
+		entityModel.createProperty(new Property(propertyMapping.getColumnName(), propertyMapping.getTypeName()), propertyMapping);
+		return propertyMapping;
+	}
 }

@@ -21,11 +21,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 
-public class ConnectionExtractorFromHibernateXML extends DefaultBinder<Void, DatabaseConnection> implements BidirectionalBinder<Void, DatabaseConnection> {
+public class ConnectionExtractorFromHibernateXML extends DefaultBinder<Void, DatabaseConnection> implements Binder<Void, DatabaseConnection> {
 
 	public String name;
 	

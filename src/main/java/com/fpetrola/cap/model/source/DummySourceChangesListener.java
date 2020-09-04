@@ -6,6 +6,10 @@ public class DummySourceChangesListener implements SourceChangesListener {
 	public void fileCreation(String resourceUri, String content) {
 	}
 
-	public void sourceChange(String resourceUri, List<SourceChange> changes) {
+	public void sourceChange(String resourceUri, List<CodeProposal> changes) {
+	}
+
+	public String getFileContent(String uri) {
+		return "";
 	}
 }

@@ -5,11 +5,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 
-public class DatabaseConnectionDiscoverer extends DefaultBinder<Void, DatabaseConnection> implements BidirectionalBinder<Void, DatabaseConnection> {
+public class DatabaseConnectionDiscoverer extends DefaultBinder<Void, DatabaseConnection> implements Binder<Void, DatabaseConnection> {
 
 	public String name;
 	private DatabaseConnection dbConnection;

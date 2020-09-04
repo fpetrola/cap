@@ -4,14 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.EntityModel;
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
 import com.fpetrola.cap.model.developer.PropertyMapping;
 import com.fpetrola.cap.model.developer.PropertyMappingType;
 
-public class BasicORMMappingGenerator extends DefaultBinder<EntityModel, ORMEntityMapping> implements BidirectionalBinder<EntityModel, ORMEntityMapping> {
+public class BasicORMMappingGenerator extends DefaultBinder<EntityModel, ORMEntityMapping> implements Binder<EntityModel, ORMEntityMapping> {
 
 	public List<ORMEntityMapping> pull(EntityModel source) {
 

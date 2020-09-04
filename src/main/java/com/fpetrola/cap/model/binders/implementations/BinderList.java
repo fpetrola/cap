@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 
-public class BinderList extends DefaultBinder<Object, Object> implements BidirectionalBinder<Object, Object> {
+public class BinderList extends DefaultBinder<Object, Object> implements Binder<Object, Object> {
 
 	public String getParametersProposalMessage() {
 		return "binders list";

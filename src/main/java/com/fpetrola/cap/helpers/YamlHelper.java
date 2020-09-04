@@ -4,7 +4,7 @@ import com.esotericsoftware.yamlbeans.YamlConfig;
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
-import com.fpetrola.cap.model.binders.ModelManagement;
+import com.fpetrola.cap.model.binders.ModelBinder;
 import com.fpetrola.cap.model.binders.implementations.*;
 
 import java.io.*;
@@ -40,7 +40,7 @@ public class YamlHelper {
         addTag(yamlConfig, DTOGenerator.class, "create-dtos");
         addTag(yamlConfig, JPAEntityMappingWriter.class,  "write-orm-mapping-to-java-class");
         addTag(yamlConfig, BinderList.class, "list");
-        addTag(yamlConfig, ModelManagement.class, "developer-model");
+        addTag(yamlConfig, ModelBinder.class, "developer-model");
         addTag(yamlConfig, DatabaseConnectionDiscoverer.class, "search-for-a-database");
         addTag(yamlConfig, RepositoryGenerator.class, "create-repository-for-entity");
         addTag(yamlConfig, DtoMapperGenerator.class, "create-dto-mapper-for-entity");

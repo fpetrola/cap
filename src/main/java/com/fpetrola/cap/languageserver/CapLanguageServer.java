@@ -26,8 +26,8 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
-import com.fpetrola.cap.model.binders.BaseBindingProcessor;
-import com.fpetrola.cap.model.binders.BindingProcessor;
+import com.fpetrola.cap.model.binders.processor.BaseBindingProcessor;
+import com.fpetrola.cap.model.binders.processor.BindingProcessor;
 
 public class CapLanguageServer implements LanguageServer {
 
@@ -43,7 +43,6 @@ public class CapLanguageServer implements LanguageServer {
 		try {
 			fileWriter = new FileWriter(new File("/home/fernando/git/LSP4J_Tutorial/server/logs.txt"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		textService = new CapTextDocumentService(this);
@@ -51,18 +50,8 @@ public class CapLanguageServer implements LanguageServer {
 		log("init");
 
 		sourceChangesListener = new SourceChangesListenerImpl() {
-
 			public void fileCreation(String uri, String content) {
-				try {
-					File file = new File(URI.create(uri));
-					file.getParentFile().mkdirs();
-					FileWriter fileWriter = new FileWriter(file);
-					fileWriter.write(content);
-					fileWriter.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
+				super.fileCreation(uri, content);
 				diagnosticGenerator.createFileAtClient(uri, "", client);
 			}
 		};

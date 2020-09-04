@@ -4,7 +4,8 @@ import com.github.javaparser.Range;
 
 public class SourceCodeReplace extends SourceCodeModification {
 
-	public SourceCodeReplace(String content, Range range) {
+	public SourceCodeReplace(String content, Range range, String uri) {
+		super(uri);
 		this.content = content;
 		this.range = range;
 	}

@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface TraverseListener {
 
-	void valuesPulledFrom(Binder<?, ?> bidirectionalBinder, List result);
+	void valuesPulledFrom(Binder<?, ?> Binder, List result);
 
 }

@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.fpetrola.cap.model.binders.implementations.JavaField;
-import com.fpetrola.cap.model.binders.implementations.SourceCodeChanger;
+import com.fpetrola.cap.model.binders.SourceCodeChanger;
+import com.fpetrola.cap.model.binders.implementations.java.JavaField;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -35,8 +35,8 @@ public class JavaparserHelper {
 		return new NormalAnnotationExpr(new Name(identifier), NodeList.nodeList(memberValuePair));
 	}
 
-	public static SourceChange addAnnotationToClass(SourceCodeChanger sourceCodeChanger, NormalAnnotationExpr normalAnnotationExpr, final String message, String name) {
-		SourceChange[] sourceChange = new SourceChange[1];
+	public static CodeProposal addAnnotationToClass(SourceCodeChanger sourceCodeChanger, NormalAnnotationExpr normalAnnotationExpr, final String message, String name) {
+		CodeProposal[] sourceChange = new CodeProposal[1];
 		sourceCodeChanger.getCompilationUnitProvider().get().accept(new ModifierVisitor<Void>() {
 			public Visitable visit(ClassOrInterfaceDeclaration classDeclaration, Void arg) {
 				sourceChange[0] = addAnnotationToBodyDeclaration(normalAnnotationExpr, message, classDeclaration, classDeclaration.findAll(SimpleName.class).get(0), sourceCodeChanger.getUri());
@@ -46,10 +46,10 @@ public class JavaparserHelper {
 		return sourceChange[0];
 	}
 
-	public static SourceChange addAnnotationToField(SourceCodeChanger sourceCodeChanger, NormalAnnotationExpr normalAnnotationExpr, final String propertyName, String message) {
+	public static CodeProposal addAnnotationToField(SourceCodeChanger sourceCodeChanger, NormalAnnotationExpr normalAnnotationExpr, final String propertyName, String message) {
 		boolean found = fieldExists(sourceCodeChanger.getCompilationUnitProvider().get(), propertyName);
 
-		SourceChange[] sourceChange = new SourceChange[1];
+		CodeProposal[] sourceChange = new CodeProposal[1];
 		if (found) {
 			sourceCodeChanger.getCompilationUnitProvider().get().accept(new ModifierVisitor<Void>() {
 				public Visitable visit(FieldDeclaration fieldDeclaration, Void arg) {
@@ -65,10 +65,10 @@ public class JavaparserHelper {
 		return sourceChange[0];
 	}
 
-	public static SourceChange addMethod(CompilationUnit cu, String methodName, String uri, String message, String body) {
+	public static CodeProposal addMethod(CompilationUnit cu, String methodName, String uri, String message, String body) {
 		boolean found = methodExists(cu, methodName);
 
-		SourceChange[] sourceChange = new SourceChange[1];
+		CodeProposal[] sourceChange = new CodeProposal[1];
 
 		if (!found)
 			cu.findAll(ClassOrInterfaceDeclaration.class).forEach(coid -> {
@@ -95,7 +95,7 @@ public class JavaparserHelper {
 					coid.getMembers().add(0, methodDeclaration);
 
 					simpleNames.ifPresent(p -> {
-						sourceChange[0] = new SourceChange(uri, p.getRange().get(), message);
+						sourceChange[0] = new CodeProposal(uri, p.getRange().get(), message);
 					});
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -106,10 +106,10 @@ public class JavaparserHelper {
 		return sourceChange[0];
 	}
 
-	public static SourceChange addFieldIfNotExists(CompilationUnit cu, String message, String propertyName, String typeName, String uri) {
+	public static CodeProposal addFieldIfNotExists(CompilationUnit cu, String message, String propertyName, String typeName, String uri) {
 		boolean found = fieldExists(cu, propertyName);
 
-		SourceChange[] sourceChange = new SourceChange[1];
+		CodeProposal[] sourceChange = new CodeProposal[1];
 		if (!found) {
 			cu.findAll(ClassOrInterfaceDeclaration.class).forEach(coid -> {
 				VariableDeclarator variables = new VariableDeclarator();
@@ -121,7 +121,7 @@ public class JavaparserHelper {
 				Optional<SimpleName> simpleNames = coid.findAll(SimpleName.class).stream().filter(sn -> sn.getParentNode().get() instanceof ClassOrInterfaceDeclaration).findFirst();
 
 				simpleNames.ifPresent(p -> {
-					sourceChange[0] = new SourceChange(uri, p.getRange().get(), message);
+					sourceChange[0] = new CodeProposal(uri, p.getRange().get(), message);
 				});
 
 			});
@@ -129,8 +129,8 @@ public class JavaparserHelper {
 		return sourceChange[0];
 	}
 
-	private static SourceChange addAnnotationToBodyDeclaration(NormalAnnotationExpr normalAnnotationExpr, final String message, BodyDeclaration classDeclaration, Node node, String uri) {
-		SourceChange[] sourceChange = new SourceChange[1];
+	private static CodeProposal addAnnotationToBodyDeclaration(NormalAnnotationExpr normalAnnotationExpr, final String message, BodyDeclaration classDeclaration, Node node, String uri) {
+		CodeProposal[] sourceChange = new CodeProposal[1];
 
 		if (node != null) {
 			String annotationClass = normalAnnotationExpr.getNameAsString();
@@ -142,7 +142,7 @@ public class JavaparserHelper {
 				annotationExpr = classDeclaration.addAndGetAnnotation(simpleName);
 				classDeclaration.findAncestor(CompilationUnit.class).ifPresent(p -> p.addImport(annotationClass));
 				annotationExpr.setPairs(normalAnnotationExpr.getPairs());
-				sourceChange[0] = new SourceChange(uri, node.getRange().get(), message);
+				sourceChange[0] = new CodeProposal(uri, node.getRange().get(), message);
 			}
 		}
 		return sourceChange[0];
@@ -182,14 +182,19 @@ public class JavaparserHelper {
 		return content;
 	}
 
-	public static List<JavaField> getFields(SourceCodeChanger sourceCodeChanger) {
+	public static List<JavaField> getFields(SourceCodeChanger sourceCodeChanger, String uri) {
 		List<JavaField> result = new ArrayList<JavaField>();
 
 		sourceCodeChanger.getCompilationUnitProvider().get().accept(new ModifierVisitor<Void>() {
 			public Visitable visit(FieldDeclaration fieldDeclaration, Void arg) {
 
 				VariableDeclarator variable = fieldDeclaration.getVariable(0);
-				result.add(new JavaField(variable.getName().asString(), variable.getType().toString(), sourceCodeChanger, false));
+
+				CodeProposal codeProposal = new CodeProposal(uri, variable.getName().getRange().get(), "existing field: " + variable.getNameAsString());
+				JavaField javaField = new JavaField(variable.getName().asString(), variable.getType().toString(), sourceCodeChanger, false);
+				result.add(javaField);
+
+				sourceCodeChanger.getChangesLinker().addCodeProposalFor(javaField, codeProposal);
 
 				return super.visit(fieldDeclaration, arg);
 			}

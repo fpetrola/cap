@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.developer.DeveloperModel;
 
@@ -28,7 +28,7 @@ public class BindersDiscoveryService {
 		if (loadClasses == null) {
 			ClassInfoList binderClasses;
 			try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(basePackage).scan()) {
-				binderClasses = scanResult.getClassesImplementing(BidirectionalBinder.class.getName()).filter(filter -> !filter.isInterface());
+				binderClasses = scanResult.getClassesImplementing(Binder.class.getName()).filter(filter -> !filter.isInterface());
 				loadClasses = binderClasses.loadClasses();
 			}
 		}

@@ -1,12 +1,13 @@
-package com.fpetrola.cap.model.binders.implementations;
+package com.fpetrola.cap.model.binders.implementations.java;
 
+import com.fpetrola.cap.model.binders.SourceCodeChanger;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 
 public class JavaField {
 
 	String name;
 	private String type;
-	SourceCodeChanger sourceCodeChanger;
+	public SourceCodeChanger sourceCodeChanger;
 	private boolean isNew;
 
 	public JavaField(String name, String type, SourceCodeChanger sourceCodeChanger, boolean isNew) {

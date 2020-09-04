@@ -12,11 +12,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import com.fpetrola.cap.helpers.PersistenceXmlParser;
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.developer.DatabaseConnection;
 
-public class ConnectionExtractorFromPersistenceXML extends DefaultBinder<Void, DatabaseConnection> implements BidirectionalBinder<Void, DatabaseConnection> {
+public class ConnectionExtractorFromPersistenceXML extends DefaultBinder<Void, DatabaseConnection> implements Binder<Void, DatabaseConnection> {
 
 	public String name;
 	static private List<DatabaseConnection> result = new ArrayList<DatabaseConnection>();

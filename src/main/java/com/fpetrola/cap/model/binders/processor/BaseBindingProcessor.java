@@ -1,15 +1,20 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.model.binders.processor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.fpetrola.cap.helpers.YamlHelper;
+import com.fpetrola.cap.model.binders.Binder;
+import com.fpetrola.cap.model.binders.BinderModMaker;
+import com.fpetrola.cap.model.binders.BinderModUnmaker;
+import com.fpetrola.cap.model.binders.DefaultBinder;
+import com.fpetrola.cap.model.binders.ModelBinder;
+import com.fpetrola.cap.model.binders.TraverseListener;
+import com.fpetrola.cap.model.source.CodeProposal;
 import com.fpetrola.cap.model.source.DummySourceChangesListener;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
-import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceChangesListener;
 import com.fpetrola.cap.model.source.SourceCodeModification;
 import com.github.javaparser.Position;
@@ -19,28 +24,28 @@ public abstract class BaseBindingProcessor {
 
 	public SourceChangesListener sourceChangesListener;
 	protected String configURI;
-	protected List<SourceChange> sourceChanges = new ArrayList<SourceChange>();
-	protected ModelManagement modelManagement;
+	protected List<CodeProposal> sourceChanges = new ArrayList<>();
+	protected ModelBinder modelBinder;
 
 	public BaseBindingProcessor() {
 		super();
 	}
 
 	protected void addChangeProposalToBinder(Binder<?, ?> binder, String message, BinderModMaker doer, BinderModUnmaker undoer) {
-		String modelSerialization = YamlHelper.serializeModel(modelManagement);
+		String modelSerialization = YamlHelper.serializeModel(modelBinder);
 		doer.doMod(binder);
-		String updatedModelSerialization = YamlHelper.serializeModel(modelManagement);
+		String updatedModelSerialization = YamlHelper.serializeModel(modelBinder);
 
 		List<SourceCodeModification> sourceCodeModifications = JavaSourceChangesHandler.createModifications(modelSerialization, updatedModelSerialization);
 
 		Range range = new Range(new Position(1, 0), new Position(1, 100));
-		if (binder != modelManagement) {
+		if (binder != modelBinder) {
 			Range findPositionOf = findPositionOfBinderBasedInYamlSerialization(binder);
 			range = new Range(new Position(findPositionOf.begin.line, 0), new Position(findPositionOf.begin.line, 100));
 		}
-		SourceChange sourceChange = new SourceChange(configURI, range, message);
-		sourceChange.insertions = sourceCodeModifications;
-		sourceChanges.add(sourceChange);
+		CodeProposal codeProposal = new CodeProposal(configURI, range, message);
+		codeProposal.getSourceChange().setInsertions(sourceCodeModifications);
+		sourceChanges.add(codeProposal);
 
 		undoer.undoMod(binder);
 	}
@@ -60,9 +65,9 @@ public abstract class BaseBindingProcessor {
 			binders.add(indexOf + 1, temporalBinder);
 			parent.setChain(binders);
 
-			String modelSerialization = YamlHelper.serializeModel(modelManagement);
+			String modelSerialization = YamlHelper.serializeModel(modelBinder);
 			parent.getChain().remove(binder);
-			String modelSerialization2 = YamlHelper.serializeModel(modelManagement);
+			String modelSerialization2 = YamlHelper.serializeModel(modelBinder);
 			parent.removeBinder(temporalBinder);
 			List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications(modelSerialization2, modelSerialization);
 			parent.setChain(lastBinderChain);
@@ -72,7 +77,7 @@ public abstract class BaseBindingProcessor {
 
 				for (SourceCodeModification sourceCodeModification : createInsertions)
 					begin = sourceCodeModification.range.begin;
-				
+
 				return new Range(new Position(begin.line + 1, 100), new Position(begin.line + 1, 100));
 			} catch (Exception e) {
 				return result;
@@ -85,16 +90,16 @@ public abstract class BaseBindingProcessor {
 		do {
 			try {
 
-				modelManagement.setSourceChangesListener(!listenChanges ? new DummySourceChangesListener() : sourceChangesListener);
-				modelManagement.setTraverseListener(traverseListener);
+				modelBinder.setSourceChangesListener(!listenChanges ? new DummySourceChangesListener() : sourceChangesListener);
+				modelBinder.setTraverseListener(traverseListener);
 
 				aModelManagement.solve(null);
 
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			} finally {
-				modelManagement.setTraverseListener(null);
-				modelManagement.setSourceChangesListener(null);
+				modelBinder.setTraverseListener(null);
+				modelBinder.setSourceChangesListener(null);
 			}
 		} while (doLoop);
 	}

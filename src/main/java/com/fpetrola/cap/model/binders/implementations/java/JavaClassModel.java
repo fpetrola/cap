@@ -1,7 +1,8 @@
-package com.fpetrola.cap.model.binders.implementations;
+package com.fpetrola.cap.model.binders.implementations.java;
 
 import java.util.List;
 
+import com.fpetrola.cap.model.binders.SourceCodeChanger;
 import com.fpetrola.cap.model.source.JavaparserHelper;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 
@@ -17,7 +18,7 @@ public class JavaClassModel {
 	}
 
 	public List<JavaField> getFields() {
-		return JavaparserHelper.getFields(sourceCodeChanger);
+		return JavaparserHelper.getFields(sourceCodeChanger, sourceCodeChanger.getUri());
 	}
 
 	public JavaField createField(String name, Class<?> type) {

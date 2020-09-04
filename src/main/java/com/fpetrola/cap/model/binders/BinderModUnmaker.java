@@ -1,5 +1,5 @@
 package com.fpetrola.cap.model.binders;
 
 public interface BinderModUnmaker {
-	void undoMod(Binder<?, ?> bidirectionalBinder);
+	void undoMod(Binder<?, ?> Binder);
 }

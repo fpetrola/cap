@@ -4,14 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.fpetrola.cap.model.binders.DefaultBinder;
-import com.fpetrola.cap.model.binders.implementations.JavaClassModel;
-import com.fpetrola.cap.model.binders.implementations.SourceCodeChanger;
+import com.fpetrola.cap.model.binders.SourceCodeChanger;
+import com.fpetrola.cap.model.binders.implementations.java.JavaClassModel;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
-public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder<S, T> {
+public abstract class BaseJavaClassBinder<S, T> extends DefaultBinder<S, T> {
 
-	public DefaultJavaClassBinder() {
+	public BaseJavaClassBinder() {
 	}
 
 	protected abstract String getClassname(S source);
@@ -22,11 +22,12 @@ public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder<S, T> {
 			var sourceChangesListener = getSourceChangesListener();
 
 			if (foundWorkspacePath != null && sourceChangesListener != null) {
-				var sourceCodeChanger = new SourceCodeChanger(foundWorkspacePath, getClassname(source), sourceChangesListener);
-				computeChanges(source, new JavaClassModel(sourceCodeChanger));
+				var sourceCodeChanger = new SourceCodeChanger(foundWorkspacePath, getClassname(source), sourceChangesListener, getChangesLinker());
+				computeChanges(source, new JavaClassModel(sourceCodeChanger), sourceCodeChanger);
 				sourceCodeChanger.aplyChanges();
 			}
 		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		return Arrays.asList();
 	}
@@ -35,5 +36,5 @@ public abstract class DefaultJavaClassBinder<S, T> extends DefaultBinder<S, T> {
 		return new MemberValuePair(key, new StringLiteralExpr(value));
 	}
 
-	public abstract void computeChanges(S ormEntityMapping, JavaClassModel javaClassModel);
+	public abstract void computeChanges(S ormEntityMapping, JavaClassModel javaClassModel, SourceCodeChanger sourceCodeChanger);
 }

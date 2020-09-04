@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
+import com.fpetrola.cap.model.binders.Binder;
 import com.fpetrola.cap.model.developer.DeveloperModel;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.layout.mxOrganicLayout;
@@ -48,15 +48,15 @@ public class BindingsDashboard extends JFrame {
 						Object value = ((mxCell) source).getValue();
 
 						Object value2 = ((mxCell) target).getValue();
-						if (value2 instanceof BidirectionalBinder) {
-							final BidirectionalBinder bidirectionalBinder = (BidirectionalBinder) value2;
+						if (value2 instanceof Binder) {
+							final Binder Binder = (Binder) value2;
 
 							final Supplier valueSupplier = () -> value instanceof Supplier ? ((Supplier) value).get() : value;
-							List pull = bidirectionalBinder.pull(valueSupplier.get());
+							List pull = Binder.pull(valueSupplier.get());
 
 							this.getModel().beginUpdate();
 
-							List<Supplier> suppliers = bidirectionalBinder.getSuppliers(valueSupplier);
+							List<Supplier> suppliers = Binder.getSuppliers(valueSupplier);
 
 							for (int i = 0; i < pull.size(); i++) {
 								Object developerModel = pull.get(i);
@@ -92,7 +92,7 @@ public class BindingsDashboard extends JFrame {
 		graph.getModel().beginUpdate();
 		try {
 
-			for (BidirectionalBinder puller2 : data.pullers) {
+			for (Binder puller2 : data.pullers) {
 
 				mxCell insertVertex = (mxCell) graph.insertVertex(parent, null, "BiBinder:\n" + puller2.getClass().getSimpleName(), 240, 150, WIDTH, 30);
 				insertVertex.setValue(puller2);

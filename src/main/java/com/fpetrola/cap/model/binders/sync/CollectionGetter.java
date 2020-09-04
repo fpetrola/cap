@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model.binders.implementations;
+package com.fpetrola.cap.model.binders.sync;
 
 import java.util.Collection;
 

@@ -6,18 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
-import com.fpetrola.cap.model.binders.WorkspaceAwareBinder;
-import com.fpetrola.cap.model.binders.implementations.helpers.DefaultJavaClassBinder;
+import com.fpetrola.cap.model.binders.Binder;
+import com.fpetrola.cap.model.binders.SourceCodeChanger;
+import com.fpetrola.cap.model.binders.implementations.helpers.BaseJavaClassBinder;
+import com.fpetrola.cap.model.binders.implementations.java.JavaClassModel;
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
 import com.fpetrola.cap.model.developer.PropertyMapping;
-import com.fpetrola.cap.model.source.SourceChange;
+import com.fpetrola.cap.model.source.CodeProposal;
 import com.github.javaparser.ast.CompilationUnit;
 
-public class DtoMapperGenerator extends DefaultJavaClassBinder<ORMEntityMapping, Void> implements BidirectionalBinder<ORMEntityMapping, Void>, WorkspaceAwareBinder {
+public class DtoMapperGenerator extends BaseJavaClassBinder<ORMEntityMapping, Void> implements Binder<ORMEntityMapping, Void> {
 
-	protected List<Function<CompilationUnit, SourceChange>> getModifiers(ORMEntityMapping source, String uri) {
-		List<Function<CompilationUnit, SourceChange>> modifiers = new ArrayList<>();
+	protected List<Function<CompilationUnit, CodeProposal>> getModifiers(ORMEntityMapping source, String uri) {
+		List<Function<CompilationUnit, CodeProposal>> modifiers = new ArrayList<>();
 		String className = source.mappedClass.substring(source.mappedClass.lastIndexOf(".") + 1);
 
 		modifiers.add(c -> {
@@ -25,7 +26,7 @@ public class DtoMapperGenerator extends DefaultJavaClassBinder<ORMEntityMapping,
 			convertBody = convertBody.replaceAll("classname", className);
 
 			for (PropertyMapping p : source.getPropertyMappings()) {
-				convertBody += "\tdto.setpropertyName (model.getpropertyName());\n".replaceAll("propertyName", p.propertyName.toUpperCase().charAt(0) + p.propertyName.substring(1));
+				convertBody += "\tdto.setpropertyName (model.getpropertyName());\n".replaceAll("propertyName", p.getPropertyName().toUpperCase().charAt(0) + p.getPropertyName().substring(1));
 			}
 
 			convertBody += "}\n";
@@ -39,7 +40,7 @@ public class DtoMapperGenerator extends DefaultJavaClassBinder<ORMEntityMapping,
 	}
 
 	@Override
-	public void computeChanges(ORMEntityMapping ormEntityMapping, JavaClassModel javaClassModel) {
+	public void computeChanges(ORMEntityMapping ormEntityMapping, JavaClassModel javaClassModel, SourceCodeChanger sourceCodeChanger) {
 		// TODO Auto-generated method stub
 		
 	}

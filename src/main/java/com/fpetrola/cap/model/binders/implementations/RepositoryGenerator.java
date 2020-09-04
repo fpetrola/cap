@@ -1,23 +1,18 @@
 package com.fpetrola.cap.model.binders.implementations;
 
-import static com.fpetrola.cap.model.source.JavaparserHelper.addAnnotationToClass;
-import static com.fpetrola.cap.model.source.JavaparserHelper.addFieldIfNotExists;
-import static com.fpetrola.cap.model.source.JavaparserHelper.addMethod;
-import static com.fpetrola.cap.model.source.JavaparserHelper.createAnnotation;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import com.fpetrola.cap.model.binders.BidirectionalBinder;
-import com.fpetrola.cap.model.binders.WorkspaceAwareBinder;
-import com.fpetrola.cap.model.binders.implementations.helpers.DefaultJavaClassBinder;
+import com.fpetrola.cap.model.binders.Binder;
+import com.fpetrola.cap.model.binders.SourceCodeChanger;
+import com.fpetrola.cap.model.binders.implementations.helpers.BaseJavaClassBinder;
+import com.fpetrola.cap.model.binders.implementations.java.JavaClassModel;
 import com.fpetrola.cap.model.developer.ORMEntityMapping;
-import com.fpetrola.cap.model.developer.PropertyMapping;
 import com.fpetrola.cap.model.source.SourceChange;
 import com.github.javaparser.ast.CompilationUnit;
 
-public class RepositoryGenerator extends DefaultJavaClassBinder<ORMEntityMapping, Void> implements BidirectionalBinder<ORMEntityMapping, Void>, WorkspaceAwareBinder {
+public class RepositoryGenerator extends BaseJavaClassBinder<ORMEntityMapping, Void> implements Binder<ORMEntityMapping, Void> {
 
 	protected List<Function<CompilationUnit, SourceChange>> getModifiers(ORMEntityMapping source, String uri) {
 		List<Function<CompilationUnit, SourceChange>> modifiers = new ArrayList<>();
@@ -47,7 +42,7 @@ public class RepositoryGenerator extends DefaultJavaClassBinder<ORMEntityMapping
 	}
 
 	@Override
-	public void computeChanges(ORMEntityMapping ormEntityMapping, JavaClassModel javaClassModel) {
+	public void computeChanges(ORMEntityMapping ormEntityMapping, JavaClassModel javaClassModel, SourceCodeChanger sourceCodeChanger) {
 		// TODO Auto-generated method stub
 		
 	}

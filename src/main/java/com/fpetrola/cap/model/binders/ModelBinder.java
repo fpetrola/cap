@@ -4,15 +4,17 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fpetrola.cap.model.binders.processor.BaseBindingProcessor;
+import com.fpetrola.cap.model.binders.sync.ChangesLinker;
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
-public class ModelManagement<S, T> extends DefaultBinder<Object, Object> implements Binder<Object, Object> {
+public class ModelBinder<S, T> extends DefaultBinder<Object, Object> implements Binder<Object, Object> {
 	public String model;
 	protected SourceChangesListener sourceChangesListener;
-
 	private TraverseListener traverseListener;
+	private ChangesLinker changesLinker= new ChangesLinker();
 
-	public ModelManagement() {
+	public ModelBinder() {
 	}
 
 	public String getModel() {
@@ -53,5 +55,13 @@ public class ModelManagement<S, T> extends DefaultBinder<Object, Object> impleme
 
 	public void setSourceChangesListener(SourceChangesListener sourceChangesListener) {
 		this.sourceChangesListener = sourceChangesListener;
+	}
+
+	public ChangesLinker getChangesLinker() {
+		return changesLinker;
+	}
+
+	public void setChangesLinker(ChangesLinker changesLinker) {
+		this.changesLinker = changesLinker;
 	}
 }

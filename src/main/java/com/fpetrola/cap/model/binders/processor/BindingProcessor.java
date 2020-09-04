@@ -1,4 +1,4 @@
-package com.fpetrola.cap.model.binders;
+package com.fpetrola.cap.model.binders.processor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,9 +10,12 @@ import java.util.stream.Collectors;
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.fpetrola.cap.helpers.BindersDiscoveryService;
 import com.fpetrola.cap.helpers.YamlHelper;
+import com.fpetrola.cap.model.binders.Binder;
+import com.fpetrola.cap.model.binders.BinderVisitor;
+import com.fpetrola.cap.model.binders.ModelBinder;
 import com.fpetrola.cap.model.binders.implementations.DatabaseEntitiesExtractor;
+import com.fpetrola.cap.model.source.CodeProposal;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;
-import com.fpetrola.cap.model.source.SourceChange;
 import com.fpetrola.cap.model.source.SourceChangesListener;
 import com.fpetrola.cap.model.source.SourceCodeModification;
 import com.github.javaparser.Position;
@@ -36,7 +39,7 @@ public class BindingProcessor extends BaseBindingProcessor {
 		proposeFilters();
 		proposeConfigForWorkspaceAwareBinder();
 
-		bindModel(false, modelManagement, (b, v) -> {
+		bindModel(false, modelBinder, (b, v) -> {
 		}, true);
 
 		if (configURI != null)
@@ -44,8 +47,8 @@ public class BindingProcessor extends BaseBindingProcessor {
 	}
 
 	private void deserializeModel() throws FileNotFoundException, YamlException {
-		modelManagement = YamlHelper.deserializeModelFromURI(configURI, ModelManagement.class);
-		setParents(modelManagement);
+		modelBinder = YamlHelper.deserializeModelFromURI(configURI, ModelBinder.class);
+		setParents(modelBinder);
 	}
 
 	private void setParents(Binder<?, ?> binder) {
@@ -58,7 +61,7 @@ public class BindingProcessor extends BaseBindingProcessor {
 	private void proposeNewBinders() {
 		BindersDiscoveryService bindersDiscoveryService = new BindersDiscoveryService();
 
-		modelManagement.accept(new BinderVisitor() {
+		modelBinder.accept(new BinderVisitor() {
 			public void visitChainedBinder(Binder binder) {
 				List<Binder> newBinders = bindersDiscoveryService.findBinders();
 
@@ -68,7 +71,7 @@ public class BindingProcessor extends BaseBindingProcessor {
 						addChangeProposalToBinder(binder, "Add binder: " + newBinder.getClass().getSimpleName(), (aBinder) -> {
 							aBinder.setChain(new ArrayList<>(chain));
 							aBinder.addBinder(newBinder);
-						}, (bidirectionalBinder) -> bidirectionalBinder.setChain(chain));
+						}, (Binder) -> Binder.setChain(chain));
 					} else {
 					}
 				});
@@ -79,17 +82,17 @@ public class BindingProcessor extends BaseBindingProcessor {
 	}
 
 	private void proposeCreation() {
-		SourceChange sourceChange = new SourceChange(configURI, new Range(new Position(1, 1), new Position(1, 1)), "Initialize Model Management");
-		modelManagement = new ModelManagement();
-		List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications("\n", YamlHelper.serializeModel(modelManagement));
+		CodeProposal codeProposal = new CodeProposal(configURI, new Range(new Position(1, 1), new Position(1, 1)), "Initialize Model Management");
+		modelBinder = new ModelBinder();
+		List<SourceCodeModification> createInsertions = JavaSourceChangesHandler.createModifications("\n", YamlHelper.serializeModel(modelBinder));
 		if (!createInsertions.isEmpty()) {
-			sourceChange.insertions = createInsertions;
-			sourceChanges.add(sourceChange);
+			codeProposal.getSourceChange().setInsertions(createInsertions);
+			sourceChanges.add(codeProposal);
 		}
 	}
 
 	private void proposeFilters() {
-		modelManagement.accept(new BinderVisitor() {
+		modelBinder.accept(new BinderVisitor() {
 			public void visitChainedBinder(Binder binder) {
 				if (binder instanceof DatabaseEntitiesExtractor) {
 					String message = binder.getParametersProposalMessage();
@@ -97,8 +100,8 @@ public class BindingProcessor extends BaseBindingProcessor {
 						message = "Add filters for: " + binder.getClass().getSimpleName();
 
 					List<String> lastFilters = binder.getFilters();
-					addChangeProposalToBinder(binder, message, (bidirectionalBinder) -> {
-						bindModel(false, modelManagement, (b, v) -> {
+					addChangeProposalToBinder(binder, message, (Binder) -> {
+						bindModel(false, modelBinder, (b, v) -> {
 							if (b == binder)
 								b.setFilters((List<String>) v.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						}, false);
@@ -110,21 +113,20 @@ public class BindingProcessor extends BaseBindingProcessor {
 
 	private void proposeConfigForWorkspaceAwareBinder() {
 
-		modelManagement.accept(new BinderVisitor() {
+		modelBinder.accept(new BinderVisitor() {
 			public void visitChainedBinder(Binder binder) {
-				if (binder == modelManagement) {
-					WorkspaceAwareBinder workspaceAwareBinder = (WorkspaceAwareBinder) binder;
+				if (binder == modelBinder) {
 
-					if (workspaceAwareBinder.findWorkspacePath() == null) {
+					if (binder.findWorkspacePath() == null) {
 						File[] file = new File[1];
 						file[0] = new File(URI.create(configURI));
 
 						while (file[0] != null) {
 							if (file[0].isDirectory()) {
 								String message = "use workspace in: " + file[0].getPath();
-								String lastWorkspacePath = ((WorkspaceAwareBinder) binder).getWorkspacePath();
+								String lastWorkspacePath = binder.getWorkspacePath();
 
-								addChangeProposalToBinder(binder, message, (bidirectionalBinder) -> workspaceAwareBinder.setWorkspacePath(file[0].getPath()), (bidirectionalBinder) -> ((WorkspaceAwareBinder) binder).setWorkspacePath(lastWorkspacePath));
+								addChangeProposalToBinder(binder, message, (Binder) -> binder.setWorkspacePath(file[0].getPath()), (Binder) -> binder.setWorkspacePath(lastWorkspacePath));
 							}
 							file[0] = file[0].getParentFile();
 						}

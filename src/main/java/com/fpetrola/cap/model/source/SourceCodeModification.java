@@ -6,9 +6,18 @@ public class SourceCodeModification {
 
 	public String content;
 	public Range range;
+	private String uri;
 
-	public SourceCodeModification() {
-		super();
+	public SourceCodeModification(String uri) {
+		this.setUri(uri);
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 
 }

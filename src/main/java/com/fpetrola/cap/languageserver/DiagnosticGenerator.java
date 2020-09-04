@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionKind;
 import org.eclipse.lsp4j.CreateFile;
@@ -25,9 +24,8 @@ import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 
-import com.fpetrola.cap.model.binders.BaseBindingProcessor;
-import com.fpetrola.cap.model.binders.BindingProcessor;
-import com.fpetrola.cap.model.source.SourceChange;
+import com.fpetrola.cap.model.binders.processor.BaseBindingProcessor;
+import com.fpetrola.cap.model.source.CodeProposal;
 import com.fpetrola.cap.model.source.SourceCodeModification;
 
 public class DiagnosticGenerator {
@@ -37,20 +35,20 @@ public class DiagnosticGenerator {
 	public DiagnosticGenerator() {
 	}
 
-	public List<PublishDiagnosticsParams> getDiagnostics(Map<String, List<SourceChange>> changesMap, BaseBindingProcessor bindingApp) {
+	public List<PublishDiagnosticsParams> getDiagnostics(Map<String, List<CodeProposal>> changesMap, BaseBindingProcessor bindingApp) {
 		List<PublishDiagnosticsParams> diagnostics = new ArrayList<>();
 		changesMap.clear();
 		codeActions.clear();
 	
 		bindingApp.bind(false);
 	
-		for (Entry<String, List<SourceChange>> entry : changesMap.entrySet()) {
+		for (Entry<String, List<CodeProposal>> entry : changesMap.entrySet()) {
 			List<Diagnostic> validate = new ArrayList<>();
-			List<SourceChange> list = entry.getValue();
+			List<CodeProposal> list = entry.getValue();
 			String uri = entry.getKey();
 			codeActions.put(uri, new ArrayList<>());
 			if (!list.isEmpty()) {
-				for (SourceChange sourceChange : list)
+				for (CodeProposal sourceChange : list)
 					createDiagnosticFromSourceChange(new VersionedTextDocumentIdentifier(uri, null), validate, sourceChange);
 	
 			}
@@ -70,28 +68,28 @@ public class DiagnosticGenerator {
 //		languageClient.applyEdit(new ApplyWorkspaceEditParams(edit));
 	}
 
-	private CodeAction createCodeAction(VersionedTextDocumentIdentifier versionedTextDocumentIdentifier, SourceChange sourceChange, Diagnostic diagnostic) {
-		CodeAction codeAction = new CodeAction("" + sourceChange.message);
+	private CodeAction createCodeAction(VersionedTextDocumentIdentifier versionedTextDocumentIdentifier, CodeProposal codeProposal, Diagnostic diagnostic) {
+		CodeAction codeAction = new CodeAction("" + codeProposal.getMessage());
 		codeAction.setDiagnostics(Arrays.asList(diagnostic));
-		codeAction.setEdit(createWorkspaceEditFromSourceChange(sourceChange, versionedTextDocumentIdentifier));
+		codeAction.setEdit(createWorkspaceEditFromSourceChange(codeProposal, versionedTextDocumentIdentifier));
 		codeAction.setKind(CodeActionKind.RefactorRewrite);
 		return codeAction;
 	}
 
-	private Diagnostic createDiagnostic(SourceChange sourceChange) {
-		com.github.javaparser.Range range = sourceChange.problemRange;
+	private Diagnostic createDiagnostic(CodeProposal codeProposal) {
+		com.github.javaparser.Range range = codeProposal.getProblemRange();
 		Position start = new Position(range.begin.line - 1, range.begin.column - 1);
 		Position end = new Position(range.end.line - 1, range.end.column);
 		Range range1 = new Range(start, end);
-		Diagnostic diagnostic = new Diagnostic(range1, sourceChange.message);
+		Diagnostic diagnostic = new Diagnostic(range1, codeProposal.getMessage());
 		diagnostic.setSeverity(DiagnosticSeverity.Warning);
 		return diagnostic;
 	}
 
-	private void createDiagnosticFromSourceChange(VersionedTextDocumentIdentifier versionedTextDocumentIdentifier, List<Diagnostic> validate, SourceChange sourceChange) {
-		Diagnostic diagnostic = createDiagnostic(sourceChange);
+	private void createDiagnosticFromSourceChange(VersionedTextDocumentIdentifier versionedTextDocumentIdentifier, List<Diagnostic> validate, CodeProposal codeProposal) {
+		Diagnostic diagnostic = createDiagnostic(codeProposal);
 		validate.add(diagnostic);
-		codeActions.get(sourceChange.uri).add(createCodeAction(versionedTextDocumentIdentifier, sourceChange, diagnostic));
+		codeActions.get(codeProposal.getUri()).add(createCodeAction(versionedTextDocumentIdentifier, codeProposal, diagnostic));
 	}
 
 	private Range createLspRangeFromRange(com.github.javaparser.Range range2) {
@@ -101,19 +99,19 @@ public class DiagnosticGenerator {
 		return range;
 	}
 
-	private WorkspaceEdit createWorkspaceEditFromSourceChange(SourceChange sourceChange, VersionedTextDocumentIdentifier versionedTextDocumentIdentifier) {
+	private WorkspaceEdit createWorkspaceEditFromSourceChange(CodeProposal codeProposal, VersionedTextDocumentIdentifier versionedTextDocumentIdentifier) {
 
 		List<TextEdit> textEdits = new ArrayList<TextEdit>();
 		List<Either<TextDocumentEdit, ResourceOperation>> documentChanges = new ArrayList<Either<TextDocumentEdit, ResourceOperation>>();
-		List<SourceCodeModification> sourceCodeModifications = new ArrayList<SourceCodeModification>(sourceChange.insertions);
+		List<SourceCodeModification> sourceCodeModifications = new ArrayList<SourceCodeModification>(codeProposal.getSourceChange().getInsertions());
 		for (SourceCodeModification sourceCodeModification : sourceCodeModifications) {
 			textEdits.add(new TextEdit(createLspRangeFromRange(sourceCodeModification.range), sourceCodeModification.content));
 			documentChanges.add(Either.forLeft(new TextDocumentEdit(versionedTextDocumentIdentifier, textEdits)));
 		}
 		HashMap<String, List<TextEdit>> changes = new HashMap<>();
-		changes.put(sourceChange.uri, textEdits);
+		changes.put(codeProposal.getSourceChange().getUri(), textEdits);
 		WorkspaceEdit edit = new WorkspaceEdit();
-		edit.setDocumentChanges(documentChanges);
+//		edit.setDocumentChanges(documentChanges);
 		edit.setChanges(changes);
 		return edit;
 	}

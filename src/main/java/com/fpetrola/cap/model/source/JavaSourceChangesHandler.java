@@ -42,7 +42,7 @@ public class JavaSourceChangesHandler {
 		initWithClassName(className);
 	}
 
-	public String addFixAllForNow(List<SourceChange> sourceChanges, List<Function<CompilationUnit, SourceChange>> funcs, String uri, String content) {
+	public String addFixAllForNow(List<CodeProposal> sourceChanges, List<Function<CompilationUnit, SourceChange>> funcs, String uri, String content) {
 		try {
 			CompilationUnit compilationUnit;
 			if (content == null)
@@ -69,13 +69,14 @@ public class JavaSourceChangesHandler {
 			}
 
 			Range range = new Range(new Position(1, 1), new Position(1, 1));
-			SourceChange sourceChange = new SourceChange(uri, range, "fix all");
+			CodeProposal codeProposal = new CodeProposal(uri, range, "fix all");
 
 			String print = LexicalPreservingPrinter.print(compilationUnit2);
-			if (!solved && sourceChange != null) {
+			if (!solved && codeProposal != null) {
 				List<SourceCodeModification> insertions = createModifications(originalSource, print);
-				sourceChange.insertions = insertions;
-				sourceChanges.add(sourceChange);
+				codeProposal.getSourceChange().setInsertions(insertions);
+				;
+				sourceChanges.add(codeProposal);
 			}
 
 			return print;
@@ -84,7 +85,7 @@ public class JavaSourceChangesHandler {
 		}
 	}
 
-	public static List<SourceCodeModification> createModifications(String originalSource, String modifiedSource) {
+	public static List<SourceCodeModification> createModificationsForUri(String originalSource, String modifiedSource, String uri2) {
 		List<SourceCodeModification> insertions = new ArrayList<>();
 		try {
 			Patch<String> patch = DiffUtils.diff(getlines(originalSource), getlines(modifiedSource));
@@ -93,7 +94,7 @@ public class JavaSourceChangesHandler {
 				Patch<String> patch2 = new Patch<String>();
 				patch2.addDelta(delta);
 				List<Delta<String>> delta2 = DiffUtils.diff(getlines(originalSource), DiffUtils.patch(getlines(originalSource), patch2)).getDeltas();
-				convertDeltasToSourceChange(insertions, delta2);
+				convertDeltasToSourceChange(insertions, delta2, uri2);
 			}
 		} catch (PatchFailedException e) {
 			throw new RuntimeException(e);
@@ -102,8 +103,12 @@ public class JavaSourceChangesHandler {
 		return insertions;
 	}
 
+	public static List<SourceCodeModification> createModifications(String originalSource, String modifiedSource) {
+		return createModificationsForUri(originalSource, modifiedSource, null);
+	}
+
 	@SuppressWarnings({ "rawtypes", "unused" })
-	private static void convertDeltasToSourceChange(List<SourceCodeModification> insertions, List<Delta<String>> deltas) {
+	private static void convertDeltasToSourceChange(List<SourceCodeModification> insertions, List<Delta<String>> deltas, String uri2) {
 
 		for (Delta<String> delta : deltas) {
 
@@ -115,12 +120,12 @@ public class JavaSourceChangesHandler {
 				Position begin = new Position(revised.getPosition(), 0);
 				Position end = new Position(revised.getPosition() + revised.size() + 1, 0);
 				final Range range2 = new Range(begin, end);
-				insertions.add((SourceCodeModification) new SourceCodeReplace("", range2));
+				insertions.add((SourceCodeModification) new SourceCodeReplace("", range2, uri2));
 
 			} else if (delta instanceof InsertDelta) {
 				Position begin = new Position(revised.getPosition(), 0);
 				final Range range2 = new Range(begin, begin);
-				insertions.add((SourceCodeModification) new SourceCodeInsertion(collect, range2));
+				insertions.add((SourceCodeModification) new SourceCodeInsertion(collect, range2, uri2));
 
 			} else if (delta instanceof ChangeDelta) {
 
@@ -133,11 +138,11 @@ public class JavaSourceChangesHandler {
 					Position end = new Position(revised.getPosition() + 1, 0);
 					final Range range2 = new Range(begin, end);
 					String content = revised.getLines().get(0) + "\n";
-					insertions.add(new SourceCodeReplace(content, range2));
+					insertions.add(new SourceCodeReplace(content, range2, uri2));
 
 					Position begin2 = new Position(revised.getPosition() + 1, 0);
 					final Range range3 = new Range(begin2, begin2);
-					insertions.add(new SourceCodeInsertion(collect.substring(content.length()), range3));
+					insertions.add(new SourceCodeInsertion(collect.substring(content.length()), range3, uri2));
 				}
 			}
 		}
@@ -162,15 +167,16 @@ public class JavaSourceChangesHandler {
 		return file;
 	}
 
-	public void addInsertionsFor(List<SourceChange> sourceChanges, List<Function<CompilationUnit, SourceChange>> funcs) {
-		for (Function<CompilationUnit, SourceChange> function : funcs) {
+	public void addInsertionsFor(List<CodeProposal> sourceChanges, List<Function<CompilationUnit, CodeProposal>> funcs) {
+		for (Function<CompilationUnit, CodeProposal> function : funcs) {
 			CompilationUnit compilationUnit = createCompilationUnit();
 			String originalSource = LexicalPreservingPrinter.print(compilationUnit);
 
-			SourceChange sourceChange = function.apply(compilationUnit);
+			CodeProposal sourceChange = function.apply(compilationUnit);
 			if (sourceChange != null) {
 				List<SourceCodeModification> insertions = createModifications(originalSource, LexicalPreservingPrinter.print(compilationUnit));
-				sourceChange.insertions = insertions;
+				sourceChange.getSourceChange().setInsertions(insertions);
+				;
 				sourceChanges.add(sourceChange);
 			}
 		}

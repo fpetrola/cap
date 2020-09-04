@@ -6,6 +6,7 @@ public class EntityModel implements DeveloperModel {
 
 	public String name;
 	public List<Property> properties;
+	private EntityModelListener entityModelListener;
 
 	public EntityModel(String name, List<Property> properties) {
 		this.name = name;
@@ -19,6 +20,19 @@ public class EntityModel implements DeveloperModel {
 
 	public List<Property> getProperties() {
 		return properties;
+	}
+
+	public void createProperty(Property property, PropertyMapping propertyMapping) {
+		properties.add(property);
+		entityModelListener.propertyCreated(this, property, propertyMapping);
+	}
+
+	protected EntityModelListener getEntityModelListener() {
+		return entityModelListener;
+	}
+
+	public void setEntityModelListener(EntityModelListener entityModelListener) {
+		this.entityModelListener = entityModelListener;
 	}
 
 }

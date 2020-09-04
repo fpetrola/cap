@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fpetrola.cap.model.binders.sync.ChangesLinker;
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
 public class DefaultBinder<S, T> implements Binder<S, T> {
@@ -41,7 +42,7 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 	}
 
 	public String getWorkspacePath() {
-		return workspacePath;
+		return parentBinder != null ? parentBinder.getWorkspacePath() : workspacePath;
 	}
 
 	public void setWorkspacePath(String workspacePath) {
@@ -145,5 +146,9 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 			return lastValue;
 		else
 			return (List) lastValue.stream().filter(v -> ids.stream().anyMatch(f -> v.toString().contains(f))).collect(Collectors.toList());
+	}
+
+	public ChangesLinker getChangesLinker() {
+		return parentBinder.getChangesLinker();
 	}
 }
