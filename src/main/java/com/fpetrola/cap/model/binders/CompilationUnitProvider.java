@@ -14,25 +14,27 @@ public class CompilationUnitProvider implements Provider<CompilationUnit> {
 	private CompilationUnit compilationUnit;
 	private List<CompilationUnit> stack = new ArrayList<CompilationUnit>();
 	private CompilationUnit originalCompilationUnit;
+	private String uri;
 
-	public CompilationUnitProvider(JavaSourceChangesHandler javaSourceChangesHandler) {
+	public CompilationUnitProvider(String uri, JavaSourceChangesHandler javaSourceChangesHandler) {
+		this.uri = uri;
 		this.javaSourceChangesHandler = javaSourceChangesHandler;
 	}
 
 	public CompilationUnit get() {
 		if (compilationUnit == null)
-			return setOriginalCompilationUnit(getNew());
+			return createNew();
 		else
 			return compilationUnit;
 	}
 
-	public CompilationUnit getNew() {
+	public CompilationUnit createNew() {
 		if (getOriginalCompilationUnit() == null) {
-			setOriginalCompilationUnit(getJavaSourceChangesHandler().createCompilationUnit());
+			setOriginalCompilationUnit(javaSourceChangesHandler.createCompilationUnit(uri));
 		}
 
 		String originalSource = LexicalPreservingPrinter.print(getOriginalCompilationUnit());
-		compilationUnit = getJavaSourceChangesHandler().createCompilationUnitFromSource(originalSource);
+		compilationUnit = javaSourceChangesHandler.createCompilationUnitFromSource(originalSource);
 		getStack().add(compilationUnit);
 		return compilationUnit;
 	}
@@ -43,10 +45,6 @@ public class CompilationUnitProvider implements Provider<CompilationUnit> {
 
 	public void setStack(List<CompilationUnit> stack) {
 		this.stack = stack;
-	}
-
-	public JavaSourceChangesHandler getJavaSourceChangesHandler() {
-		return javaSourceChangesHandler;
 	}
 
 	public CompilationUnit getOriginalCompilationUnit() {

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fpetrola.cap.helpers.Provider;
 import com.fpetrola.cap.model.binders.implementations.java.JavaField;
 import com.fpetrola.cap.model.binders.sync.ChangesLinker;
 import com.fpetrola.cap.model.source.CodeProposal;
@@ -20,65 +21,65 @@ import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinte
 public class SourceCodeChanger {
 
 	private ChangesLinker changesLinker;
-	private CompilationUnitProvider compilationUnitProvider;
-	private List<CodeProposal> sourceChanges;
+	private Provider<CompilationUnit> compilationUnitProvider;
+	private List<CodeProposal> codeProposals;
 	private SourceChangesListener sourceChangesListener;
 	private String uri;
+	private CompilationUnit originalCompilationUnit;
 
-	public SourceCodeChanger(CompilationUnitProvider compilationUnit, SourceChangesListener sourceChangesListener, ChangesLinker changesLinker) {
+	public SourceCodeChanger(String uri, String workspacePath, String className, Provider<CompilationUnit> provider, SourceChangesListener sourceChangesListener, ChangesLinker changesLinker) {
+		this.uri = uri;
 		this.sourceChangesListener = sourceChangesListener;
-		this.compilationUnitProvider = compilationUnit;
+		this.compilationUnitProvider = provider;
 		this.changesLinker = changesLinker;
-		this.uri = compilationUnit.getJavaSourceChangesHandler().getUri();
+
+		this.originalCompilationUnit = provider.get();
+		provider.createNew();
 		try {
-			compilationUnitProvider.getNew();
-			this.sourceChanges = new ArrayList<>();
+			this.setCodeProposals(new ArrayList<>());
 		} catch (Exception e) {
-			String content = JavaparserHelper.createNewJavaClassContent(compilationUnitProvider.getJavaSourceChangesHandler().getClassName());
+			String content = JavaparserHelper.createNewJavaClassContent(className);
 			sourceChangesListener.fileCreation(uri, content);
 			throw new RuntimeException(e);
 		}
 	}
 
-	public SourceCodeChanger(String findWorkspacePath, String classname, SourceChangesListener sourceChangesListener, ChangesLinker changesLinker) {
-		this(new CompilationUnitProvider(new JavaSourceChangesHandler(findWorkspacePath, classname)), sourceChangesListener, changesLinker);
-	}
-
 	public void addAnnotationToClass(NormalAnnotationExpr createAnnotation) {
 		var name = getAnnotationSimpleName(createAnnotation);
-		addChange(compilationUnitProvider.getNew(), JavaparserHelper.addAnnotationToClass(this, createAnnotation, "add '" + name + "' annotation to class", ""));
+		addChange(JavaparserHelper.addAnnotationToClass(this, createAnnotation, "add '" + name + "' annotation to class", ""));
 	}
 
 	public void addAnnotationToField(NormalAnnotationExpr createAnnotation, JavaField javaField) {
 		if (!javaField.isNew()) {
 			var name = getAnnotationSimpleName(createAnnotation);
 			var message = "add annotation " + name + " to property: " + javaField.getName();
-			addChange(compilationUnitProvider.get(), JavaparserHelper.addAnnotationToField(javaField.sourceCodeChanger, createAnnotation, javaField.getName(), message));
-			compilationUnitProvider.getNew();
+			addChange(JavaparserHelper.addAnnotationToField(javaField.sourceCodeChanger, createAnnotation, javaField.getName(), message));
 		}
 	}
 
-	private void addChange(CompilationUnit compilationUnit, CodeProposal sourceChange) {
-		if (sourceChange != null) {
-			var originalSource = LexicalPreservingPrinter.print(getCompilationUnitProvider().getOriginalCompilationUnit());
+	private void addChange(CodeProposal codeProposal) {
+		if (codeProposal != null) {
+			CompilationUnit compilationUnit = compilationUnitProvider.get();
+			var originalSource = LexicalPreservingPrinter.print(originalCompilationUnit);
 			var resultingSource = LexicalPreservingPrinter.print(compilationUnit);
 
-			sourceChange.getSourceChange().setInsertions(JavaSourceChangesHandler.createModifications(originalSource, resultingSource));
-			sourceChanges.add(sourceChange);
+			codeProposal.getSourceChange().setInsertions(JavaSourceChangesHandler.createModifications(originalSource, resultingSource));
+			getCodeProposals().add(codeProposal);
+
+			compilationUnitProvider.createNew();
 		}
 	}
 
 	public void addfield(String name, Class<?> type) {
-		addChange(compilationUnitProvider.get(), JavaparserHelper.addFieldIfNotExists(compilationUnitProvider.get(), "create property: " + name, name, type.getSimpleName(), uri));
-		compilationUnitProvider.getNew();
+		addChange(JavaparserHelper.addFieldIfNotExists(compilationUnitProvider.get(), "create property: " + name, name, type.getSimpleName(), uri));
 	}
 
 	public void aplyChanges() {
-		sourceChangesListener.sourceChange(getUri(), sourceChanges);
+		sourceChangesListener.sourceChange(getUri(), getCodeProposals());
 	}
 
 	public void aplyChanges2(CodeProposal codeProposal) {
-		if (codeProposal.getSourceChange() != null)
+		if (codeProposal != null && codeProposal.getSourceChange() != null)
 			sourceChangesListener.sourceChange(getUri(), Arrays.asList(codeProposal));
 	}
 
@@ -91,16 +92,12 @@ public class SourceCodeChanger {
 		return name.substring(name.lastIndexOf(".") + 1);
 	}
 
-	public CompilationUnitProvider getCompilationUnitProvider() {
+	public Provider<CompilationUnit> getCompilationUnitProvider() {
 		return compilationUnitProvider;
 	}
 
 	public String getUri() {
 		return uri;
-	}
-
-	public String getURI(File file) {
-		return file.toURI().toString().replace("file:/", "file:///");
 	}
 
 	public void setUri(String uri) {
@@ -109,6 +106,14 @@ public class SourceCodeChanger {
 
 	public ChangesLinker getChangesLinker() {
 		return changesLinker;
+	}
+
+	public List<CodeProposal> getCodeProposals() {
+		return codeProposals;
+	}
+
+	public void setCodeProposals(List<CodeProposal> codeProposals) {
+		this.codeProposals = codeProposals;
 	}
 
 }

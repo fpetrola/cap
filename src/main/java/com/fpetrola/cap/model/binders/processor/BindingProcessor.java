@@ -32,13 +32,14 @@ public class BindingProcessor extends BaseBindingProcessor {
 
 		try {
 			deserializeModel();
+			proposeNewBinders();
+			proposeFilters();
+			proposeConfigForWorkspaceAwareBinder();
+
+			deserializeModel();
 		} catch (Exception e1) {
 			proposeCreation();
 		}
-		proposeNewBinders();
-		proposeFilters();
-		proposeConfigForWorkspaceAwareBinder();
-
 		bindModel(false, modelBinder, (b, v) -> {
 		}, true);
 

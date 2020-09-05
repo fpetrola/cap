@@ -7,6 +7,12 @@ public class SourceChange {
 
 	private String uri;
 	private List<SourceCodeModification> insertions = new ArrayList<SourceCodeModification>();
+	private String message;
+
+	public SourceChange(String uri, String message) {
+		this.uri = uri;
+		this.message = message;
+	}
 
 	public SourceChange(String uri) {
 		this.uri = uri;
@@ -31,5 +37,9 @@ public class SourceChange {
 
 	public void setInsertions(List<SourceCodeModification> insertions) {
 		this.insertions = insertions;
+	}
+
+	public String getMessage() {
+		return message;
 	}
 }

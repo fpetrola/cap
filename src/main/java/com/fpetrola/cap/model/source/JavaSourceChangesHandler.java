@@ -29,24 +29,21 @@ import difflib.PatchFailedException;
 
 public class JavaSourceChangesHandler {
 
-	private static final String javaSourceFolderBase = "src/main/java";
-	private String uri;
+	public static final String javaSourceFolderBase = "src/main/java";
 	private String workspacePath;
 	private JavaParser javaParser;
-	private String className;
 
-	public JavaSourceChangesHandler(String workspacePath, String className) {
+	public JavaSourceChangesHandler(String workspacePath) {
 		this.workspacePath = workspacePath;
-		this.className = className;
 		this.javaParser = createJavaParser();
-		initWithClassName(className);
+		initWithClassName();
 	}
 
 	public String addFixAllForNow(List<CodeProposal> sourceChanges, List<Function<CompilationUnit, SourceChange>> funcs, String uri, String content) {
 		try {
 			CompilationUnit compilationUnit;
 			if (content == null)
-				compilationUnit = javaParser.parse(createFileFromUri()).getResult().get();
+				compilationUnit = javaParser.parse(createFileFromUri(uri)).getResult().get();
 			else
 				compilationUnit = javaParser.parse(content).getResult().get();
 
@@ -153,23 +150,18 @@ public class JavaSourceChangesHandler {
 		return Arrays.asList(split);
 	}
 
-	public File initWithClassName(String className) {
-		Path mavenModuleRoot = new File(getWorkspacePath()).toPath();
-		SourceRoot sourceRoot = new SourceRoot(mavenModuleRoot.resolve(javaSourceFolderBase));
+	public void initWithClassName() {
+		Path workspacePath = new File(getWorkspacePath()).toPath();
+		SourceRoot sourceRoot = new SourceRoot(workspacePath.resolve(javaSourceFolderBase));
 		ParserConfiguration parserConfiguration = sourceRoot.getParserConfiguration();
 		parserConfiguration.setLexicalPreservationEnabled(true);
 		SourceRoot createSourceRoot = sourceRoot;
 		createSourceRoot.setPrinter(LexicalPreservingPrinter::print);
-
-		String completeFilename = mavenModuleRoot + "/" + javaSourceFolderBase + "/" + className.replace(".", "/") + ".java";
-		File file = new File(completeFilename);
-		uri = getURI(file);
-		return file;
 	}
 
-	public void addInsertionsFor(List<CodeProposal> sourceChanges, List<Function<CompilationUnit, CodeProposal>> funcs) {
+	public void addInsertionsFor(List<CodeProposal> sourceChanges, List<Function<CompilationUnit, CodeProposal>> funcs, String uri) {
 		for (Function<CompilationUnit, CodeProposal> function : funcs) {
-			CompilationUnit compilationUnit = createCompilationUnit();
+			CompilationUnit compilationUnit = createCompilationUnit(uri);
 			String originalSource = LexicalPreservingPrinter.print(compilationUnit);
 
 			CodeProposal sourceChange = function.apply(compilationUnit);
@@ -182,9 +174,9 @@ public class JavaSourceChangesHandler {
 		}
 	}
 
-	public CompilationUnit createCompilationUnit() {
+	public CompilationUnit createCompilationUnit(String uri) {
 		try {
-			CompilationUnit compilationUnit = javaParser.parse(createFileFromUri()).getResult().get();
+			CompilationUnit compilationUnit = javaParser.parse(createFileFromUri(uri)).getResult().get();
 			LexicalPreservingPrinter.setup(compilationUnit);
 			return compilationUnit;
 		} catch (FileNotFoundException e) {
@@ -198,7 +190,7 @@ public class JavaSourceChangesHandler {
 		return compilationUnit;
 	}
 
-	private File createFileFromUri() {
+	private File createFileFromUri(String uri) {
 		return new File(URI.create(uri));
 	}
 
@@ -212,24 +204,12 @@ public class JavaSourceChangesHandler {
 		return javaParser;
 	}
 
-	private String getURI(File file) {
-		return file.toURI().toString().replace("file:/", "file:///");
-	}
-
-	public String getUri() {
-		return uri;
-	}
-
 	public String getWorkspacePath() {
 		return workspacePath;
 	}
-
-	public boolean fileExists() {
-		return createFileFromUri().exists();
-	}
-
-	public String getClassName() {
-		return className;
-	}
+//
+//	public boolean fileExists() {
+//		return createFileFromUri().exists();
+//	}
 
 }

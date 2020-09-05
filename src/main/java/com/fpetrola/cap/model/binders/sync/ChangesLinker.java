@@ -13,8 +13,12 @@ public class ChangesLinker {
 
 	public CodeProposal getChangerOf(Object o1, Object o2) {
 		SourceChange sourceChange = sourceChanges.get(o1);
-		CodeProposal codeProposal = codeProposals.get(o2);
-		codeProposal.setSourceChange(sourceChange);
+		CodeProposal codeProposal = null;
+		if (sourceChange != null) {
+			codeProposal = codeProposals.get(o2);
+			codeProposal.setSourceChange(sourceChange);
+			codeProposal.setMessage(sourceChange.getMessage());
+		}
 		return codeProposal;
 	}
 
