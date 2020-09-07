@@ -10,7 +10,6 @@ import com.fpetrola.cap.model.source.SourceChangesListener;
 
 public class DefaultBinder<S, T> implements Binder<S, T> {
 	protected List<String> filters = new ArrayList<>();
-	public String workspacePath;
 	public List<Binder> chain = new ArrayList<>();
 	private Binder<T, ?> parentBinder;
 
@@ -42,11 +41,7 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 	}
 
 	public String getWorkspacePath() {
-		return parentBinder != null ? parentBinder.getWorkspacePath() : workspacePath;
-	}
-
-	public void setWorkspacePath(String workspacePath) {
-		this.workspacePath = workspacePath;
+		return parentBinder != null ? parentBinder.getWorkspacePath() : null;
 	}
 
 	public void setChain(List<Binder> binders) {
@@ -81,15 +76,6 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 
 	public Binder<T, ?> getParent() {
 		return parentBinder;
-	}
-
-	public String findWorkspacePath() {
-		if (workspacePath != null)
-			return workspacePath;
-		if (parentBinder != null) {
-			return parentBinder.findWorkspacePath();
-		} else
-			return null;
 	}
 
 	public boolean allowsRootBinder() {
@@ -131,7 +117,7 @@ public class DefaultBinder<S, T> implements Binder<S, T> {
 			}
 
 			lastResult = result;
-			if (result.isEmpty())
+			if (result.isEmpty() && !pull.isEmpty() && !pull.get(0).getClass().equals(Void.class))
 				result = new ArrayList<>(pull);
 
 			lastValue = new ArrayList<>(result);

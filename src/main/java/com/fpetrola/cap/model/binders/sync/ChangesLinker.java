@@ -1,32 +1,14 @@
 package com.fpetrola.cap.model.binders.sync;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fpetrola.cap.model.source.CodeProposal;
 import com.fpetrola.cap.model.source.SourceChange;
 
-public class ChangesLinker {
+public interface ChangesLinker {
 
-	private Map<Object, SourceChange> sourceChanges = new HashMap<Object, SourceChange>();
-	private Map<Object, CodeProposal> codeProposals = new HashMap<Object, CodeProposal>();
+	CodeProposal getChangerOf(Object o1, Object o2);
 
-	public CodeProposal getChangerOf(Object o1, Object o2) {
-		SourceChange sourceChange = sourceChanges.get(o1);
-		CodeProposal codeProposal = null;
-		if (sourceChange != null) {
-			codeProposal = codeProposals.get(o2);
-			codeProposal.setSourceChange(sourceChange);
-			codeProposal.setMessage(sourceChange.getMessage());
-		}
-		return codeProposal;
-	}
+	void addSourceChangeFor(Object pm, SourceChange sourceChange);
 
-	public void addSourceChangeFor(Object pm, SourceChange sourceChange) {
-		sourceChanges.put(pm, sourceChange);
-	}
+	void addCodeProposalFor(Object object, CodeProposal codeProposal);
 
-	public void addCodeProposalFor(Object object, CodeProposal codeProposal) {
-		codeProposals.put(object, codeProposal);
-	}
 }

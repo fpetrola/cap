@@ -6,15 +6,21 @@ import java.util.List;
 
 import com.fpetrola.cap.model.binders.processor.BaseBindingProcessor;
 import com.fpetrola.cap.model.binders.sync.ChangesLinker;
+import com.fpetrola.cap.model.binders.sync.DefaultChangesLinker;
 import com.fpetrola.cap.model.source.SourceChangesListener;
 
 public class ModelBinder<S, T> extends DefaultBinder<Object, Object> implements Binder<Object, Object> {
 	public String model;
 	protected SourceChangesListener sourceChangesListener;
 	private TraverseListener traverseListener;
-	private ChangesLinker changesLinker= new ChangesLinker();
+	private ChangesLinker defaultChangesLinker= new DefaultChangesLinker();
+	private String workspacePath;
 
 	public ModelBinder() {
+	}
+	
+	public String getWorkspacePath() {
+		return workspacePath;
 	}
 
 	public String getModel() {
@@ -58,10 +64,14 @@ public class ModelBinder<S, T> extends DefaultBinder<Object, Object> implements 
 	}
 
 	public ChangesLinker getChangesLinker() {
-		return changesLinker;
+		return defaultChangesLinker;
 	}
 
-	public void setChangesLinker(ChangesLinker changesLinker) {
-		this.changesLinker = changesLinker;
+	public void setChangesLinker(ChangesLinker defaultChangesLinker) {
+		this.defaultChangesLinker = defaultChangesLinker;
+	}
+
+	public void setWorkspacePath(String workspacePath) {
+		this.workspacePath = workspacePath;
 	}
 }

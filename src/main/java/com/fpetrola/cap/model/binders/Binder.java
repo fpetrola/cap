@@ -13,10 +13,6 @@ public interface Binder<S, T> {
 
 	String getWorkspacePath();
 
-	void setWorkspacePath(String workspacePath);
-
-	String findWorkspacePath();
-
 	void setSourceChangesListener(SourceChangesListener sourceChangesListener);
 
 	void setFilters(List<String> ids);

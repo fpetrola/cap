@@ -32,7 +32,7 @@ public class SourceChangesListenerImpl implements SourceChangesListener {
 			FileWriter fileWriter = new FileWriter(file);
 			fileWriter.write(content);
 			fileWriter.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -49,6 +49,16 @@ public class SourceChangesListenerImpl implements SourceChangesListener {
 		} catch (Exception e) {
 			fileCreation(uri, "");
 			return "";
+		}
+	}
+
+	public boolean fileExists(String uri) {
+		try {
+			Path path = Paths.get(URI.create(uri));
+			String content = Files.readString(path);
+			return true;
+		} catch (Exception e) {
+			return false;
 		}
 	}
 }

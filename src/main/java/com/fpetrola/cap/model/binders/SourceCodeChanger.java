@@ -20,28 +20,22 @@ import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinte
 @SuppressWarnings("unused")
 public class SourceCodeChanger {
 
-	private ChangesLinker changesLinker;
+	private ChangesLinker defaultChangesLinker;
 	private Provider<CompilationUnit> compilationUnitProvider;
 	private List<CodeProposal> codeProposals;
 	private SourceChangesListener sourceChangesListener;
 	private String uri;
 	private CompilationUnit originalCompilationUnit;
 
-	public SourceCodeChanger(String uri, String workspacePath, String className, Provider<CompilationUnit> provider, SourceChangesListener sourceChangesListener, ChangesLinker changesLinker) {
+	public SourceCodeChanger(String uri, String workspacePath, String className, Provider<CompilationUnit> provider, SourceChangesListener sourceChangesListener, ChangesLinker defaultChangesLinker) {
 		this.uri = uri;
 		this.sourceChangesListener = sourceChangesListener;
 		this.compilationUnitProvider = provider;
-		this.changesLinker = changesLinker;
+		this.defaultChangesLinker = defaultChangesLinker;
 
 		this.originalCompilationUnit = provider.get();
 		provider.createNew();
-		try {
-			this.setCodeProposals(new ArrayList<>());
-		} catch (Exception e) {
-			String content = JavaparserHelper.createNewJavaClassContent(className);
-			sourceChangesListener.fileCreation(uri, content);
-			throw new RuntimeException(e);
-		}
+		this.setCodeProposals(new ArrayList<>());
 	}
 
 	public void addAnnotationToClass(NormalAnnotationExpr createAnnotation) {
@@ -105,7 +99,7 @@ public class SourceCodeChanger {
 	}
 
 	public ChangesLinker getChangesLinker() {
-		return changesLinker;
+		return defaultChangesLinker;
 	}
 
 	public List<CodeProposal> getCodeProposals() {

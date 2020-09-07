@@ -12,6 +12,8 @@ import com.fpetrola.cap.model.binders.BinderModUnmaker;
 import com.fpetrola.cap.model.binders.DefaultBinder;
 import com.fpetrola.cap.model.binders.ModelBinder;
 import com.fpetrola.cap.model.binders.TraverseListener;
+import com.fpetrola.cap.model.binders.sync.ChangesLinker;
+import com.fpetrola.cap.model.binders.sync.DummyChangesLinker;
 import com.fpetrola.cap.model.source.CodeProposal;
 import com.fpetrola.cap.model.source.DummySourceChangesListener;
 import com.fpetrola.cap.model.source.JavaSourceChangesHandler;

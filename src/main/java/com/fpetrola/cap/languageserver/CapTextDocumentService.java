@@ -1,14 +1,11 @@
 package com.fpetrola.cap.languageserver;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CodeLens;
@@ -16,7 +13,6 @@ import org.eclipse.lsp4j.CodeLensParams;
 import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
-import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
@@ -32,16 +28,11 @@ import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.MarkedString;
 import org.eclipse.lsp4j.MarkupContent;
-import org.eclipse.lsp4j.MessageActionItem;
-import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
-import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
-import org.eclipse.lsp4j.ShowMessageRequestParams;
 import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SymbolInformation;
-import org.eclipse.lsp4j.TextDocumentEdit;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
@@ -179,33 +170,6 @@ public class CapTextDocumentService implements TextDocumentService {
 		for (PublishDiagnosticsParams publishDiagnosticsParams : publish) {
 			languageServer.client.publishDiagnostics(publishDiagnosticsParams);
 		}
-	}
-
-	private void editFile() {
-		ApplyWorkspaceEditParams params2 = new ApplyWorkspaceEditParams();
-		WorkspaceEdit edit = new WorkspaceEdit();
-		TextDocumentEdit textDocumentEdit = new TextDocumentEdit();
-		VersionedTextDocumentIdentifier textDocument = new VersionedTextDocumentIdentifier();
-		textDocument.setUri("uri:///home/fernando/Documents/2aaa.java");
-		textDocument.setVersion(0);
-		textDocumentEdit.setTextDocument(textDocument);
-		TextEdit textEdit = new TextEdit();
-		textEdit.setNewText("hola mundo!!!!");
-		Range range = new Range();
-		range.setStart(new Position(10, 3));
-		range.setEnd(new Position(10, 17));
-		textEdit.setRange(range);
-		textDocumentEdit.setEdits(Arrays.asList(textEdit));
-		edit.setDocumentChanges(Arrays.asList(Either.forLeft(textDocumentEdit)));
-		params2.setEdit(edit);
-		languageServer.client.applyEdit(params2);
-	}
-
-	private void sendMessage() {
-		MessageActionItem messageActionItemSi = new MessageActionItem("si");
-		MessageActionItem messageActionItemNo = new MessageActionItem("no");
-		ShowMessageRequestParams requestParams = new ShowMessageRequestParams(Arrays.asList(messageActionItemSi, messageActionItemNo));
-		languageServer.client.showMessageRequest(requestParams);
 	}
 
 	public void didChange(DidChangeTextDocumentParams params) {

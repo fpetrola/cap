@@ -24,38 +24,42 @@ public class DatabaseEntitiesExtractor extends DefaultBinder<DatabaseConnection,
 		try {
 			SourceChangesListener sourceChangesListener = getSourceChangesListener();
 			var uri = getWorkspacePath() != null ? "file://" + getWorkspacePath() + "/database.sql" : null;
-			executeActiveQueries(dbConnection, sourceChangesListener, uri);
 
-			var resultSet = dbConnection.con.getMetaData().getTables(dbConnection.con.getCatalog(), null, null, new String[] { "TABLE" });
+			if (uri != null) {
 
-			while (resultSet.next()) {
-				var tableName = resultSet.getString("TABLE_NAME");
-				var properties = createProperties(dbConnection, tableName);
+				executeActiveQueries(dbConnection, sourceChangesListener, uri);
 
-				EntityModel entityModel = new EntityModel(tableName, properties);
-				entityModel.setEntityModelListener((model, property, pm) -> {
-					try {
+				var resultSet = dbConnection.con.getMetaData().getTables(dbConnection.con.getCatalog(), null, null, new String[] { "TABLE" });
 
-						if (uri != null) {
-							var properties2 = createProperties(dbConnection, tableName);
-							boolean notExists = properties2.stream().noneMatch(p -> p.name.equals(property.name));
+				while (resultSet.next()) {
+					var tableName = resultSet.getString("TABLE_NAME");
+					var properties = createProperties(dbConnection, tableName);
 
-							if (notExists) {
-								String content = sourceChangesListener.getFileContent(uri);
-								String sql = "ALTER TABLE " + tableName + " ADD " + property.name + " " + property.typeName + " NOT NULL";
-								String newContent = content + "\n" + sql;
+					EntityModel entityModel = new EntityModel(tableName, properties);
+					entityModel.setEntityModelListener((model, property, pm) -> {
+						try {
 
-								SourceChange sourceChange = new SourceChange(uri, "add column '" + property.name + "' to table '" + tableName + "'");
-								sourceChange.getInsertions().addAll(JavaSourceChangesHandler.createModificationsForUri(content, newContent, uri));
-								getChangesLinker().addSourceChangeFor(pm, sourceChange);
+							if (uri != null) {
+								var properties2 = createProperties(dbConnection, tableName);
+								boolean notExists = properties2.stream().noneMatch(p -> p.name.equals(property.name));
+
+								if (notExists) {
+									String content = sourceChangesListener.getFileContent(uri);
+									String sql = "ALTER TABLE " + tableName + " ADD " + property.name + " " + property.typeName + " NOT NULL";
+									String newContent = content + "\n" + sql;
+
+									SourceChange sourceChange = new SourceChange(uri, "add column '" + property.name + "' to table '" + tableName + "'");
+									sourceChange.getInsertions().addAll(JavaSourceChangesHandler.createModificationsForUri(content, newContent, uri));
+									getChangesLinker().addSourceChangeFor(pm, sourceChange);
+								}
 							}
+						} catch (SQLException e) {
+							throw new RuntimeException(e);
 						}
-					} catch (SQLException e) {
-						throw new RuntimeException(e);
-					}
-				});
+					});
 
-				entities.add(entityModel);
+					entities.add(entityModel);
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

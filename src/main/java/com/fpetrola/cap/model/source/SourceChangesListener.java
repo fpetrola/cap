@@ -8,4 +8,6 @@ public interface SourceChangesListener {
 	void fileCreation(String resourceUri, String content);
 
 	String getFileContent(String uri);
+
+	boolean fileExists(String uri);
 }

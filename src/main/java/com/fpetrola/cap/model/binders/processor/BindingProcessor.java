@@ -35,7 +35,7 @@ public class BindingProcessor extends BaseBindingProcessor {
 			proposeNewBinders();
 			proposeFilters();
 			proposeConfigForWorkspaceAwareBinder();
-
+			
 			deserializeModel();
 		} catch (Exception e1) {
 			proposeCreation();
@@ -116,9 +116,10 @@ public class BindingProcessor extends BaseBindingProcessor {
 
 		modelBinder.accept(new BinderVisitor() {
 			public void visitChainedBinder(Binder binder) {
-				if (binder == modelBinder) {
-
-					if (binder.findWorkspacePath() == null) {
+				if (binder instanceof ModelBinder) {
+					
+					ModelBinder foundModelBinder = (ModelBinder) binder;
+					if (binder.getWorkspacePath() == null) {
 						File[] file = new File[1];
 						file[0] = new File(URI.create(configURI));
 
@@ -127,7 +128,7 @@ public class BindingProcessor extends BaseBindingProcessor {
 								String message = "use workspace in: " + file[0].getPath();
 								String lastWorkspacePath = binder.getWorkspacePath();
 
-								addChangeProposalToBinder(binder, message, (Binder) -> binder.setWorkspacePath(file[0].getPath()), (Binder) -> binder.setWorkspacePath(lastWorkspacePath));
+								addChangeProposalToBinder(binder, message, (Binder) -> foundModelBinder.setWorkspacePath(file[0].getPath()), (Binder) -> foundModelBinder.setWorkspacePath(lastWorkspacePath));
 							}
 							file[0] = file[0].getParentFile();
 						}

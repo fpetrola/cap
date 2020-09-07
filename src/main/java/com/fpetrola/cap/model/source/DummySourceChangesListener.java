@@ -12,4 +12,8 @@ public class DummySourceChangesListener implements SourceChangesListener {
 	public String getFileContent(String uri) {
 		return "";
 	}
+
+	public boolean fileExists(String uri) {
+		return false;
+	}
 }
